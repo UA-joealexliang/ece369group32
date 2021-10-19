@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 
-module controller(Opcode, RegDst, ALUSrc, MemtoReg, RegWrite, MemRead, MemWrite, Branch, ALUOp1, ALUOp0);
+module Controller(Opcode, RegDst, ALUSrc, MemtoReg, RegWrite, MemRead, MemWrite, Branch, ALUOp1, ALUOp0);
 
     input [5:0] Opcode; // left-most 6 bits of the instruction signifying the opcode
 
