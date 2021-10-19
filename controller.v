@@ -1,16 +1,29 @@
 `timescale 1ns / 1ps
 
-module Controller(Opcode, RegDst, ALUSrc, MemtoReg, RegWrite, MemRead, MemWrite, Branch, ALUOp1, ALUOp0);
+module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, SignExtend, ALUSrc1, ALUSrc2, MemtoReg, RegWrite, HI_LO_Write, MemRead, MemWrite, Branch, Jump, Datatype, ALUControl);
 
-    input [5:0] Opcode; // left-most 6 bits of the instruction signifying the opcode
+    input [5:0] Opcode;     // left-most 6 bits of the instruction signifying the opcode
+    input Bit21;            // used to differentiate srl vs rotr 
+    input [4:0] Bit20_16;   // used to differentiate bgez vs bltz
+    input [4:0] Bit10_6;    // used to differentiate seb vs seh and Bit6 used to differentiate srlv vs rotrv
+    input [5:0] funct;      // right-most 6 bits of the instruction signifying the function under operation type
 
-    output reg RegDst, ALUSrc, MemtoReg, RegWrite, MemRead, MemWrite, Branch, ALUOp1, ALUOp0; // 9 control signals
+    output reg RegDst, SignExtend, ALUSrc1, ALUSrc2, MemtoReg, RegWrite, HI_LO_Write, MemRead, MemWrite, Branch, Jump, Datatype; // 12 control signals
+    output reg [4:0] ALUControl;
+
+    //SignExtend: 0 for unsigned operations, 1 for signed operations
+    //ALUSrc1: 0 for rs, 1 for imm (for rotate and shift)
+    //HI_LO_Write: 1 for HI/LO register write
+    //Branch: 1 for branches
+    //Jump: 1 for jumps
+    //Datatype: 0 = word, 1 = halfword, 2 = byte (loads and stores)
+    //ALUControl: match ALU32Bit.v values
 
     always@(*) begin
         case(Opcode)
             // Arithmetic/Logic r-format
 
-            6'b000000: begin // r-format instructions
+            6'b000000: begin // r-format instructions add, addu
                 RegDst = 1'b1;
                 ALUSrc = 1'b0;
                 MemtoReg = 1'b0;
@@ -18,6 +31,7 @@ module Controller(Opcode, RegDst, ALUSrc, MemtoReg, RegWrite, MemRead, MemWrite,
                 MemRead = 1'b0;
                 MemWrite = 1'b0;
                 Branch = 1'b0;
+                Jump = 1'b0;
                 ALUOp1 = 1'b1;
                 ALUOp0 = 1'b0;
             end
@@ -30,6 +44,7 @@ module Controller(Opcode, RegDst, ALUSrc, MemtoReg, RegWrite, MemRead, MemWrite,
                 MemRead = 1'b0;
                 MemWrite = 1'b0;
                 Branch = 1'b0;
+                Jump = 1'b0;
                 ALUOp1 = 1'b1;
                 ALUOp0 = 1'b0;
             end
@@ -44,6 +59,7 @@ module Controller(Opcode, RegDst, ALUSrc, MemtoReg, RegWrite, MemRead, MemWrite,
                 MemRead = 1'b1;
                 MemWrite = 1'b0;
                 Branch = 1'b0;
+                Jump = 1'b0;
                 ALUOp1 = 1'b0;
                 ALUOp0 = 1'b0;
             end
@@ -56,6 +72,7 @@ module Controller(Opcode, RegDst, ALUSrc, MemtoReg, RegWrite, MemRead, MemWrite,
                 MemRead = 1'b1;
                 MemWrite = 1'b0;
                 Branch = 1'b0;
+                Jump = 1'b0;
                 ALUOp1 = 1'b0;
                 ALUOp0 = 1'b0;
             end
@@ -68,6 +85,7 @@ module Controller(Opcode, RegDst, ALUSrc, MemtoReg, RegWrite, MemRead, MemWrite,
                 MemRead = 1'b1;
                 MemWrite = 1'b0;
                 Branch = 1'b0;
+                Jump = 1'b0;
                 ALUOp1 = 1'b0;
                 ALUOp0 = 1'b0;
             end
@@ -80,6 +98,7 @@ module Controller(Opcode, RegDst, ALUSrc, MemtoReg, RegWrite, MemRead, MemWrite,
                 MemRead = 1'b0;
                 MemWrite = 1'b0;
                 Branch = 1'b0;
+                Jump = 1'b0;
                 ALUOp1 = 1'b0;
                 ALUOp0 = 1'b0;
             end
@@ -92,6 +111,7 @@ module Controller(Opcode, RegDst, ALUSrc, MemtoReg, RegWrite, MemRead, MemWrite,
                 MemRead = 1'b0;
                 MemWrite = 1'b1;
                 Branch = 1'b0;
+                Jump = 1'b0;
                 ALUOp1 = 1'b0;
                 ALUOp0 = 1'b0;
             end
@@ -104,6 +124,7 @@ module Controller(Opcode, RegDst, ALUSrc, MemtoReg, RegWrite, MemRead, MemWrite,
                 MemRead = 1'b0;
                 MemWrite = 1'b1;
                 Branch = 1'b0;
+                Jump = 1'b0;
                 ALUOp1 = 1'b0;
                 ALUOp0 = 1'b0;
             end
@@ -116,6 +137,7 @@ module Controller(Opcode, RegDst, ALUSrc, MemtoReg, RegWrite, MemRead, MemWrite,
                 MemRead = 1'b0;
                 MemWrite = 1'b1;
                 Branch = 1'b0;
+                Jump = 1'b0;
                 ALUOp1 = 1'b0;
                 ALUOp0 = 1'b0;
             end
@@ -130,6 +152,7 @@ module Controller(Opcode, RegDst, ALUSrc, MemtoReg, RegWrite, MemRead, MemWrite,
                 MemRead = 1'b0;
                 MemWrite = 1'b0;
                 Branch = 1'b1;
+                Jump = 1'b0;
                 ALUOp1 = 1'b0;
                 ALUOp0 = 1'b1;
             end
@@ -142,6 +165,7 @@ module Controller(Opcode, RegDst, ALUSrc, MemtoReg, RegWrite, MemRead, MemWrite,
                 MemRead = 1'b0;
                 MemWrite = 1'b0;
                 Branch = 1'b1;
+                Jump = 1'b0;
                 ALUOp1 = 1'b0;
                 ALUOp0 = 1'b1;
             end
@@ -154,6 +178,7 @@ module Controller(Opcode, RegDst, ALUSrc, MemtoReg, RegWrite, MemRead, MemWrite,
                 MemRead = 1'b0;
                 MemWrite = 1'b0;
                 Branch = 1'b1;
+                Jump = 1'b0;
                 ALUOp1 = 1'b0;
                 ALUOp0 = 1'b1;
             end
@@ -166,6 +191,7 @@ module Controller(Opcode, RegDst, ALUSrc, MemtoReg, RegWrite, MemRead, MemWrite,
                 MemRead = 1'b0;
                 MemWrite = 1'b0;
                 Branch = 1'b1;
+                Jump = 1'b0;
                 ALUOp1 = 1'b0;
                 ALUOp0 = 1'b1;
             end
@@ -178,6 +204,7 @@ module Controller(Opcode, RegDst, ALUSrc, MemtoReg, RegWrite, MemRead, MemWrite,
                 MemRead = 1'b0;
                 MemWrite = 1'b0;
                 Branch = 1'b1;
+                Jump = 1'b0;
                 ALUOp1 = 1'b0;
                 ALUOp0 = 1'b1;
             end
@@ -192,6 +219,7 @@ module Controller(Opcode, RegDst, ALUSrc, MemtoReg, RegWrite, MemRead, MemWrite,
                 MemRead = 1'b0;
                 MemWrite = 1'b0;
                 Branch = 1'b0;
+                Jump = 1'b0;
                 ALUOp1 = 1'b1;
                 ALUOp0 = 1'b0;
             end
@@ -204,6 +232,7 @@ module Controller(Opcode, RegDst, ALUSrc, MemtoReg, RegWrite, MemRead, MemWrite,
                 MemRead = 1'b0;
                 MemWrite = 1'b0;
                 Branch = 1'b0;
+                Jump = 1'b0;
                 ALUOp1 = 1'b1;
                 ALUOp0 = 1'b0;
             end
@@ -216,6 +245,7 @@ module Controller(Opcode, RegDst, ALUSrc, MemtoReg, RegWrite, MemRead, MemWrite,
                 MemRead = 1'b0;
                 MemWrite = 1'b0;
                 Branch = 1'b0;
+                Jump = 1'b0;
                 ALUOp1 = 1'b1;
                 ALUOp0 = 1'b0;
             end
@@ -228,6 +258,7 @@ module Controller(Opcode, RegDst, ALUSrc, MemtoReg, RegWrite, MemRead, MemWrite,
                 MemRead = 1'b0;
                 MemWrite = 1'b0;
                 Branch = 1'b0;
+                Jump = 1'b0;
                 ALUOp1 = 1'b1;
                 ALUOp0 = 1'b0;
             end
@@ -240,6 +271,7 @@ module Controller(Opcode, RegDst, ALUSrc, MemtoReg, RegWrite, MemRead, MemWrite,
                 MemRead = 1'b0;
                 MemWrite = 1'b0;
                 Branch = 1'b0;
+                Jump = 1'b0;
                 ALUOp1 = 1'b1;
                 ALUOp0 = 1'b0;
             end
@@ -252,6 +284,7 @@ module Controller(Opcode, RegDst, ALUSrc, MemtoReg, RegWrite, MemRead, MemWrite,
                 MemRead = 1'b0;
                 MemWrite = 1'b0;
                 Branch = 1'b0;
+                Jump = 1'b0;
                 ALUOp1 = 1'b1;
                 ALUOp0 = 1'b0;
             end
@@ -264,6 +297,7 @@ module Controller(Opcode, RegDst, ALUSrc, MemtoReg, RegWrite, MemRead, MemWrite,
                 MemRead = 1'b0;
                 MemWrite = 1'b0;
                 Branch = 1'b0;
+                Jump = 1'b0;
                 ALUOp1 = 1'b1;
                 ALUOp0 = 1'b0;
             end
@@ -278,6 +312,7 @@ module Controller(Opcode, RegDst, ALUSrc, MemtoReg, RegWrite, MemRead, MemWrite,
                 MemRead = 1'b0;
                 MemWrite = 1'b0;
                 Branch = 1'b0;
+                Jump = 1'b0;
                 ALUOp1 = 1'b1;
                 ALUOp0 = 1'b0;
             end
