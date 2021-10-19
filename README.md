@@ -17,6 +17,8 @@ git rm [file] //to remove a file
 
 git commit -m "message here"  
 
+git commit -a -m "message here" to add all files for commit
+
 git push  
 
 git pull //update local files with cloud files  
