@@ -9,8 +9,10 @@ Create task lists here
 * [ ] support j, jr, jal
   -jr takes in rs or 25-21; need another mux to   choose between immediate and register value
   -jal updates register 31 with PC+4; need   another mux
-* [ ] modify DataMemory to work with all loads & stores, need to add another controller signal
+* [✔] modify DataMemory to work with all loads & stores, need to add another controller signal, and add SignExtend
   -sh, lh only modifies 16 bits
-  -sb, lb only midifes 8 bits
+  -sb, lb only modifes 8 bits
+  -lh, lb need to be sign-extended before placed into Write (Joe implemented this into DataMemory file)
+  -CONTROLLER SIGNAL ADDED: Datatype
 * [ ] Load InstructionMemory.txt from file instead of hardcoding into module
 * [ ] Input funct codes into ALU
