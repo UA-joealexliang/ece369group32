@@ -364,9 +364,6 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Opcode, ALUResult, Hi, Lo, Zero,
 					5'b01101: begin // sra, srav
 						if (B[31] == 1) begin
 							s <= $signed(B) >>> A[4:0];		
-//							for (i = 32-A[4:0]; i <= 5'd31; i = i + 1) begin
-//								s[i] = 1;
-//							end
 							ALUResult <= s;
 						end
 						else if (B[31] == 0) begin
