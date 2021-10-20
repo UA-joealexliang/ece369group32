@@ -53,7 +53,7 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Instruction, ALUResult, Hi, Lo, 
     always@(*)begin
         case(ALUControl)
             
-        5'b00001: begin                 	//add*, addiu, addu*, addi, lw, sw, sb, lh, lb, sh
+        5'b00001: begin                 	//add*, addiu*, addu*, addi*, lw, sw, sb, lh, lb, sh
         	ALUResult = A + B;
         end 
             
@@ -137,23 +137,19 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Instruction, ALUResult, Hi, Lo, 
 			end
 	    end
 
-        5'b01101: begin                  	//logical and*, andi
-			HI_LO_Write <= 0;
+        5'b01101: begin                  	//logical and*, andi*
         	ALUResult = (A & B);
         end 
             
-        5'b01110: begin                  	//logical or*, ori
-			HI_LO_Write <= 0;
+        5'b01110: begin                  	//logical or*, ori*
             ALUResult = (A | B);
         end
             
 	    5'b01111: begin                  	//logical nor*
-			HI_LO_Write <= 0;
             ALUResult = ~(A | B);
         end
 
-        5'b10000: begin                  	//logical xor*, xori
-			HI_LO_Write <= 0;
+        5'b10000: begin                  	//logical xor*, xori*
             ALUResult = (A ^ B);
         end
 		
@@ -167,17 +163,14 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Instruction, ALUResult, Hi, Lo, 
 	    end
 
 	    5'b10001: begin                  	//sll*, sllv* rt is left shifted rs[4:0] bits
-			HI_LO_Write <= 0;
 			ALUResult <= B << A[4:0];
         end
             
  	    5'b10010: begin                  	//srl*, srlv* rt is right shifted rs[4:0] bits
-			HI_LO_Write <= 0;
             ALUResult <= B >> A[4:0];
         end
 
-	    5'b10011: begin                  	//slt*, slti rs < rt
-			HI_LO_Write <= 0;
+	    5'b10011: begin                  	//slt*, slti* rs < rt
 			if (A[31] != B[31]) begin //if they are not the same sign
 				if (A[31] == 1) begin //rs is negative
 					ALUResult <= 1;
@@ -197,7 +190,6 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Instruction, ALUResult, Hi, Lo, 
         end
 		
 	    5'b10100: begin						//movn* SET RegWrite = 0, writing now determined by RegWrite2
-			HI_LO_Write <= 0;
 			ALUResult <= A;
 			if(B != 0) begin
 				RegWrite2 <= 1;
@@ -208,7 +200,6 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Instruction, ALUResult, Hi, Lo, 
 	    end
 
 	    5'b10101: begin						//movz* SET RegWrite = 0, writing now determined by RegWrite2
-			HI_LO_Write <= 0;
 			ALUResult <= A;
 			if(B == 0) begin				
 				RegWrite2 <= 1;
@@ -219,13 +210,11 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Instruction, ALUResult, Hi, Lo, 
 	    end	
             
         5'b10110: begin                  	//rotrv*, rotr* rt is rotated rs[4:0] bits (ASSUME unsigned B[4:0])
-			HI_LO_Write <= 0;
 			temp <= {B, B}; //ex B = 101 temp = 101101 rotr0/3 = 101 rotr1 = 110 rotr2 = 011 
 			ALUResult <= temp[A[4:0]+:32]; //https://electronics.stackexchange.com/questions/67983/accessing-rows-of-an-array-using-variable-in-verilog
         end
 
 	    5'b10111: begin						//sra*, srav* rt is sign right shifted rs[4:0] bits  
-			HI_LO_Write <= 0;
 			if (B[31] == 1) begin
 				s <= B >> A[4:0];
 				for (i = 32-A[4:0]; i <= 5'd31; i = i + 1) begin
@@ -247,8 +236,7 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Instruction, ALUResult, Hi, Lo, 
 		    end
 	    end
 		
- 	    5'b11001: begin 					//sltiu, sltu* unsigned rs < rt
-			HI_LO_Write <= 0;
+ 	    5'b11001: begin 					//sltiu*, sltu* unsigned rs < rt
 			Zero <= 0;
 			if (A < B) begin
 		   		ALUResult <= 1;
@@ -267,21 +255,18 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Instruction, ALUResult, Hi, Lo, 
 	    end	
 
 	    5'b11001: begin 					//mfhi*
-			HI_LO_Write <= 0;
 			ALUResult <= Hi_in;
 		end
 
 	    5'b11001: begin 					//mflo*
-			HI_LO_Write <= 0;
 			ALUResult <= Lo_in;
 	    end		
 	    
-	    5'b11010: begin 					//lui load immediate into upper half of a word
+	    5'b11010: begin 					//lui* load immediate into upper half of a word
 			ALUResult <= B<<16;
 	    end		    
 
         default:  begin  					//j, jr*, jal
-			HI_LO_Write <= 0;   
         end
             
         endcase
@@ -499,6 +484,61 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Instruction, ALUResult, Hi, Lo, 
 						end
 					end
 				endcase
+			end
+
+			// I-type instructions
+			
+			6'b001001: begin // addiu
+				ALUResult = A + B;
+			end
+
+			6'b001000: begin // addi
+				ALUResult = A + B;
+			end
+
+			6'b001111: begin // lui
+				ALUResult <= B<<16;
+			end
+
+			6'b001100: begin // andi
+				ALUResult = (A & B);
+			end
+
+			6'b001101: begin // ori
+            	ALUResult = (A | B);
+			end
+
+			6'b001110: begin // xori
+				ALUResult = (A ^ B);
+			end
+
+			6'b001010: begin // slti
+				if (A[31] != B[31]) begin //if they are not the same sign
+					if (A[31] == 1) begin //rs is negative
+						ALUResult <= 1;
+					end
+					else if (B[31] == 1) begin //rt is negative
+						ALUResult <= 0;
+					end
+				end
+				else begin //if they are the same sign, normal comparison works (1000 < 1111 since 1000 = -8 and 1111 = -1)
+					if (A < B) begin
+						ALUResult <= 1;
+					end
+					else begin
+						ALUResult <= 0;
+					end
+				end
+			end
+
+			6'b001011: begin // sltiu
+				Zero <= 0;
+				if (A < B) begin
+					ALUResult <= 1;
+				end
+				else begin
+					ALUResult <= 0;
+				end
 			end
 
 			
