@@ -26,14 +26,14 @@
 //   operations needed to support. 
 ////////////////////////////////////////////////////////////////////////////////
 
-module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Op, Funct, ALUResult, Hi, Lo, Zero, HI_LO_Write, RegWrite2);
+module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Instruction, ALUResult, Hi, Lo, Zero, HI_LO_Write, RegWrite2);
 
 	input [4:0] ALUControl; //control bits for ALU operation
                                 //you need to adjust the bitwidth as needed
 	input [31:0] A, B;	//inputs
 	input [31:0] Hi_in;
 	input [31:0] Lo_in;
-	input [5:0] Op, Funct; // inputs for opcode and function code from instruction
+	input [31:0] Instruction; // inputs for opcode and function code from instruction
 	
 	reg [63:0] temp; //temp 64 bit register
 	reg [31:0] s; //temp 32 bit register
@@ -64,7 +64,7 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Op, Funct, ALUResult, Hi, Lo, Ze
 			HI_LO_Write <= 0;
         end    
 	
-	    5'b00011: begin              		//mul
+	    5'b00011: begin              		//mul*
             ALUResult <= A * B;
 			HI_LO_Write <= 0;		
         end 
@@ -76,14 +76,14 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Op, Funct, ALUResult, Hi, Lo, Ze
             HI_LO_Write <= 1;
         end
 	
-  	    5'b00101: begin                 	//multiply and add: madd
+  	    5'b00101: begin                 	//multiply and add: madd*
             temp <= {Hi_in, Lo_in} + (A * B);
             Hi <= temp[63:32];
             Lo <= temp[31:0]; 
             HI_LO_Write <= 1;
         end
             
-        5'b00110: begin                 	//multiply and sub: msub
+        5'b00110: begin                 	//multiply and sub: msub*
             temp <= {Hi_in, Lo_in} - (A * B);
             Hi <= temp[63:32];
             Lo <= temp[31:0]; 
@@ -170,7 +170,7 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Op, Funct, ALUResult, Hi, Lo, Ze
             ALUResult = (A ^ B);
         end
 		
-	    5'b10001: begin 					//seh least significant halfword rt sign extended
+	    5'b10001: begin 					//seh* least significant halfword rt sign extended
 			HI_LO_Write <= 0;
 			if (B[15] == 1) begin
      		    ALUResult <= {16'hffff, B[15:0]};
@@ -309,9 +309,9 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Op, Funct, ALUResult, Hi, Lo, Ze
     /* New implementation with op/funct codes*/
     
     always@(*) begin
-        case(Op)
-			6'b000000: begin // r-type instructions
-				case(Funct)
+        case(Instruction[31:26]) // opcode
+			6'b000000: begin // SPECIAL (r-type instructions)
+				case(Instruction[5:0]) // funct
 					6'b100000: begin // add
 						ALUResult = A + B;
 						HI_LO_Write <= 0;
@@ -504,7 +504,44 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Op, Funct, ALUResult, Hi, Lo, Ze
 				endcase
 			end
 
-			
+			6'b011100: begin // SPECIAL2 (mul, madd, msub)
+				case(Funct)
+					6'b000010: begin // mul
+						ALUResult <= A * B;
+						HI_LO_Write <= 0;
+					end
+
+					6'b000000: begin // madd
+						temp <= {Hi_in, Lo_in} + (A * B);
+						Hi <= temp[63:32];
+						Lo <= temp[31:0]; 
+						HI_LO_Write <= 1;
+					end
+
+					6'b000100: begin // msub
+						temp <= {Hi_in, Lo_in} - (A * B);
+						Hi <= temp[63:32];
+						Lo <= temp[31:0]; 
+						HI_LO_Write <= 1;
+					end
+				endcase
+			end
+
+			6'b011111: begin // SPECIAL3 (seh, seb)
+				case(Funct)
+					6'b100000: begin // seh
+						HI_LO_Write <= 0;
+						if (B[15] == 1) begin
+							ALUResult <= {16'hffff, B[15:0]};
+						end
+						else begin
+							ALUResult <= {16'h0000, B[15:0]};
+						end
+					end
+
+
+				endcase
+			end
 		endcase
     end
  
