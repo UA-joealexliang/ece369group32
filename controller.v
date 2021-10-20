@@ -8,12 +8,14 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, SignExtend, A
     input [4:0] Bit10_6;    // used to differentiate seb vs seh and Bit6 used to differentiate srlv vs rotrv
     input [5:0] funct;      // right-most 6 bits of the instruction signifying the function under operation type
 
-    output reg RegDst, SignExtend, ALUSrc1, ALUSrc2, MemtoReg, RegWrite, HI_LO_Write, MemRead, MemWrite, Branch, Jump, Datatype; // 12 control signals
+    output reg RegDst, SignExtend, ALUSrc1, ALUSrc2, MemtoReg, RegWrite, HI_LO_Write, MemRead, MemWrite, Branch, Jump; // 12 control signals
+    output reg [1:0] Datatype;
+    output reg [1:0] HI_LO_Write;
     output reg [4:0] ALUControl;
 
     //SignExtend: 0 for unsigned operations, 1 for signed operations
     //ALUSrc1: 0 for rs, 1 for imm (for rotate and shift)
-    //HI_LO_Write: 1 for HI/LO register write
+    //HI_LO_Write: 0 = noWrite, 1 = HI_Write, 2 = LO_Write 3 = HI_LO_Write
     //Branch: 1 for branches
     //Jump: 1 for jumps
     //Datatype: 0 = word, 1 = halfword, 2 = byte (loads and stores)
