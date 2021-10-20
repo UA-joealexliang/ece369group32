@@ -1,7 +1,7 @@
 Create task lists here <br />
 
-* [ ] make Hi_in Lo_in feed into ALU32Bit [CAMERON] <br />
-* [ ] there should be 2 muxes for PC Counter [CAMERON] <br />
+* [✔] make Hi_in Lo_in feed into ALU32Bit [CAMERON] <br />
+* [✔] there should be 2 muxes for PC Counter [CAMERON] <br />
   -first one takes in PC+4 and PC+4+offset,  choice is determined by AND Gate {branch, Zero} <br />
   -second one takes in result of first one and  immediate/register value, choice is determined by jump control <br />
 * [ ] update controller and datapath to support movn, movz [CAMERON] <br />
