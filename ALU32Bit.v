@@ -61,14 +61,8 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Instruction, ALUResult, Hi, Lo, 
             ALUResult = A - B; 
         end    
 	
-<<<<<<< HEAD
 	    5'b00011: begin              		//mul*
-            ALUResult <= A * B;
-			HI_LO_Write <= 0;		
-=======
-	    5'b00011: begin              		//mul
             ALUResult <= A * B;		
->>>>>>> 022f30fb39184bf9e2902b1eae23d5d828b71a69
         end 
 	
 	    5'b00100: begin                  	//multiply word: mult*, multu*
@@ -163,12 +157,7 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Instruction, ALUResult, Hi, Lo, 
             ALUResult = (A ^ B);
         end
 		
-<<<<<<< HEAD
-	    5'b10001: begin 					//seh* least significant halfword rt sign extended
-			HI_LO_Write <= 0;
-=======
 	    5'b10001: begin 					//seh least significant halfword rt sign extended
->>>>>>> 022f30fb39184bf9e2902b1eae23d5d828b71a69
 			if (B[15] == 1) begin
      		    ALUResult <= {16'hffff, B[15:0]};
      		end
@@ -249,7 +238,7 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Instruction, ALUResult, Hi, Lo, 
 			end
 	    end
             
- 	    5'b11000: begin 					//seb sign extend least significant byte
+ 	    5'b11000: begin 					//seb* sign extend least significant byte
 			if (B[7] == 1) begin
      		    ALUResult <= {24'hffff, B[7:0]};
      		end
@@ -471,7 +460,7 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Instruction, ALUResult, Hi, Lo, 
 			end
 
 			6'b011100: begin // SPECIAL2 (mul, madd, msub)
-				case(Funct)
+				case(Instruction[5:0]) // funct
 					6'b000010: begin // mul
 						ALUResult <= A * B;
 					end
@@ -491,8 +480,8 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Instruction, ALUResult, Hi, Lo, 
 			end
 
 			6'b011111: begin // SPECIAL3 (seh, seb)
-				case(Funct)
-					6'b100000: begin // seh
+				case(Instruction[10:6])
+					5'b11000: begin // seh
 						if (B[15] == 1) begin
 							ALUResult <= {16'hffff, B[15:0]};
 						end
@@ -501,9 +490,18 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Instruction, ALUResult, Hi, Lo, 
 						end
 					end
 
-
+					5'b10000: begin // seb
+						if (B[7] == 1) begin
+							ALUResult <= {24'hffff, B[7:0]};
+						end
+						else begin
+							ALUResult <= {24'h0000, B[7:0]};
+						end
+					end
 				endcase
 			end
+
+			
 		endcase
     end
  
