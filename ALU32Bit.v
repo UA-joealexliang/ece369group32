@@ -43,7 +43,6 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Instruction, ALUResult, Hi, Lo, 
 	output reg Zero;	    		//Zero flag is raised if conditions are met in branch instructions
 	output reg [31:0] Hi;
 	output reg [31:0] Lo;
-    output reg HI_LO_Write;	// {0 = no write, 1 = write}
 	output reg RegWrite2; //this is OR'd with RegWrite
 
 
@@ -56,42 +55,41 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Instruction, ALUResult, Hi, Lo, 
             
         5'b00001: begin                 	//add*, addiu, addu*, addi, lw, sw, sb, lh, lb, sh
         	ALUResult = A + B;
-			HI_LO_Write <= 0;
         end 
             
         5'b00010: begin                 	//sub*
             ALUResult = A - B; 
-			HI_LO_Write <= 0;
         end    
 	
+<<<<<<< HEAD
 	    5'b00011: begin              		//mul*
             ALUResult <= A * B;
 			HI_LO_Write <= 0;		
+=======
+	    5'b00011: begin              		//mul
+            ALUResult <= A * B;		
+>>>>>>> 022f30fb39184bf9e2902b1eae23d5d828b71a69
         end 
 	
 	    5'b00100: begin                  	//multiply word: mult*, multu*
             temp <= $signed(A * B);
             Hi <= temp[63:32];
             Lo <= temp[31:0];
-            HI_LO_Write <= 1;
         end
 	
   	    5'b00101: begin                 	//multiply and add: madd*
             temp <= {Hi_in, Lo_in} + (A * B);
             Hi <= temp[63:32];
             Lo <= temp[31:0]; 
-            HI_LO_Write <= 1;
         end
             
         5'b00110: begin                 	//multiply and sub: msub*
             temp <= {Hi_in, Lo_in} - (A * B);
             Hi <= temp[63:32];
             Lo <= temp[31:0]; 
-            HI_LO_Write <= 1;
         end
 	
 	    5'b00111: begin						//bgez rs >= 0
-			HI_LO_Write <= 0;
 			if (A >= 0) begin
 				Zero <= 1;
 			end
@@ -101,7 +99,6 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Instruction, ALUResult, Hi, Lo, 
 	    end
 
 	    5'b01000: begin						//beq rs == rt
-			HI_LO_Write <= 0;
 			if (A == B) begin
 				Zero <= 1;
 			end
@@ -111,7 +108,6 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Instruction, ALUResult, Hi, Lo, 
 	    end
 
 	    5'b01001: begin						//bne rs != rt
-			HI_LO_Write <= 0;
 			if(A != B) begin
 				Zero <= 1;
 			end
@@ -121,7 +117,6 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Instruction, ALUResult, Hi, Lo, 
 	    end
 
 	    5'b01010: begin						//bgtz rs > 0
-			HI_LO_Write <= 0;
 			if (A > 0) begin
 				Zero <= 1;
 			end
@@ -131,7 +126,6 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Instruction, ALUResult, Hi, Lo, 
 	    end
 
 	    5'b01011: begin						//blez rs <= 0
-			HI_LO_Write <= 0;
 			if (A <= 0) begin
 				Zero <= 1;
 			end
@@ -141,7 +135,6 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Instruction, ALUResult, Hi, Lo, 
 	    end
 	    
 	    5'b01100: begin						//bltz rs < 0
-			HI_LO_Write <= 0;
 			if (A < 0) begin
 				Zero <= 1;
 			end
@@ -170,8 +163,12 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Instruction, ALUResult, Hi, Lo, 
             ALUResult = (A ^ B);
         end
 		
+<<<<<<< HEAD
 	    5'b10001: begin 					//seh* least significant halfword rt sign extended
 			HI_LO_Write <= 0;
+=======
+	    5'b10001: begin 					//seh least significant halfword rt sign extended
+>>>>>>> 022f30fb39184bf9e2902b1eae23d5d828b71a69
 			if (B[15] == 1) begin
      		    ALUResult <= {16'hffff, B[15:0]};
      		end
@@ -253,7 +250,6 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Instruction, ALUResult, Hi, Lo, 
 	    end
             
  	    5'b11000: begin 					//seb sign extend least significant byte
-			HI_LO_Write <= 0;
 			if (B[7] == 1) begin
      		    ALUResult <= {24'hffff, B[7:0]};
      		end
@@ -275,12 +271,10 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Instruction, ALUResult, Hi, Lo, 
 
  	    5'b11001: begin 					//mthi*
 			Hi <= A;
-			HI_LO_Write <= 1;
 	    end
 
 	    5'b11001: begin 					//mtlo*
 			Lo <= A;
-			HI_LO_Write <= 1;
 	    end	
 
 	    5'b11001: begin 					//mfhi*
@@ -294,7 +288,6 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Instruction, ALUResult, Hi, Lo, 
 	    end		
 	    
 	    5'b11010: begin 					//lui load immediate into upper half of a word
-			HI_LO_Write <= 0;
 			ALUResult <= B<<16;
 	    end		    
 

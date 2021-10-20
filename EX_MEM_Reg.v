@@ -20,17 +20,17 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module EX_MEM_Reg(EX_RegWrite, EX_MemtoReg, 
+module EX_MEM_Reg(EX_RegWrite, RegWrite2, EX_MemtoReg, 
                   EX_Branch, EX_MemWrite, EX_MemRead,
                   EX_Zero, EX_PCResult, EX_ALUResult, EX_Data2, EX_RegDstData, HI, LO, func, Jump, jumpImm, jumpRs,
                   
-                  MEM_RegWrite, MEM_MemtoReg,
+                  MEM_RegWrite, MEM_RegWrite2, MEM_MemtoReg,
                   MEM_Branch, MEM_MemWrite, MEM_MemRead,
                   MEM_Zero, MEM_PCResult, MEM_ALUResult, MEM_Data2, MEM_RegDstData, MEM_HI, MEM_LO, func_out, Jump_out, MEM_jumpImm, MEM_jumpRs,
                   
                   Clk, Clr, Ld);
                   
-        input EX_RegWrite, EX_MemtoReg, 
+        input EX_RegWrite, RegWrite2, EX_MemtoReg, 
               EX_Branch, EX_MemWrite, EX_MemRead,
               EX_Zero;
               
@@ -41,7 +41,7 @@ module EX_MEM_Reg(EX_RegWrite, EX_MemtoReg,
         
         input Clk, Clr, Ld;
         
-        output reg MEM_RegWrite, MEM_MemtoReg,
+        output reg MEM_RegWrite, MEM_RegWrite2, MEM_MemtoReg,
                    MEM_Branch, MEM_MemWrite, MEM_MemRead,
                    MEM_Zero;
         
@@ -54,6 +54,7 @@ module EX_MEM_Reg(EX_RegWrite, EX_MemtoReg,
         
             if(Clr == 1) begin
                 MEM_RegWrite <= 0; 
+                MEM_RegWrite2 <= 0;
                 MEM_MemtoReg <= 0;
                 MEM_Branch <= 0; 
                 MEM_MemWrite <= 0; 
@@ -72,6 +73,7 @@ module EX_MEM_Reg(EX_RegWrite, EX_MemtoReg,
             end
             else if(Ld == 1) begin
                 MEM_RegWrite <= EX_RegWrite; 
+                MEM_RegWrite <= RegWrite2;
                 MEM_MemtoReg <= EX_MemtoReg;
                 MEM_Branch <= EX_Branch; 
                 MEM_MemWrite <= EX_MemWrite; 
