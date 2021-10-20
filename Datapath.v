@@ -18,7 +18,7 @@ module Datapath(Clk, Rst);
     
     //Controller signals
     wire [1:0] RegDst; 
-    wire ALUSrc, MemtoReg, RegWrite, MemRead, MemWrite, Branch, ALUOp1, ALUOp0, Opcode, Jump, JRegOrImm;
+    wire ALUSrc, ALUSrc2, MemtoReg, RegWrite, MemRead, MemWrite, Branch, ALUOp1, ALUOp0, Opcode, Jump, JRegOrImm, Datatype;
     wire [4:0] ALUControl;
     
 /////////////////INSTRUCTION FETCH STAGE///////////////////////////////////////////    
@@ -86,23 +86,26 @@ module Datapath(Clk, Rst);
     SignExtension           SignExtend(ID_Instruction[15:0], SignExtended);
     
     ID_EX_Reg               ID_EX_Reg(ReadData1, ReadData2, SignExtended, ID_PCResult, ID_Instruction[31:26], ID_Instruction[20:16], ID_Instruction[15:11], ID_Instruction[5:0],
-                                     ALUOp1, ALUOp0, RegDst, ALUSrc, ALUControl, Branch, MemWrite, MemRead, MemtoReg, RegWrite, Jump, jump_imm, jump_rs,
+                                     ALUOp1, ALUOp0, RegDst, ALUSrc, ALUControl, Branch, MemWrite, MemRead, MemtoReg, RegWrite, Jump, jump_imm, jump_rs, ALUSrc2, Datatype,
                                      Clk, Rst, 1'b1, 
                                      EX_ReadData1, EX_ReadData2, EX_SignExtend, EX_PCResult, EX_Instruction31_26, EX_Instruction20_16, EX_Instruction15_11, EX_Instruction5_0,
                                      ALUOp1_out, ALUOp0_out, RegDst_out, ALUSrc_out, ALUControl_out, 
-                                     EX_Branch, EX_MemWrite, EX_MemRead, EX_MemtoReg, EX_RegWrite, EX_Jump, EX_jumpImm, EX_jumpRs);
+                                     EX_Branch, EX_MemWrite, EX_MemRead, EX_MemtoReg, EX_RegWrite, EX_Jump, EX_jumpImm, EX_jumpRs, EX_ALUSrc2, EX_Datatype);
     
 ////////////////////EXECUTION STAGE////////////////////////////////////////////////////
     //wires coming from IDEX
     wire [31:0] EXMEM_PC;
-    wire [31:0] ALUSrcData;
+    wire [31:0] ALUSrc1Data, ALUSrc2Data;
     
     wire [31:0] Imm_shifted;
     
     ShiftLeft2              ShiftImm(EX_SignExtend, Imm_shifted);
     
     Adder_32bit             PCAdd (EX_PCResult, Imm_shifted, EXMEM_PC);
-    Mux32Bit2To1            MuxALU(ALUSrcData, EX_ReadData2, EX_SignExtend, ALUSrc);
+    
+    Mux32Bit2To1            MuxALUinput1(ALUSrc1Data, EX_ReadData1, EX_SignExtend, EX_ALUSrc2);
+    Mux32Bit2To1            MuxALUinput2(ALUSrc2Data, EX_ReadData2, EX_SignExtend, ALUSrc_out);
+    
     
     wire Zero, RegWrite2;
     wire [31:0] ALUResult;
@@ -122,7 +125,7 @@ module Datapath(Clk, Rst);
 
     
 /////////hi and lo in     
-    ALU32Bit                ALU1  (ALUControl_out, EX_ReadData1, ALUSrcData, Hi_out, Lo_out, EX_Instruction31_26, ALUResult, HiALUOut, LoALUOut, Zero, RegWrite2);
+    ALU32Bit                ALU1  (ALUControl_out, ALUSrc1Data, ALUSrc2Data, Hi_out, Lo_out, EX_Instruction31_26, ALUResult, HiALUOut, LoALUOut, Zero, RegWrite2);
     
                                   //ALUControl, A,          B,          Hi_in, Lo_in, Opcode, ALUResult, Hi, Lo, Zero, RegWrite2
 
@@ -141,16 +144,16 @@ module Datapath(Clk, Rst);
     wire MEM_MemWrite;
     wire MEM_MemRead;
     wire MEM_MemtoReg;
-    wire MEM_RegWrite, MEM_RegWrite2;
+    wire MEM_RegWrite, MEM_RegWrite2, MEM_Datatype;
     wire [31:0] MEM_HI, MEM_LO, MEM_jumpImm, MEM_jumpRs;
     wire [5:0] MEM_func;
     wire [1:0] MEM_Jump;
     
     
     EX_MEM_Reg              EX_MEM (EX_RegWrite, RegWrite2, EX_MemtoReg, EX_Branch, EX_MemWrite, EX_MemRead,
-                                    Zero, EXMEM_PC, ALUResult, EX_ReadData2, RegDstData, HiALUOut, LoALUOut, EX_Instruction5_0, EX_Jump, EX_jumpImm, EX_jumpRs,
+                                    Zero, EXMEM_PC, ALUResult, EX_ReadData2, RegDstData, HiALUOut, LoALUOut, EX_Instruction5_0, EX_Jump, EX_jumpImm, EX_jumpRs, EX_Datatype,
                                     MEM_RegWrite, MEM_RegWrite2, MEM_MemtoReg, MEM_Branch, MEM_MemWrite, MEM_MemRead,
-                                    MEM_Zero, MEM_PCResult, MEM_ALUResult, MEM_Data2, MEM_RegDstData, MEM_HI, MEM_LO, MEM_func, MEM_Jump, MEM_jumpImm, MEM_jumpRs,
+                                    MEM_Zero, MEM_PCResult, MEM_ALUResult, MEM_Data2, MEM_RegDstData, MEM_HI, MEM_LO, MEM_func, MEM_Jump, MEM_jumpImm, MEM_jumpRs, MEM_Datatype,
                                     Clk, Rst, 1'b1 );
     
     
@@ -160,13 +163,13 @@ module Datapath(Clk, Rst);
     wire [31:0] ReadData;
     wire [31:0] Imm_or_Rs;
     
-    Compare                 checkFunc(MEM_func, , , MEM_Jump);
+    //Compare                 checkFunc(MEM_func, , , MEM_Jump);
     
     ANDGate                 AND_Branch(MEM_Branch, MEM_Zero, PC_Src);
     
     Mux32Bit2To1            PCTarget( Imm_or_Rs, MEM_jumpImm, MEM_jumpRs, MEM_Jump);
     
-    DataMemory              Data_Memory(MEM_ALUResult, MEM_Data2, Clk, MEM_MemWrite, MEM_MemRead, ReadData);
+    DataMemory              Data_Memory(MEM_ALUResult, MEM_Data2, Clk, MEM_MemWrite, MEM_MemRead, MEM_Datatype, ReadData);
     
     Mux32Bit2To1            PC4_or_PC4Offset(PC4_or_PCoffset , PCAddResult, MEM_PCResult, PC_Src);
     Mux32Bit2To1            NextPC(PC_in, PC4_or_PCoffset, Imm_or_Rs, Jump);
@@ -188,7 +191,7 @@ module Datapath(Clk, Rst);
     wire WriteHILO;             /////////move to controller
     wire MEM_or_HILO;
     
-    Compare                 compareFunc(WB_func, WriteHILO, MEM_or_HILO);
+   // Compare                 compareFunc(WB_func, WriteHILO, MEM_or_HILO);
     
     wire[31:0] WB_Data2;
     wire[31:0] MovnData, MovzData;

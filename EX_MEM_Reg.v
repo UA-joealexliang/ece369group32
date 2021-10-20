@@ -22,17 +22,17 @@
 
 module EX_MEM_Reg(EX_RegWrite, RegWrite2, EX_MemtoReg, 
                   EX_Branch, EX_MemWrite, EX_MemRead,
-                  EX_Zero, EX_PCResult, EX_ALUResult, EX_Data2, EX_RegDstData, HI, LO, func, Jump, jumpImm, jumpRs,
+                  EX_Zero, EX_PCResult, EX_ALUResult, EX_Data2, EX_RegDstData, HI, LO, func, Jump, jumpImm, jumpRs, Datatype,
                   
                   MEM_RegWrite, MEM_RegWrite2, MEM_MemtoReg,
                   MEM_Branch, MEM_MemWrite, MEM_MemRead,
-                  MEM_Zero, MEM_PCResult, MEM_ALUResult, MEM_Data2, MEM_RegDstData, MEM_HI, MEM_LO, func_out, Jump_out, MEM_jumpImm, MEM_jumpRs,
+                  MEM_Zero, MEM_PCResult, MEM_ALUResult, MEM_Data2, MEM_RegDstData, MEM_HI, MEM_LO, func_out, Jump_out, MEM_jumpImm, MEM_jumpRs, MEM_Datatype,
                   
                   Clk, Clr, Ld);
                   
         input EX_RegWrite, RegWrite2, EX_MemtoReg, 
               EX_Branch, EX_MemWrite, EX_MemRead,
-              EX_Zero;
+              EX_Zero, Datatype;
               
         input [31:0] EX_PCResult, EX_ALUResult, EX_Data2, HI, LO, jumpImm, jumpRs;
         input [4:0] EX_RegDstData;
@@ -43,7 +43,7 @@ module EX_MEM_Reg(EX_RegWrite, RegWrite2, EX_MemtoReg,
         
         output reg MEM_RegWrite, MEM_RegWrite2, MEM_MemtoReg,
                    MEM_Branch, MEM_MemWrite, MEM_MemRead,
-                   MEM_Zero;
+                   MEM_Zero, MEM_Datatype;
         
         output reg [31:0] MEM_PCResult, MEM_ALUResult, MEM_Data2, MEM_HI, MEM_LO, MEM_jumpImm, MEM_jumpRs;
         output reg [4:0] MEM_RegDstData;
@@ -70,6 +70,7 @@ module EX_MEM_Reg(EX_RegWrite, RegWrite2, EX_MemtoReg,
                 Jump_out <= 0;
                 MEM_jumpImm <= 0;
                 MEM_jumpRs <= 0;
+                MEM_Datatype <= 0;
             end
             else if(Ld == 1) begin
                 MEM_RegWrite <= EX_RegWrite; 
@@ -89,6 +90,8 @@ module EX_MEM_Reg(EX_RegWrite, RegWrite2, EX_MemtoReg,
                 Jump_out <= Jump;
                 MEM_jumpImm <= jumpImm;
                 MEM_jumpRs <= jumpRs;
+                MEM_Datatype <= Datatype;
+
             end
                           
         end
