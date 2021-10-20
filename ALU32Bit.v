@@ -26,14 +26,14 @@
 //   operations needed to support. 
 ////////////////////////////////////////////////////////////////////////////////
 
-module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Instruction, ALUResult, Hi, Lo, Zero, HI_LO_Write, RegWrite2);
+module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Opcode, ALUResult, Hi, Lo, Zero, RegWrite2);
 
 	input [4:0] ALUControl; //control bits for ALU operation
                                 //you need to adjust the bitwidth as needed
 	input [31:0] A, B;	//inputs
 	input [31:0] Hi_in;
 	input [31:0] Lo_in;
-	input [31:0] Instruction; // inputs for opcode and function code from instruction
+	input [5:0] Opcode; // input for opcode from instruction
 	
 	reg [63:0] temp; //temp 64 bit register
 	reg [31:0] s; //temp 32 bit register
@@ -276,82 +276,53 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Instruction, ALUResult, Hi, Lo, 
     /* New implementation with op/funct codes*/
     
     always@(*) begin
-        case(Instruction[31:26]) // opcode
+        case(Opcode)
 			6'b000000: begin // SPECIAL (r-type instructions)
-				case(Instruction[5:0]) // funct
-					6'b100000: begin // add
+				case(ALUControl)
+					5'b00000: begin // add, addu
 						ALUResult = A + B;
 					end
 
-					6'b100001: begin // addu
-						ALUResult = A + B;
-					end
-
-					6'b100010: begin // sub
+					5'b00001: begin // sub
 						ALUResult = A - B; 
 					end
 
-					6'b011000: begin // mult
+					5'b00010: begin // mult, multu
 						temp <= $signed(A * B);
             			Hi <= temp[63:32];
             			Lo <= temp[31:0];
 					end
 
-					6'b011001: begin // multu
-						temp <= $signed(A * B);
-            			Hi <= temp[63:32];
-            			Lo <= temp[31:0];
-					end
-
-					6'b100100: begin // and
+					5'b00011: begin // and
         				ALUResult = (A & B);
 					end
 
-					6'b100101: begin // or
+					5'b00100: begin // or
             			ALUResult = (A | B);
 					end
 
-					6'b100111: begin // nor
+					5'b00101: begin // nor
             			ALUResult = ~(A | B);
 					end
 
-					6'b100110: begin // xor
+					5'b00110: begin // xor
             			ALUResult = (A ^ B);
 					end
 
-					6'b000000: begin // sll
+					5'b00111: begin // sll, sllv
 						ALUResult <= B << A[4:0];
 					end
 
-					6'b000010: begin // srl
-            			case(Instruction[21])
-							1'b0: begin // srl
-								ALUResult <= B >> A[4:0];
-							end
-							1'b1: begin // rotr
-								temp <= {B, B}; //ex B = 101 temp = 101101 rotr0/3 = 101 rotr1 = 110 rotr2 = 011 
-								ALUResult <= temp[A[4:0]+:32];
-							end
-						endcase
+					5'b01000: begin // srl, srlv
+						ALUResult <= B >> A[4:0];
 					end
 
-					6'b000100: begin // sllv
-						ALUResult <= B << A[4:0];
+					5'b01001: begin // rotr, rotrv
+						temp <= {B, B}; //ex B = 101 temp = 101101 rotr0/3 = 101 rotr1 = 110 rotr2 = 011 
+						ALUResult <= temp[A[4:0]+:32];
 					end
 
-					6'b000110: begin // srlv
-						case(Instruction[6])
-							1'b0: begin // srlv
-								ALUResult <= B >> A[4:0];
-							end
-							1'b1: begin // rotrv
-								temp <= {B, B}; //ex B = 101 temp = 101101 rotr0/3 = 101 rotr1 = 110 rotr2 = 011 
-								ALUResult <= temp[A[4:0]+:32];
-							end
-						endcase
-					end
-
-					6'b101010: begin // slt
+					5'b01010: begin // slt
 						if (A[31] != B[31]) begin //if they are not the same sign
 							if (A[31] == 1) begin //rs is negative
 								ALUResult <= 1;
@@ -370,7 +341,7 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Instruction, ALUResult, Hi, Lo, 
 						end
 					end
 
-					6'b001011: begin // movn
+					5'b01011: begin // movn
 						ALUResult <= A;
 						if(B != 0) begin
 							RegWrite2 <= 1;
@@ -380,7 +351,7 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Instruction, ALUResult, Hi, Lo, 
 						end
 					end
 
-					6'b001010: begin // movz
+					5'b01100: begin // movz
 						ALUResult <= A;
 						if(B == 0) begin				
 							RegWrite2 <= 1;
@@ -390,7 +361,7 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Instruction, ALUResult, Hi, Lo, 
 						end
 					end
 
-					6'b000011: begin // sra
+					5'b01101: begin // sra, srav
 						if (B[31] == 1) begin
 							s <= B >> A[4:0];
 							for (i = 32-A[4:0]; i <= 5'd31; i = i + 1) begin
@@ -403,20 +374,7 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Instruction, ALUResult, Hi, Lo, 
 						end
 					end
 
-					6'b000111: begin // srav
-						if (B[31] == 1) begin
-							s <= B >> A[4:0];
-							for (i = 32-A[4:0]; i <= 5'd31; i = i + 1) begin
-								s[i] = 1;
-							end
-							ALUResult <= s;
-						end
-						else if (B[31] == 0) begin
-							ALUResult <= B >> A[4:0];
-						end
-					end
-
-					6'b101011: begin // sltu
+					5'b01110: begin // sltu
 						Zero <= 0;
 						if (A < B) begin
 							ALUResult <= 1;
@@ -426,19 +384,19 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Instruction, ALUResult, Hi, Lo, 
 						end
 					end
 
-					6'b010001: begin // mthi
+					5'b01111: begin // mthi
 						Hi <= A;
 					end
 
-					6'b010011: begin // mtlo
+					5'b10000: begin // mtlo
 						Lo <= A;
 					end
 
-					6'b010000: begin // mfhi
+					5'b10001: begin // mfhi
 						ALUResult <= Hi_in;
 					end
 
-					6'b010010: begin // mflo
+					5'b10010: begin // mflo
 						ALUResult <= Lo_in;
 					end
 
@@ -448,18 +406,18 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Instruction, ALUResult, Hi, Lo, 
 			end
 
 			6'b011100: begin // SPECIAL2 (mul, madd, msub)
-				case(Instruction[5:0]) // funct
-					6'b000010: begin // mul
+				case(ALUControl)
+					5'b10011: begin // mul
 						ALUResult <= A * B;
 					end
 
-					6'b000000: begin // madd
+					5'b10100: begin // madd
 						temp <= {Hi_in, Lo_in} + (A * B);
 						Hi <= temp[63:32];
 						Lo <= temp[31:0]; 
 					end
 
-					6'b000100: begin // msub
+					5'b10101: begin // msub
 						temp <= {Hi_in, Lo_in} - (A * B);
 						Hi <= temp[63:32];
 						Lo <= temp[31:0]; 
@@ -468,8 +426,8 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Instruction, ALUResult, Hi, Lo, 
 			end
 
 			6'b011111: begin // SPECIAL3 (seh, seb)
-				case(Instruction[10:6])
-					5'b11000: begin // seh
+				case(ALUControl)
+					5'b10110: begin // seh
 						if (B[15] == 1) begin
 							ALUResult <= {16'hffff, B[15:0]};
 						end
@@ -478,7 +436,7 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Instruction, ALUResult, Hi, Lo, 
 						end
 					end
 
-					5'b10000: begin // seb
+					5'b10111: begin // seb
 						if (B[7] == 1) begin
 							ALUResult <= {24'hffff, B[7:0]};
 						end
@@ -573,8 +531,8 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Instruction, ALUResult, Hi, Lo, 
 			// branch instructions
 
 			6'b000001: begin
-				case(Instruction[20:16])
-					5'b00001: begin // bgez
+				case(ALUControl)
+					5'b11000: begin // bgez
 						if (A >= 0) begin
 							Zero <= 1;
 						end
@@ -583,7 +541,7 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Instruction, ALUResult, Hi, Lo, 
 						end
 					end
 
-					5'b00000: begin // bltz
+					5'b11001: begin // bltz
 						if (A < 0) begin
 							Zero <= 1;
 						end

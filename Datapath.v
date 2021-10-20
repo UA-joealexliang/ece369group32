@@ -19,6 +19,7 @@ module Datapath(Clk, Rst);
     //Controller signals
     wire [1:0] RegDst; 
     wire ALUSrc, MemtoReg, RegWrite, MemRead, MemWrite, Branch, ALUOp1, ALUOp0, Opcode, Jump, JRegOrImm;
+    wire [4:0] ALUControl;
     
 /////////////////INSTRUCTION FETCH STAGE///////////////////////////////////////////    
     
@@ -59,10 +60,11 @@ module Datapath(Clk, Rst);
     wire [31:0] EX_ReadData2;
     wire [31:0] EX_SignExtend;
     wire [31:0] EX_PCResult,  EX_jumpImm, EX_jumpRs;
-    wire [4:0] EX_Instruction20_16, EX_Instruction15_11;
+    wire [4:0] EX_Instruction31_26, EX_Instruction20_16, EX_Instruction15_11;
     wire [5:0] EX_Instruction5_0;
     wire [1:0] EX_Jump;
     wire ALUOp1_out, ALUOp0_out, RegDst_out, ALUSrc_out;
+    wire [4:0] ALUControl_out;
     wire EX_Branch, EX_MemWrite, EX_MemRead, EX_MemtoReg, EX_RegWrite;
     wire HI_LO_Write;
     
@@ -70,9 +72,9 @@ module Datapath(Clk, Rst);
     
     ShiftLeft2              Shift_jaddr(ID_Instruction[25:0], jump_imm);
 
-    Controller              Controller(ID_Instruction[31:26], ID_Instruction[20:16], ID_Instruction[10:6], ID_Instruction[5:0], 
+    Controller              Controller(ID_Instruction[31:26], ID_Instruction[21], ID_Instruction[20:16], ID_Instruction[10:6], ID_Instruction[5:0], 
                                                     RegDst, ALUSrc, ALUSrc2, MemtoReg, RegWrite, HI_LO_Write, 
-                                                    MemRead, MemWrite, Branch, ALUOp1, ALUOp0, Jump, Datatype, ALUControl);
+                                                    MemRead, MemWrite, Branch, Jump, Datatype, ALUControl);
                                 
     wire [4:0] regWriteAddr;
     Mux32Bit2To1            rdOrGPR31(regWriteAddr, ID_Instruction[15:11], 5'd31, Jump);
@@ -83,11 +85,11 @@ module Datapath(Clk, Rst);
     
     SignExtension           SignExtend(ID_Instruction[15:0], SignExtended);
     
-    ID_EX_Reg               ID_EX_Reg(ReadData1, ReadData2, SignExtended, ID_PCResult, ID_Instruction[20:16], ID_Instruction[15:11], ID_Instruction[5:0],
-                                     ALUOp1, ALUOp0, RegDst, ALUSrc, Branch, MemWrite, MemRead, MemtoReg, RegWrite, Jump, jump_imm, jump_rs,
+    ID_EX_Reg               ID_EX_Reg(ReadData1, ReadData2, SignExtended, ID_PCResult, ID_Instruction[31:26], ID_Instruction[20:16], ID_Instruction[15:11], ID_Instruction[5:0],
+                                     ALUOp1, ALUOp0, RegDst, ALUSrc, ALUControl, Branch, MemWrite, MemRead, MemtoReg, RegWrite, Jump, jump_imm, jump_rs,
                                      Clk, Rst, 1'b1, 
-                                     EX_ReadData1, EX_ReadData2, EX_SignExtend, EX_PCResult, EX_Instruction20_16, EX_Instruction15_11, EX_Instruction5_0,
-                                     ALUOp1_out, ALUOp0_out, RegDst_out, ALUSrc_out, 
+                                     EX_ReadData1, EX_ReadData2, EX_SignExtend, EX_PCResult, EX_Instruction31_26, EX_Instruction20_16, EX_Instruction15_11, EX_Instruction5_0,
+                                     ALUOp1_out, ALUOp0_out, RegDst_out, ALUSrc_out, ALUControl_out, 
                                      EX_Branch, EX_MemWrite, EX_MemRead, EX_MemtoReg, EX_RegWrite, EX_Jump, EX_jumpImm, EX_jumpRs);
     
 ////////////////////EXECUTION STAGE////////////////////////////////////////////////////
@@ -103,7 +105,6 @@ module Datapath(Clk, Rst);
     Mux32Bit2To1            MuxALU(ALUSrcData, EX_ReadData2, EX_SignExtend, ALUSrc);
     
     wire Zero, RegWrite2;
-    wire [4:0] ALUControl;
     wire [31:0] ALUResult;
     wire [31:0] HiALUOut, LoALUOut;
    
@@ -121,9 +122,9 @@ module Datapath(Clk, Rst);
 
     
 /////////hi and lo in     
-    ALU32Bit                ALU1  (ALUControl, EX_ReadData1, ALUSrcData, Hi_out, Lo_out, ALUResult, HiALUOut, LoALUOut, Zero, HI_LO_Write, RegWrite2);
+    ALU32Bit                ALU1  (ALUControl_out, EX_ReadData1, ALUSrcData, Hi_out, Lo_out, EX_Instruction31_26, ALUResult, HiALUOut, LoALUOut, Zero, RegWrite2);
     
-                                  //ALUControl, A,          B,          Hi_in, Lo_in, ALUResult, Hi, Lo, Zero, HI_LO_Write, RegWrite2
+                                  //ALUControl, A,          B,          Hi_in, Lo_in, Opcode, ALUResult, Hi, Lo, Zero, RegWrite2
 
     
     wire [4:0] RegDstData;
