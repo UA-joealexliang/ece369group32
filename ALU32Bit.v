@@ -53,7 +53,7 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Instruction, ALUResult, Hi, Lo, 
     always@(*)begin
         case(ALUControl)
             
-        5'b00001: begin                 	//add*, addiu*, addu*, addi*, lw, sw, sb, lh, lb, sh
+        5'b00001: begin                 	//add*, addiu*, addu*, addi*, lw*, sw*, sb*, lh*, lb*, sh*
         	ALUResult = A + B;
         end 
             
@@ -83,7 +83,7 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Instruction, ALUResult, Hi, Lo, 
             Lo <= temp[31:0]; 
         end
 	
-	    5'b00111: begin						//bgez rs >= 0
+	    5'b00111: begin						//bgez* rs >= 0
 			if (A >= 0) begin
 				Zero <= 1;
 			end
@@ -92,7 +92,7 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Instruction, ALUResult, Hi, Lo, 
 			end
 	    end
 
-	    5'b01000: begin						//beq rs == rt
+	    5'b01000: begin						//beq* rs == rt
 			if (A == B) begin
 				Zero <= 1;
 			end
@@ -101,7 +101,7 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Instruction, ALUResult, Hi, Lo, 
 			end
 	    end
 
-	    5'b01001: begin						//bne rs != rt
+	    5'b01001: begin						//bne* rs != rt
 			if(A != B) begin
 				Zero <= 1;
 			end
@@ -110,7 +110,7 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Instruction, ALUResult, Hi, Lo, 
 			end
 	    end
 
-	    5'b01010: begin						//bgtz rs > 0
+	    5'b01010: begin						//bgtz* rs > 0
 			if (A > 0) begin
 				Zero <= 1;
 			end
@@ -119,7 +119,7 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Instruction, ALUResult, Hi, Lo, 
 			end
 	    end
 
-	    5'b01011: begin						//blez rs <= 0
+	    5'b01011: begin						//blez* rs <= 0
 			if (A <= 0) begin
 				Zero <= 1;
 			end
@@ -128,7 +128,7 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Instruction, ALUResult, Hi, Lo, 
 			end
 	    end
 	    
-	    5'b01100: begin						//bltz rs < 0
+	    5'b01100: begin						//bltz* rs < 0
 			if (A < 0) begin
 				Zero <= 1;
 			end
@@ -153,7 +153,7 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Instruction, ALUResult, Hi, Lo, 
             ALUResult = (A ^ B);
         end
 		
-	    5'b10001: begin 					//seh least significant halfword rt sign extended
+	    5'b10001: begin 					//seh* least significant halfword rt sign extended
 			if (B[15] == 1) begin
      		    ALUResult <= {16'hffff, B[15:0]};
      		end
@@ -303,9 +303,6 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Instruction, ALUResult, Hi, Lo, 
             			Lo <= temp[31:0];
 					end
 
-					6'b001000: begin // jr
-					end
-
 					6'b100100: begin // and
         				ALUResult = (A & B);
 					end
@@ -327,7 +324,15 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Instruction, ALUResult, Hi, Lo, 
 					end
 
 					6'b000010: begin // srl
-            			ALUResult <= B >> A[4:0];
+            			case(Instruction[21])
+							1'b0: begin // srl
+								ALUResult <= B >> A[4:0];
+							end
+							1'b1: begin // rotr
+								temp <= {B, B}; //ex B = 101 temp = 101101 rotr0/3 = 101 rotr1 = 110 rotr2 = 011 
+								ALUResult <= temp[A[4:0]+:32];
+							end
+						endcase
 					end
 
 					6'b000100: begin // sllv
@@ -335,7 +340,15 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Instruction, ALUResult, Hi, Lo, 
 					end
 
 					6'b000110: begin // srlv
-            			ALUResult <= B >> A[4:0];
+						case(Instruction[6])
+							1'b0: begin // srlv
+								ALUResult <= B >> A[4:0];
+							end
+							1'b1: begin // rotrv
+								temp <= {B, B}; //ex B = 101 temp = 101101 rotr0/3 = 101 rotr1 = 110 rotr2 = 011 
+								ALUResult <= temp[A[4:0]+:32];
+							end
+						endcase
 					end
 
 					6'b101010: begin // slt
@@ -375,16 +388,6 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Instruction, ALUResult, Hi, Lo, 
 						else begin
 							RegWrite2 <= 0;
 						end
-					end
-
-					6'b000110: begin // rotrv
-						temp <= {B, B}; //ex B = 101 temp = 101101 rotr0/3 = 101 rotr1 = 110 rotr2 = 011 
-						ALUResult <= temp[A[4:0]+:32];
-					end
-
-					6'b000010: begin // rotr
-						temp <= {B, B}; //ex B = 101 temp = 101101 rotr0/3 = 101 rotr1 = 110 rotr2 = 011 
-						ALUResult <= temp[A[4:0]+:32];
 					end
 
 					6'b000011: begin // sra
@@ -439,7 +442,7 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Instruction, ALUResult, Hi, Lo, 
 						ALUResult <= Lo_in;
 					end
 
-					default: begin
+					default: begin // jr
 					end
 				endcase
 			end
@@ -496,10 +499,6 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Instruction, ALUResult, Hi, Lo, 
 				ALUResult = A + B;
 			end
 
-			6'b001111: begin // lui
-				ALUResult <= B<<16;
-			end
-
 			6'b001100: begin // andi
 				ALUResult = (A & B);
 			end
@@ -541,7 +540,98 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Instruction, ALUResult, Hi, Lo, 
 				end
 			end
 
-			
+			// data instructions
+
+			6'b100011: begin // lw
+				ALUResult = A + B;
+			end
+
+			6'b101011: begin // sw
+				ALUResult = A + B;
+			end
+
+			6'b101000: begin // sb
+				ALUResult = A + B;
+			end
+
+			6'b100001: begin // lh
+				ALUResult = A + B;
+			end
+
+			6'b100000: begin // lb
+				ALUResult = A + B;
+			end
+
+			6'b101001: begin // sh
+				ALUResult = A + B;
+			end
+
+			6'b001111: begin // lui
+				ALUResult <= B<<16;
+			end
+
+			// branch instructions
+
+			6'b000001: begin
+				case(Instruction[20:16])
+					5'b00001: begin // bgez
+						if (A >= 0) begin
+							Zero <= 1;
+						end
+						else begin
+							Zero <= 0;
+						end
+					end
+
+					5'b00000: begin // bltz
+						if (A < 0) begin
+							Zero <= 1;
+						end
+						else begin
+							Zero <= 0;
+						end
+					end
+				endcase
+			end
+
+			6'b000100: begin // beq
+				if (A == B) begin
+					Zero <= 1;
+				end
+				else begin
+					Zero <= 0;
+				end
+			end
+
+			6'b000101: begin // bne
+				if(A != B) begin
+					Zero <= 1;
+				end
+				else begin
+					Zero <= 0;
+				end
+			end
+
+			6'b000111: begin // bgtz
+				if (A > 0) begin
+					Zero <= 1;
+				end
+				else begin
+					Zero <= 0;
+				end
+			end
+
+			6'b000110: begin // blez
+				if (A <= 0) begin
+					Zero <= 1;
+				end
+				else begin
+					Zero <= 0;
+				end
+			end
+
+			default: begin // j, jal
+			end
 		endcase
     end
  
