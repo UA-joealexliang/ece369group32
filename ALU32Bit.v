@@ -26,13 +26,14 @@
 //   operations needed to support. 
 ////////////////////////////////////////////////////////////////////////////////
 
-module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, ALUResult, Hi, Lo, Zero, HI_LO_Write);
+module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Op, Funct, ALUResult, Hi, Lo, Zero, HI_LO_Write, RegWrite2);
 
 	input [4:0] ALUControl; //control bits for ALU operation
                                 //you need to adjust the bitwidth as needed
 	input [31:0] A, B;	//inputs
 	input [31:0] Hi_in;
 	input [31:0] Lo_in;
+	input [5:0] Op, Funct; // inputs for opcode and function code from instruction
 	
 	reg [63:0] temp; //temp 64 bit register
 	reg [31:0] s; //temp 32 bit register
