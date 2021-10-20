@@ -23,6 +23,8 @@ git push
 
 git pull //update local files with cloud files  
 
+git reset --hard origin //hard reset to remote files, local changes will be lost
+
 use tab to autofill name  
 
 For updating a file  

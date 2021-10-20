@@ -38,7 +38,6 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Opcode, ALUResult, Hi, Lo, Zero,
 	reg [63:0] temp; //temp 64 bit register
 	reg [31:0] s; //temp 32 bit register
 	reg [4:0] i; //0-31 for loop variable
-	reg [31:0] extension;
 
 	output reg [31:0] ALUResult;	//answer
 	output reg Zero;	    		//Zero flag is raised if conditions are met in branch instructions
@@ -364,7 +363,7 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Opcode, ALUResult, Hi, Lo, Zero,
 
 					5'b01101: begin // sra, srav
 						if (B[31] == 1) begin
-							s <= B >> A[4:0];		
+							s <= $signed(B) >>> A[4:0];		
 //							for (i = 32-A[4:0]; i <= 5'd31; i = i + 1) begin
 //								s[i] = 1;
 //							end
