@@ -49,6 +49,8 @@ module DataMemory(Address, WriteData, Clk, MemWrite, MemRead, Datatype, ReadData
     
     output reg[31:0] ReadData; // Contents of memory location at Address
 
+    $readmemh("data_memory.mem", memory);
+
     /* Please fill in the implementation here */
     always@(posedge Clk) begin
         if (MemWrite == 1) begin
