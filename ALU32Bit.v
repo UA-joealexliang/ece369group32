@@ -26,14 +26,14 @@
 //   operations needed to support. 
 ////////////////////////////////////////////////////////////////////////////////
 
-module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Op, Funct, ALUResult, Hi, Lo, Zero, HI_LO_Write, RegWrite2);
+module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Instruction, ALUResult, Hi, Lo, Zero, HI_LO_Write, RegWrite2);
 
 	input [4:0] ALUControl; //control bits for ALU operation
                                 //you need to adjust the bitwidth as needed
 	input [31:0] A, B;	//inputs
 	input [31:0] Hi_in;
 	input [31:0] Lo_in;
-	input [5:0] Op, Funct; // inputs for opcode and function code from instruction
+	input [31:0] Instruction; // inputs for opcode and function code from instruction
 	
 	reg [63:0] temp; //temp 64 bit register
 	reg [31:0] s; //temp 32 bit register
@@ -61,7 +61,7 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Op, Funct, ALUResult, Hi, Lo, Ze
             ALUResult = A - B; 
         end    
 	
-	    5'b00011: begin              		//mul
+	    5'b00011: begin              		//mul*
             ALUResult <= A * B;		
         end 
 	
@@ -71,13 +71,13 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Op, Funct, ALUResult, Hi, Lo, Ze
             Lo <= temp[31:0];
         end
 	
-  	    5'b00101: begin                 	//multiply and add: madd
+  	    5'b00101: begin                 	//multiply and add: madd*
             temp <= {Hi_in, Lo_in} + (A * B);
             Hi <= temp[63:32];
             Lo <= temp[31:0]; 
         end
             
-        5'b00110: begin                 	//multiply and sub: msub
+        5'b00110: begin                 	//multiply and sub: msub*
             temp <= {Hi_in, Lo_in} - (A * B);
             Hi <= temp[63:32];
             Lo <= temp[31:0]; 
@@ -238,7 +238,7 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Op, Funct, ALUResult, Hi, Lo, Ze
 			end
 	    end
             
- 	    5'b11000: begin 					//seb sign extend least significant byte
+ 	    5'b11000: begin 					//seb* sign extend least significant byte
 			if (B[7] == 1) begin
      		    ALUResult <= {24'hffff, B[7:0]};
      		end
@@ -291,84 +291,69 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Op, Funct, ALUResult, Hi, Lo, Ze
     /* New implementation with op/funct codes*/
     
     always@(*) begin
-        case(Op)
-			6'b000000: begin // r-type instructions
-				case(Funct)
+        case(Instruction[31:26]) // opcode
+			6'b000000: begin // SPECIAL (r-type instructions)
+				case(Instruction[5:0]) // funct
 					6'b100000: begin // add
 						ALUResult = A + B;
-						HI_LO_Write <= 0;
 					end
 
 					6'b100001: begin // addu
 						ALUResult = A + B;
-						HI_LO_Write <= 0;
 					end
 
 					6'b100010: begin // sub
 						ALUResult = A - B; 
-						HI_LO_Write <= 0;
 					end
 
 					6'b011000: begin // mult
 						temp <= $signed(A * B);
             			Hi <= temp[63:32];
             			Lo <= temp[31:0];
-            			HI_LO_Write <= 1;
 					end
 
 					6'b011001: begin // multu
 						temp <= $signed(A * B);
             			Hi <= temp[63:32];
             			Lo <= temp[31:0];
-            			HI_LO_Write <= 1;
 					end
 
 					6'b001000: begin // jr
-						HI_LO_Write <= 0;
 					end
 
 					6'b100100: begin // and
-						HI_LO_Write <= 0;
         				ALUResult = (A & B);
 					end
 
 					6'b100101: begin // or
-						HI_LO_Write <= 0;
             			ALUResult = (A | B);
 					end
 
 					6'b100111: begin // nor
-						HI_LO_Write <= 0;
             			ALUResult = ~(A | B);
 					end
 
 					6'b100110: begin // xor
-						HI_LO_Write <= 0;
             			ALUResult = (A ^ B);
 					end
 
 					6'b000000: begin // sll
-						HI_LO_Write <= 0;
 						ALUResult <= B << A[4:0];
 					end
 
 					6'b000010: begin // srl
-						HI_LO_Write <= 0;
             			ALUResult <= B >> A[4:0];
 					end
 
 					6'b000100: begin // sllv
-						HI_LO_Write <= 0;
 						ALUResult <= B << A[4:0];
 					end
 
 					6'b000110: begin // srlv
-						HI_LO_Write <= 0;
             			ALUResult <= B >> A[4:0];
 					end
 
 					6'b101010: begin // slt
-						HI_LO_Write <= 0;
 						if (A[31] != B[31]) begin //if they are not the same sign
 							if (A[31] == 1) begin //rs is negative
 								ALUResult <= 1;
@@ -388,7 +373,6 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Op, Funct, ALUResult, Hi, Lo, Ze
 					end
 
 					6'b001011: begin // movn
-						HI_LO_Write <= 0;
 						ALUResult <= A;
 						if(B != 0) begin
 							RegWrite2 <= 1;
@@ -399,7 +383,6 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Op, Funct, ALUResult, Hi, Lo, Ze
 					end
 
 					6'b001010: begin // movz
-						HI_LO_Write <= 0;
 						ALUResult <= A;
 						if(B == 0) begin				
 							RegWrite2 <= 1;
@@ -410,19 +393,16 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Op, Funct, ALUResult, Hi, Lo, Ze
 					end
 
 					6'b000110: begin // rotrv
-						HI_LO_Write <= 0;
 						temp <= {B, B}; //ex B = 101 temp = 101101 rotr0/3 = 101 rotr1 = 110 rotr2 = 011 
 						ALUResult <= temp[A[4:0]+:32];
 					end
 
 					6'b000010: begin // rotr
-						HI_LO_Write <= 0;
 						temp <= {B, B}; //ex B = 101 temp = 101101 rotr0/3 = 101 rotr1 = 110 rotr2 = 011 
 						ALUResult <= temp[A[4:0]+:32];
 					end
 
 					6'b000011: begin // sra
-						HI_LO_Write <= 0;
 						if (B[31] == 1) begin
 							s <= B >> A[4:0];
 							for (i = 32-A[4:0]; i <= 5'd31; i = i + 1) begin
@@ -436,7 +416,6 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Op, Funct, ALUResult, Hi, Lo, Ze
 					end
 
 					6'b000111: begin // srav
-						HI_LO_Write <= 0;
 						if (B[31] == 1) begin
 							s <= B >> A[4:0];
 							for (i = 32-A[4:0]; i <= 5'd31; i = i + 1) begin
@@ -450,7 +429,6 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Op, Funct, ALUResult, Hi, Lo, Ze
 					end
 
 					6'b101011: begin // sltu
-						HI_LO_Write <= 0;
 						Zero <= 0;
 						if (A < B) begin
 							ALUResult <= 1;
@@ -462,26 +440,63 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Op, Funct, ALUResult, Hi, Lo, Ze
 
 					6'b010001: begin // mthi
 						Hi <= A;
-						HI_LO_Write <= 1;
 					end
 
 					6'b010011: begin // mtlo
 						Lo <= A;
-						HI_LO_Write <= 1;
 					end
 
 					6'b010000: begin // mfhi
-						HI_LO_Write <= 0;
 						ALUResult <= Hi_in;
 					end
 
 					6'b010010: begin // mflo
-						HI_LO_Write <= 0;
 						ALUResult <= Lo_in;
 					end
 
 					default: begin
-						HI_LO_Write <= 0;
+					end
+				endcase
+			end
+
+			6'b011100: begin // SPECIAL2 (mul, madd, msub)
+				case(Instruction[5:0]) // funct
+					6'b000010: begin // mul
+						ALUResult <= A * B;
+					end
+
+					6'b000000: begin // madd
+						temp <= {Hi_in, Lo_in} + (A * B);
+						Hi <= temp[63:32];
+						Lo <= temp[31:0]; 
+					end
+
+					6'b000100: begin // msub
+						temp <= {Hi_in, Lo_in} - (A * B);
+						Hi <= temp[63:32];
+						Lo <= temp[31:0]; 
+					end
+				endcase
+			end
+
+			6'b011111: begin // SPECIAL3 (seh, seb)
+				case(Instruction[10:6])
+					5'b11000: begin // seh
+						if (B[15] == 1) begin
+							ALUResult <= {16'hffff, B[15:0]};
+						end
+						else begin
+							ALUResult <= {16'h0000, B[15:0]};
+						end
+					end
+
+					5'b10000: begin // seb
+						if (B[7] == 1) begin
+							ALUResult <= {24'hffff, B[7:0]};
+						end
+						else begin
+							ALUResult <= {24'h0000, B[7:0]};
+						end
 					end
 				endcase
 			end
