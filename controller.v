@@ -147,9 +147,9 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, SignExtend, A
             // Branch
 
             6'b000001: begin // bgez, bltz
-                RegDst = X;
+                //RegDst = X;
                 ALUSrc = 1'b0;
-                MemtoReg = X;
+                //MemtoReg = X;
                 RegWrite = 1'b0;
                 MemRead = 1'b0;
                 MemWrite = 1'b0;
@@ -160,9 +160,9 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, SignExtend, A
             end
 
             6'b000100: begin // beq
-                RegDst = X;
+                //RegDst = X;
                 ALUSrc = 1'b0;
-                MemtoReg = X;
+                //MemtoReg = X;
                 RegWrite = 1'b0;
                 MemRead = 1'b0;
                 MemWrite = 1'b0;
@@ -173,9 +173,9 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, SignExtend, A
             end
 
             6'b000101: begin // bne
-                RegDst = X;
+                //RegDst = X;
                 ALUSrc = 1'b0;
-                MemtoReg = X;
+                //MemtoReg = X;
                 RegWrite = 1'b0;
                 MemRead = 1'b0;
                 MemWrite = 1'b0;
@@ -186,9 +186,9 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, SignExtend, A
             end
 
             6'b000111: begin // bgtz
-                RegDst = X;
+                //RegDst = X;
                 ALUSrc = 1'b0;
-                MemtoReg = X;
+                //MemtoReg = X;
                 RegWrite = 1'b0;
                 MemRead = 1'b0;
                 MemWrite = 1'b0;
@@ -199,9 +199,9 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, SignExtend, A
             end
 
             6'b000110: begin // blez
-                RegDst = X;
+                //RegDst = X;
                 ALUSrc = 1'b0;
-                MemtoReg = X;
+                //MemtoReg = X;
                 RegWrite = 1'b0;
                 MemRead = 1'b0;
                 MemWrite = 1'b0;
@@ -320,15 +320,15 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, SignExtend, A
             end
 
             default: begin
-                RegDst = X;
-                ALUSrc = X;
-                MemtoReg = X;
-                RegWrite = X;
-                MemRead = X;
-                MemWrite = X;
-                Branch = X;
-                ALUOp1 = X;
-                ALUOp0 = X;
+                RegDst = 0;
+                ALUSrc = 0;
+                MemtoReg = 0;
+                RegWrite = 0;
+                MemRead = 0;
+                MemWrite = 0;
+                Branch = 0;
+                ALUOp1 = 0;
+                ALUOp0 = 0;
             end
         endcase
     end
