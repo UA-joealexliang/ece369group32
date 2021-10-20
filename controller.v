@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 
-module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, SignExtend, ALUSrc1, ALUSrc2, MemtoReg, RegWrite, HI_LO_Write, MemRead, MemWrite, Branch, Jump, Datatype, ALUControl);
+module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, SignExtend, ALUSrc1, ALUSrc2, MemtoReg, RegWrite, HI_LO_Write, MemRead, MemWrite, Branch, Jump, Datatype);
 
     input [5:0] Opcode;     // left-most 6 bits of the instruction signifying the opcode
     input Bit21;            // used to differentiate srl vs rotr 
@@ -8,10 +8,10 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, SignExtend, A
     input [4:0] Bit10_6;    // used to differentiate seb vs seh and Bit6 used to differentiate srlv vs rotrv
     input [5:0] funct;      // right-most 6 bits of the instruction signifying the function under operation type
 
-    output reg RegDst, SignExtend, ALUSrc1, ALUSrc2, MemtoReg, RegWrite, HI_LO_Write, MemRead, MemWrite, Branch, Jump; // 12 control signals
+    output reg RegDst, SignExtend, ALUSrc1, ALUSrc2, MemtoReg, RegWrite, MemRead, MemWrite, Branch, Jump; // 12 control signals
     output reg [1:0] Datatype;
     output reg [1:0] HI_LO_Write;
-    output reg [4:0] ALUControl;
+    //output reg [4:0] ALUControl;
 
     //SignExtend: 0 for unsigned operations, 1 for signed operations
     //ALUSrc1: 0 for rs, 1 for imm (for rotate and shift)
@@ -19,7 +19,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, SignExtend, A
     //Branch: 1 for branches
     //Jump: 1 for jumps
     //Datatype: 0 = word, 1 = halfword, 2 = byte (loads and stores)
-    //ALUControl: match ALU32Bit.v values
+    //ALUControl: match ALU32Bit.v values; NOT CURRENTLY USED
 
     always@(*) begin
         case(Opcode)
