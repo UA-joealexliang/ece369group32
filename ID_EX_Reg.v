@@ -32,18 +32,19 @@ module ID_EX_Reg(ReadData1_in, ReadData2_in, SignExtend_in, PCResult_in, Instruc
     input [31:0] ReadData2_in;
     input [31:0] SignExtend_in;
     input [31:0] PCResult_in, jump_imm, jump_rs;
-    input [4:0] Instruction31_26;
+    input [5:0] Instruction31_26;
     input [4:0] Instruction20_16;
     input [4:0] Instruction15_11;
     input [5:0] Instruction5_0;
-    input [1:0] Jump;
-    
+    input Jump;
     input ALUOp1, ALUOp0, RegDst, ALUSrc, ALUSrc2;
     input [4:0] ALUControl;
     input Branch, MemWrite, MemRead;
-    input MemtoReg, RegWrite, Datatype;
+    input MemtoReg, RegWrite;
+    input [1:0] Datatype;
     
-    output reg ALUOp1_out, ALUOp0_out, RegDst_out, ALUSrc_out, EX_ALUSrc2, EX_Datatype;
+    output reg ALUOp1_out, ALUOp0_out, RegDst_out, ALUSrc_out, EX_ALUSrc2; 
+    output reg [1:0] EX_Datatype;
     output reg [4:0] ALUControl_out;
     output reg Branch_out, MemWrite_out, MemRead_out;
     output reg MemtoReg_out, RegWrite_out;
@@ -52,11 +53,11 @@ module ID_EX_Reg(ReadData1_in, ReadData2_in, SignExtend_in, PCResult_in, Instruc
     output reg [31:0] ReadData2_out;
     output reg [31:0] SignExtend_out;
     output reg [31:0] PCResult_out, EX_jumpImm, EX_jumpRs;
-    output reg [4:0] Instruction31_26_out;
+    output reg [5:0] Instruction31_26_out;
     output reg [4:0] Instruction20_16_out;
     output reg [4:0] Instruction15_11_out;
     output reg [5:0] Instruction5_0_out;
-    output reg [1:0] Jump_out;
+    output reg Jump_out;
     
     
     
@@ -84,7 +85,7 @@ module ID_EX_Reg(ReadData1_in, ReadData2_in, SignExtend_in, PCResult_in, Instruc
                 EX_ALUSrc2 <= 0;
                 EX_Datatype <= 0;
             end
-            else if(Ld == 1) begin
+            /*else if(Ld == 1) begin*/
                 ALUOp1_out <= ALUOp1;
                 ALUOp0_out <= ALUOp0;
                 RegDst_out <= RegDst;
@@ -104,7 +105,7 @@ module ID_EX_Reg(ReadData1_in, ReadData2_in, SignExtend_in, PCResult_in, Instruc
                 EX_jumpRs <= jump_rs;
                 EX_ALUSrc2 <= ALUSrc2;
                 EX_Datatype <= Datatype;
-            end
+            /*end*/
             
         end
 endmodule

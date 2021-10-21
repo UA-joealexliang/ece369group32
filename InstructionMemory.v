@@ -43,10 +43,12 @@ module InstructionMemory(Address, Instruction);
     output reg [31:0] Instruction;    // Instruction at memory location Address
     
     reg [31:0] memory [0:127];
+
+    initial begin
+        $readmemh("instruction_memory.mem", memory);    
+    end
     
-    $readmemh("instruction_memory.mem", memory);
-    
-    always @* begin
+    always @(*) begin
         Instruction <= memory[Address[8:2]];
     end
     

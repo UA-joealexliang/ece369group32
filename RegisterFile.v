@@ -58,9 +58,19 @@ module RegisterFile(ReadRegister1, ReadRegister2, WriteRegister, WriteData, RegW
     input Clk;
     
     reg [31:0] register [0:31];
+    reg [4:0] i;
     
     output reg [31:0] ReadData1;
     output reg [31:0] ReadData2;
+    
+    initial begin
+        register[0] = 0;
+        register[1] = 1;
+        register[2] = 2;
+        register[3] = 3;
+        register[4] = 4;
+
+    end
     
     always@(posedge Clk) begin
         if(RegWrite == 1) begin
@@ -68,7 +78,7 @@ module RegisterFile(ReadRegister1, ReadRegister2, WriteRegister, WriteData, RegW
         end
     end
     
-    always@(*)begin
+    always@(negedge Clk)begin
         ReadData1 <= register[ReadRegister1];
         ReadData2 <= register[ReadRegister2];
     end

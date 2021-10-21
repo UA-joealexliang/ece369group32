@@ -11,7 +11,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
     output reg RegDst, ALUSrc, ALUSrc2, MemtoReg, RegWrite, MemRead, MemWrite, Branch, Jump; // 12 control signals
     //output reg SignExtend; // still needs to be implemented
     output reg [1:0] Datatype;
-    output reg [1:0] HI_LO_Write;
+    output reg HI_LO_Write;
     output reg [4:0] ALUControl;
 
     //SignExtend: 0 for unsigned operations, 1 for signed operations
@@ -53,10 +53,12 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
 
                     6'b011000: begin // mult
                         ALUControl = 5'b00010;
+                        HI_LO_Write = 1;
                     end
 
                     6'b011001: begin // multu
                         ALUControl = 5'b00010;
+                        HI_LO_Write = 1;
                     end
 
                     6'b100100: begin // and
@@ -141,10 +143,12 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
 
                     6'b010001: begin // mthi
                         ALUControl = 5'b01111;
+                        HI_LO_Write = 1;
                     end
 
                     6'b010011: begin // mtlo
                         ALUControl = 5'b10000;
+                        HI_LO_Write = 1;
                     end
 
                     6'b010000: begin // mfhi
@@ -176,14 +180,17 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
                 case(funct)
                     6'b000010: begin // mul
                         ALUControl = 5'b10011;
+                        HI_LO_Write = 0;
                     end
 
                     6'b000000: begin // madd
                         ALUControl = 5'b10100;
+                        HI_LO_Write = 1;
                     end
 
                     6'b000100: begin // msub
                         ALUControl = 5'b10101;
+                        HI_LO_Write = 1;
                     end
 
                     default: begin

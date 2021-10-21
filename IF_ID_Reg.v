@@ -37,8 +37,8 @@ module IF_ID_Reg(Instruction_in, PCResult_in, Clk, Clr, Ld, Instruction_out, PCR
                 R <= 0;
             end
             else if(Ld == 1) begin
-                R[63:32] <= PCResult_in;
-                R[31:0] <= Instruction_in;
+                PCResult_out <= PCResult_in;
+                Instruction_out <= Instruction_in;
             end
             else
                 R <= R;
