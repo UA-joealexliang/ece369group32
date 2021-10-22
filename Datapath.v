@@ -86,7 +86,7 @@ module Datapath(Clk, Rst, PCResult);
     wire [31:0] regWriteAddr;
 
                             //RegisterFile(ReadRegister1, ReadRegister2, WriteRegister, WriteData, RegWrite, Clk, ReadData1, ReadData2);
-    RegisterFile            Registers(ID_Instruction[25:21], ID_Instruction[20:16], regWriteAddr[4:0], WB_Data, WB_RegWrite1 | WB_RegWrite2, Clk, ReadData1, ReadData2);
+    RegisterFile            Registers(ID_Instruction[25:21], ID_Instruction[20:16], WB_RegDstData, WB_Data, WB_RegWrite1 | WB_RegWrite2, Clk, ReadData1, ReadData2);
     
                             //SignExtension(in, out, signOrZero);
     SignExtension           SignExtension(ID_Instruction[15:0], SignExtended, SignExtend);
