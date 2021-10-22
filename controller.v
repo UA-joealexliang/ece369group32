@@ -8,14 +8,15 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
     input [4:0] Bit10_6;    // used to differentiate seb vs seh and Bit6 used to differentiate srlv vs rotrv
     input [5:0] funct;      // right-most 6 bits of the instruction signifying the function under operation type
 
-    output reg RegDst, ALUSrc, ALUSrc2, MemtoReg, RegWrite, MemRead, MemWrite, Branch, Jump; // 12 control signals
+    output reg ALUSrc, ALUSrc2, MemtoReg, RegWrite, MemRead, MemWrite, Branch, Jump; // 12 control signals
+    output reg [1:0] RegDst;
     //output reg SignExtend; // still needs to be implemented
     output reg [1:0] Datatype;
-    output reg HI_LO_Write;
+    output reg [1:0] HI_LO_Write; // 0: don't write, 1: HI, 2: LO, 3: Both
     output reg [4:0] ALUControl;
 
     //SignExtend: 0 for unsigned operations, 1 for signed operations
-    //ALUSrc1: 0 for rs, 1 for imm (for rotate and shift)
+    //ALUSrc2: 0 for rs, 1 for imm (for rotate and shift)
     //HI_LO_Write: 0 = noWrite, 1 = HI_Write, 2 = LO_Write 3 = HI_LO_Write
     //Branch: 1 for branches
     //Jump: 1 for jumps
@@ -27,14 +28,16 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
             // Arithmetic/Logic r-format
 
             6'b000000: begin // r-format instructions add, addu
-                RegDst = 1'b1;
+                RegDst = 2'b01;
                 ALUSrc = 1'b0;
+                ALUSrc2 = 1'b0;
                 MemtoReg = 1'b0;
                 RegWrite = 1'b1;
                 MemRead = 1'b0;
                 MemWrite = 1'b0;
                 Branch = 1'b0;
                 Jump = 1'b0;
+                HI_LO_Write = 2'b00;
                 //ALUOp1 = 1'b1;
                 //ALUOp0 = 1'b0;
 
@@ -53,12 +56,12 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
 
                     6'b011000: begin // mult
                         ALUControl = 5'b00010;
-                        HI_LO_Write = 1;
+                        HI_LO_Write = 2'b11;
                     end
 
                     6'b011001: begin // multu
                         ALUControl = 5'b00010;
-                        HI_LO_Write = 1;
+                        HI_LO_Write = 2'b11;
                     end
 
                     6'b100100: begin // and
@@ -79,20 +82,24 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
 
                     6'b000000: begin // sll
                         ALUControl = 5'b00111;
+                        ALUSrc2 = 1'b1;
                     end
 
                     6'b000100: begin // sllv
                         ALUControl = 5'b00111;
+                        ALUSrc2 = 1'b1;
                     end
 
                     6'b000010: begin
                         case(Bit21)
                             1'b0: begin // srl
                                 ALUControl = 5'b01000;
+                                ALUSrc2 = 1'b1;
                             end
 
                             1'b1: begin // rotr
                                 ALUControl = 5'b01001;
+                                ALUSrc2 = 1'b1;
                             end
 
                             default: begin
@@ -105,10 +112,12 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
                         case(Bit10_6)
                             5'b00000: begin // srlv
                                 ALUControl = 5'b01000;
+                                ALUSrc2 = 1'b1;
                             end
 
                             5'b00001: begin // rotrv
                                 ALUControl = 5'b01001;
+                                ALUSrc2 = 1'b1;
                             end
 
                             default: begin
@@ -143,12 +152,12 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
 
                     6'b010001: begin // mthi
                         ALUControl = 5'b01111;
-                        HI_LO_Write = 1;
+                        HI_LO_Write = 2'b01;
                     end
 
                     6'b010011: begin // mtlo
                         ALUControl = 5'b10000;
-                        HI_LO_Write = 1;
+                        HI_LO_Write = 2'b10;
                     end
 
                     6'b010000: begin // mfhi
@@ -158,6 +167,11 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
                     6'b010010: begin // mflo
                         ALUControl = 5'b10010;
                     end
+                    
+                    6'b001000: begin // jr
+                        ALUControl = 5'b11111;
+                        Jump = 1'b1;
+                    end
 
                     default: begin
                         ALUControl = 5'b11111;
@@ -166,8 +180,9 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
             end
 
             6'b011100: begin // mul, madd, msub
-                RegDst = 1'b1;
+                RegDst = 2'b01;
                 ALUSrc = 1'b0;
+                ALUSrc2 = 1'b0;
                 MemtoReg = 1'b0;
                 RegWrite = 1'b1;
                 MemRead = 1'b0;
@@ -180,21 +195,22 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
                 case(funct)
                     6'b000010: begin // mul
                         ALUControl = 5'b10011;
-                        HI_LO_Write = 0;
+                        HI_LO_Write = 2'b00;
                     end
 
                     6'b000000: begin // madd
                         ALUControl = 5'b10100;
-                        HI_LO_Write = 1;
+                        HI_LO_Write = 2'b11;
                     end
 
                     6'b000100: begin // msub
                         ALUControl = 5'b10101;
-                        HI_LO_Write = 1;
+                        HI_LO_Write = 2'b11;
                     end
 
                     default: begin
                         ALUControl = 5'b11111;
+                        HI_LO_Write = 2'b00;
                     end
                 endcase
             end
@@ -202,53 +218,61 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
             // Data
 
             6'b100011: begin // lw
-                RegDst = 1'b0;
+                RegDst = 2'b00;
                 ALUSrc = 1'b1;
+                ALUSrc2 = 1'b0;
                 MemtoReg = 1'b1;
                 RegWrite = 1'b1;
                 MemRead = 1'b1;
                 MemWrite = 1'b0;
                 Branch = 1'b0;
                 Jump = 1'b0;
+                HI_LO_Write = 2'b00;
                 //ALUOp1 = 1'b0;
                 //ALUOp0 = 1'b0;
             end
 
             6'b100001: begin // lh
-                RegDst = 1'b0;
+                RegDst = 2'b00;
                 ALUSrc = 1'b1;
+                ALUSrc2 = 1'b0;
                 MemtoReg = 1'b1;
                 RegWrite = 1'b1;
                 MemRead = 1'b1;
                 MemWrite = 1'b0;
                 Branch = 1'b0;
                 Jump = 1'b0;
+                HI_LO_Write = 2'b00;
                 //ALUOp1 = 1'b0;
                 //ALUOp0 = 1'b0;
             end
 
             6'b100000: begin // lb
-                RegDst = 1'b0;
+                RegDst = 2'b00;
                 ALUSrc = 1'b1;
+                ALUSrc2 = 1'b0;
                 MemtoReg = 1'b1;
                 RegWrite = 1'b1;
                 MemRead = 1'b1;
                 MemWrite = 1'b0;
                 Branch = 1'b0;
                 Jump = 1'b0;
+                HI_LO_Write = 2'b00;
                 //ALUOp1 = 1'b0;
                 //ALUOp0 = 1'b0;
             end
 
             6'b001111: begin // lui
-                RegDst = 1'b0;
+                RegDst = 2'b00;
                 ALUSrc = 1'b1;
+                ALUSrc2 = 1'b0;
                 MemtoReg = 1'b0;
                 RegWrite = 1'b1;
                 MemRead = 1'b0;
                 MemWrite = 1'b0;
                 Branch = 1'b0;
                 Jump = 1'b0;
+                HI_LO_Write = 2'b00;
                 //ALUOp1 = 1'b0;
                 //ALUOp0 = 1'b0;
             end
@@ -256,12 +280,14 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
             6'b101011: begin // sw
                 //RegDst = X;
                 ALUSrc = 1'b1;
+                ALUSrc2 = 1'b0;
                 //MemtoReg = X;
                 RegWrite = 1'b0;
                 MemRead = 1'b0;
                 MemWrite = 1'b1;
                 Branch = 1'b0;
                 Jump = 1'b0;
+                HI_LO_Write = 2'b00;
                 //ALUOp1 = 1'b0;
                 //ALUOp0 = 1'b0;
             end
@@ -269,12 +295,14 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
             6'b101001: begin // sh
                 //RegDst = X;
                 ALUSrc = 1'b1;
+                ALUSrc2 = 1'b0;
                 //MemtoReg = X;
                 RegWrite = 1'b0;
                 MemRead = 1'b0;
                 MemWrite = 1'b1;
                 Branch = 1'b0;
                 Jump = 1'b0;
+                HI_LO_Write = 2'b00;
                 //ALUOp1 = 1'b0;
                 //ALUOp0 = 1'b0;
             end
@@ -282,12 +310,14 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
             6'b101000: begin // sb
                 //RegDst = X;
                 ALUSrc = 1'b1;
+                ALUSrc2 = 1'b0;
                 //MemtoReg = X;
                 RegWrite = 1'b0;
                 MemRead = 1'b0;
                 MemWrite = 1'b1;
                 Branch = 1'b0;
                 Jump = 1'b0;
+                HI_LO_Write = 2'b00;
                 //ALUOp1 = 1'b0;
                 //ALUOp0 = 1'b0;
             end
@@ -297,12 +327,14 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
             6'b000001: begin // bgez, bltz
                 //RegDst = X;
                 ALUSrc = 1'b0;
+                ALUSrc2 = 1'b0;
                 //MemtoReg = X;
                 RegWrite = 1'b0;
                 MemRead = 1'b0;
                 MemWrite = 1'b0;
                 Branch = 1'b1;
                 Jump = 1'b0;
+                HI_LO_Write = 2'b00;
                 //ALUOp1 = 1'b0;
                 //ALUOp0 = 1'b1;
 
@@ -320,12 +352,14 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
             6'b000100: begin // beq
                 //RegDst = X;
                 ALUSrc = 1'b0;
+                ALUSrc2 = 1'b0;
                 //MemtoReg = X;
                 RegWrite = 1'b0;
                 MemRead = 1'b0;
                 MemWrite = 1'b0;
                 Branch = 1'b1;
                 Jump = 1'b0;
+                HI_LO_Write = 2'b00;
                 //ALUOp1 = 1'b0;
                 //ALUOp0 = 1'b1;
             end
@@ -333,12 +367,14 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
             6'b000101: begin // bne
                 //RegDst = X;
                 ALUSrc = 1'b0;
+                ALUSrc2 = 1'b0;
                 //MemtoReg = X;
                 RegWrite = 1'b0;
                 MemRead = 1'b0;
                 MemWrite = 1'b0;
                 Branch = 1'b1;
                 Jump = 1'b0;
+                HI_LO_Write = 2'b00;
                 //ALUOp1 = 1'b0;
                 //ALUOp0 = 1'b1;
             end
@@ -346,12 +382,14 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
             6'b000111: begin // bgtz
                 //RegDst = X;
                 ALUSrc = 1'b0;
+                ALUSrc2 = 1'b0;
                 //MemtoReg = X;
                 RegWrite = 1'b0;
                 MemRead = 1'b0;
                 MemWrite = 1'b0;
                 Branch = 1'b1;
                 Jump = 1'b0;
+                HI_LO_Write = 2'b00;
                 //ALUOp1 = 1'b0;
                 //ALUOp0 = 1'b1;
             end
@@ -359,12 +397,14 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
             6'b000110: begin // blez
                 //RegDst = X;
                 ALUSrc = 1'b0;
+                ALUSrc2 = 1'b0;
                 //MemtoReg = X;
                 RegWrite = 1'b0;
                 MemRead = 1'b0;
                 MemWrite = 1'b0;
                 Branch = 1'b1;
                 Jump = 1'b0;
+                HI_LO_Write = 2'b00;
                 //ALUOp1 = 1'b0;
                 //ALUOp0 = 1'b1;
             end
@@ -372,92 +412,106 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
             // Arithmetic/Logic I-format
 
             6'b001001: begin // addiu
-                RegDst = 1'b0;
+                RegDst = 2'b00;
                 ALUSrc = 1'b1;
+                ALUSrc2 = 1'b0;
                 MemtoReg = 1'b0;
                 RegWrite = 1'b1;
                 MemRead = 1'b0;
                 MemWrite = 1'b0;
                 Branch = 1'b0;
                 Jump = 1'b0;
+                HI_LO_Write = 2'b00;
                 //ALUOp1 = 1'b1;
                 //ALUOp0 = 1'b0;
             end
 
             6'b001000: begin // addi
-                RegDst = 1'b0;
+                RegDst = 2'b00;
                 ALUSrc = 1'b1;
+                ALUSrc2 = 1'b0;
                 MemtoReg = 1'b0;
                 RegWrite = 1'b1;
                 MemRead = 1'b0;
                 MemWrite = 1'b0;
                 Branch = 1'b0;
                 Jump = 1'b0;
+                HI_LO_Write = 2'b00;
                 //ALUOp1 = 1'b1;
                 //ALUOp0 = 1'b0;
             end
 
             6'b001100: begin // andi
-                RegDst = 1'b0;
+                RegDst = 2'b00;
                 ALUSrc = 1'b1;
+                ALUSrc2 = 1'b0;
                 MemtoReg = 1'b0;
                 RegWrite = 1'b1;
                 MemRead = 1'b0;
                 MemWrite = 1'b0;
                 Branch = 1'b0;
                 Jump = 1'b0;
+                HI_LO_Write = 2'b00;
                 //ALUOp1 = 1'b1;
                 //ALUOp0 = 1'b0;
             end
 
             6'b001101: begin // ori
-                RegDst = 1'b0;
+                RegDst = 2'b00;
                 ALUSrc = 1'b1;
+                ALUSrc2 = 1'b0;
                 MemtoReg = 1'b0;
                 RegWrite = 1'b1;
                 MemRead = 1'b0;
                 MemWrite = 1'b0;
                 Branch = 1'b0;
                 Jump = 1'b0;
+                HI_LO_Write = 2'b00;
                 //ALUOp1 = 1'b1;
                 //ALUOp0 = 1'b0;
             end
 
             6'b001110: begin // xori
-                RegDst = 1'b0;
+                RegDst = 2'b00;
                 ALUSrc = 1'b1;
+                ALUSrc2 = 1'b0;
                 MemtoReg = 1'b0;
                 RegWrite = 1'b1;
                 MemRead = 1'b0;
                 MemWrite = 1'b0;
                 Branch = 1'b0;
                 Jump = 1'b0;
+                HI_LO_Write = 2'b00;
                 //ALUOp1 = 1'b1;
                 //ALUOp0 = 1'b0;
             end
 
             6'b001010: begin // slti
-                RegDst = 1'b0;
+                RegDst = 2'b00;
                 ALUSrc = 1'b1;
+                ALUSrc2 = 1'b0;
                 MemtoReg = 1'b0;
                 RegWrite = 1'b1;
                 MemRead = 1'b0;
                 MemWrite = 1'b0;
                 Branch = 1'b0;
                 Jump = 1'b0;
+                HI_LO_Write = 2'b00;
                 //ALUOp1 = 1'b1;
                 //ALUOp0 = 1'b0;
             end
 
             6'b001011: begin // sltiu
-                RegDst = 1'b0;
+                RegDst = 2'b00;
                 ALUSrc = 1'b1;
+                ALUSrc2 = 1'b0;
                 MemtoReg = 1'b0;
                 RegWrite = 1'b1;
                 MemRead = 1'b0;
                 MemWrite = 1'b0;
                 Branch = 1'b0;
                 Jump = 1'b0;
+                HI_LO_Write = 2'b00;
                 //ALUOp1 = 1'b1;
                 //ALUOp0 = 1'b0;
             end
@@ -465,14 +519,16 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
             // Other
 
             6'b011111: begin // seh, seb
-                RegDst = 1'b1;
+                RegDst = 2'b01;
                 ALUSrc = 1'b0;
+                ALUSrc2 = 1'b0;
                 MemtoReg = 1'b0;
                 RegWrite = 1'b1;
                 MemRead = 1'b0;
                 MemWrite = 1'b0;
                 Branch = 1'b0;
                 Jump = 1'b0;
+                HI_LO_Write = 2'b00;
                 //ALUOp1 = 1'b1;
                 //ALUOp0 = 1'b0;
 
@@ -486,15 +542,43 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
                     end
                 endcase
             end
+            
+            6'b000010: begin // j
+                RegDst = 2'b00;
+                ALUSrc = 1'b0;
+                ALUSrc2 = 1'b1;
+                MemtoReg = 1'b0;
+                RegWrite = 1'b0;
+                MemRead = 1'b0;
+                MemWrite = 1'b0;
+                Branch = 1'b0;
+                Jump = 1'b1;
+                HI_LO_Write = 2'b00;
+            end
+            
+            6'b000011: begin // jal
+                RegDst = 2'b10;
+                ALUSrc = 1'b0;
+                ALUSrc2 = 1'b1;
+                MemtoReg = 1'b0;
+                RegWrite = 1'b0;
+                MemRead = 1'b0;
+                MemWrite = 1'b0;
+                Branch = 1'b0;
+                Jump = 1'b1;
+                HI_LO_Write = 2'b00;
+            end
 
             default: begin
-                RegDst = 1'b0;
+                RegDst = 2'b00;
                 ALUSrc = 1'b0;
                 MemtoReg = 1'b0;
                 RegWrite = 1'b0;
                 MemRead = 1'b0;
                 MemWrite = 1'b0;
                 Branch = 1'b0;
+                Jump = 1'b0;
+                HI_LO_Write = 2'b00;
                 //ALUOp1 = 1'b0;
                 //ALUOp0 = 1'b0;
             end

@@ -66,7 +66,8 @@ module Datapath(Clk, Rst, PCResult);
     wire  EX_Jump;
     wire ALUOp1_out, ALUOp0_out, RegDst_out, ALUSrc_out;
     wire [4:0] ALUControl_out;
-    wire EX_Branch, EX_MemWrite, EX_MemRead, EX_MemtoReg, EX_RegWrite, EX_ALUSrc2, HI_LO_Write;
+    wire EX_Branch, EX_MemWrite, EX_MemRead, EX_MemtoReg, EX_RegWrite, EX_ALUSrc2;
+    wire [1:0] HI_LO_Write;
     wire [1:0]  EX_Datatype;
     
     /*ShiftLeft2              Shift_jr(ReadData1, jump_rs);
@@ -120,17 +121,17 @@ module Datapath(Clk, Rst, PCResult);
     (* mark_debug = "true" *) wire [31:0] Hi_out, Lo_out;
     wire HI_Src, LO_Src;
      
-    Mux32Bit2To1            HI_mux (inputHI, EX_ReadData1, HiALUOut, HI_LO_Write);
-    Mux32Bit2To1            LO_mux (inputLO, EX_ReadData1, LoALUOut, HI_LO_Write);
+    //Mux32Bit2To1            HI_mux (inputHI, EX_ReadData1, HiALUOut, HI_LO_Write);
+    //Mux32Bit2To1            LO_mux (inputLO, EX_ReadData1, LoALUOut, HI_LO_Write);
     
     wire [31:0] HI_out, LO_out;
     
-    HI_Reg                  HI_Reg (inputHI, HI_out, Clk, HI_LO_Write, Rst);
-    LO_Reg                  LO_Reg (inputLO, LO_out, Clk, HI_LO_Write, Rst);
+    HI_Reg                  HI_Reg (HiALUOut, HI_out, Clk, HI_LO_Write[0], Rst);
+    LO_Reg                  LO_Reg (LoALUOut, LO_out, Clk, HI_LO_Write[1], Rst);
 
     
 /////////hi and lo in     
-    ALU32Bit                ALU1  (ALUControl_out, ALUSrc1Data, ALUSrc2Data, Hi_out, Lo_out, EX_Instruction31_26, ALUResult, HiALUOut, LoALUOut, Zero, RegWrite2);
+    ALU32Bit                ALU1  (ALUControl_out, ALUSrc1Data, ALUSrc2Data, HI_out, LO_out, EX_Instruction31_26, ALUResult, HiALUOut, LoALUOut, Zero, RegWrite2);
     
                                   //ALUControl, A,          B,          Hi_in, Lo_in, Opcode, ALUResult, Hi, Lo, Zero, RegWrite2
 
@@ -189,9 +190,9 @@ module Datapath(Clk, Rst, PCResult);
     wire [4:0] WB_RegDstData;
     wire [5:0] WB_func;
     
-    MEM_WB_Reg              MEM_WB(MEM_RegWrite, MEM_RegWrite2, MEM_MemtoReg, ReadData, MEM_ALUResult, MEM_RegDstData[4:0], MEM_HI, MEM_LO, MEM_func, MEM_Zero,
+    MEM_WB_Reg              MEM_WB(MEM_RegWrite, MEM_RegWrite2, MEM_MemtoReg, ReadData, MEM_ALUResult, MEM_RegDstData[4:0], MEM_HI, MEM_LO,
                                     Clk, Rst, 1'b1,
-                                    WB_RegWrite1, WB_RegWrite2, WB_MemtoReg, WB_ReadData, WB_ALUResult, WB_RegDstData, WB_HI, WB_LO, WB_func, WB_Zero);
+                                    WB_RegWrite1, WB_RegWrite2, WB_MemtoReg, WB_ReadData, WB_ALUResult, WB_RegDstData, WB_HI, WB_LO);
                                     
                                     
                                     
