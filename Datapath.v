@@ -66,7 +66,8 @@ module Datapath(Clk, Rst);
     wire  EX_Jump;
     wire ALUOp1_out, ALUOp0_out, RegDst_out, ALUSrc_out;
     wire [4:0] ALUControl_out;
-    wire EX_Branch, EX_MemWrite, EX_MemRead, EX_MemtoReg, EX_RegWrite, EX_ALUSrc2, HI_LO_Write;
+    wire EX_Branch, EX_MemWrite, EX_MemRead, EX_MemtoReg, EX_RegWrite, EX_ALUSrc2;
+    wire [1:0] HI_LO_Write;
     wire [1:0]  EX_Datatype;
     
     /*ShiftLeft2              Shift_jr(ReadData1, jump_rs);
@@ -120,13 +121,13 @@ module Datapath(Clk, Rst);
     (* mark_debug = "true" *) wire [31:0] Hi_out, Lo_out;
     wire HI_Src, LO_Src;
      
-    Mux32Bit2To1            HI_mux (inputHI, EX_ReadData1, HiALUOut, HI_LO_Write);
-    Mux32Bit2To1            LO_mux (inputLO, EX_ReadData1, LoALUOut, HI_LO_Write);
+    //Mux32Bit2To1            HI_mux (inputHI, EX_ReadData1, HiALUOut, HI_LO_Write);
+    //Mux32Bit2To1            LO_mux (inputLO, EX_ReadData1, LoALUOut, HI_LO_Write);
     
     wire [31:0] HI_out, LO_out;
     
-    HI_Reg                  HI_Reg (inputHI, HI_out, Clk, HI_LO_Write, Rst);
-    LO_Reg                  LO_Reg (inputLO, LO_out, Clk, HI_LO_Write, Rst);
+    HI_Reg                  HI_Reg (HIAluOut, HI_out, Clk, HI_LO_Write[0], Rst);
+    LO_Reg                  LO_Reg (LoALUOut, LO_out, Clk, HI_LO_Write[1], Rst);
 
     
 /////////hi and lo in     
