@@ -17,7 +17,7 @@ module SignExtension(in, out, signOrZero);
     reg [15:0] extension;
     
     always@(*) begin
-        if(signOrZero == 1) begin
+        if(signOrZero == 0) begin
             if(in[15] == 1) begin
                 extension <= 16'b1111_1111_1111_1111;
                 out <= {extension, in};
@@ -31,8 +31,8 @@ module SignExtension(in, out, signOrZero);
             if(in[15] == 0) begin
                 extension <= 16'b0000_0000_0000_0000;
                 out <= {extension, in};
-            end
         end
+    end
     end
 
 endmodule
