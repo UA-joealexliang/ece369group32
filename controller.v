@@ -8,7 +8,8 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
     input [4:0] Bit10_6;    // used to differentiate seb vs seh and Bit6 used to differentiate srlv vs rotrv
     input [5:0] funct;      // right-most 6 bits of the instruction signifying the function under operation type
 
-    output reg RegDst, ALUSrc, ALUSrc2, MemtoReg, RegWrite, MemRead, MemWrite, Branch, Jump; // 12 control signals
+    output reg ALUSrc, ALUSrc2, MemtoReg, RegWrite, MemRead, MemWrite, Branch, Jump; // 12 control signals
+    output reg [1:0] RegDst;
     //output reg SignExtend; // still needs to be implemented
     output reg [1:0] Datatype;
     output reg HI_LO_Write;
@@ -27,7 +28,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
             // Arithmetic/Logic r-format
 
             6'b000000: begin // r-format instructions add, addu
-                RegDst = 1'b1;
+                RegDst = 2'b01;
                 ALUSrc = 1'b0;
                 ALUSrc2 = 1'b0;
                 MemtoReg = 1'b0;
@@ -178,7 +179,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
             end
 
             6'b011100: begin // mul, madd, msub
-                RegDst = 1'b1;
+                RegDst = 2'b01;
                 ALUSrc = 1'b0;
                 ALUSrc2 = 1'b0;
                 MemtoReg = 1'b0;
@@ -215,7 +216,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
             // Data
 
             6'b100011: begin // lw
-                RegDst = 1'b0;
+                RegDst = 2'b00;
                 ALUSrc = 1'b1;
                 ALUSrc2 = 1'b0;
                 MemtoReg = 1'b1;
@@ -229,7 +230,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
             end
 
             6'b100001: begin // lh
-                RegDst = 1'b0;
+                RegDst = 2'b00;
                 ALUSrc = 1'b1;
                 ALUSrc2 = 1'b0;
                 MemtoReg = 1'b1;
@@ -243,7 +244,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
             end
 
             6'b100000: begin // lb
-                RegDst = 1'b0;
+                RegDst = 2'b00;
                 ALUSrc = 1'b1;
                 ALUSrc2 = 1'b0;
                 MemtoReg = 1'b1;
@@ -257,7 +258,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
             end
 
             6'b001111: begin // lui
-                RegDst = 1'b0;
+                RegDst = 2'b00;
                 ALUSrc = 1'b1;
                 ALUSrc2 = 1'b0;
                 MemtoReg = 1'b0;
@@ -397,7 +398,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
             // Arithmetic/Logic I-format
 
             6'b001001: begin // addiu
-                RegDst = 1'b0;
+                RegDst = 2'b00;
                 ALUSrc = 1'b1;
                 ALUSrc2 = 1'b0;
                 MemtoReg = 1'b0;
@@ -411,7 +412,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
             end
 
             6'b001000: begin // addi
-                RegDst = 1'b0;
+                RegDst = 2'b00;
                 ALUSrc = 1'b1;
                 ALUSrc2 = 1'b0;
                 MemtoReg = 1'b0;
@@ -425,7 +426,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
             end
 
             6'b001100: begin // andi
-                RegDst = 1'b0;
+                RegDst = 2'b00;
                 ALUSrc = 1'b1;
                 ALUSrc2 = 1'b0;
                 MemtoReg = 1'b0;
@@ -439,7 +440,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
             end
 
             6'b001101: begin // ori
-                RegDst = 1'b0;
+                RegDst = 2'b00;
                 ALUSrc = 1'b1;
                 ALUSrc2 = 1'b0;
                 MemtoReg = 1'b0;
@@ -453,7 +454,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
             end
 
             6'b001110: begin // xori
-                RegDst = 1'b0;
+                RegDst = 2'b00;
                 ALUSrc = 1'b1;
                 ALUSrc2 = 1'b0;
                 MemtoReg = 1'b0;
@@ -467,7 +468,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
             end
 
             6'b001010: begin // slti
-                RegDst = 1'b0;
+                RegDst = 2'b00;
                 ALUSrc = 1'b1;
                 ALUSrc2 = 1'b0;
                 MemtoReg = 1'b0;
@@ -481,7 +482,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
             end
 
             6'b001011: begin // sltiu
-                RegDst = 1'b0;
+                RegDst = 2'b00;
                 ALUSrc = 1'b1;
                 ALUSrc2 = 1'b0;
                 MemtoReg = 1'b0;
@@ -497,7 +498,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
             // Other
 
             6'b011111: begin // seh, seb
-                RegDst = 1'b1;
+                RegDst = 2'b01;
                 ALUSrc = 1'b0;
                 ALUSrc2 = 1'b0;
                 MemtoReg = 1'b0;
@@ -521,7 +522,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
             end
             
             6'b000010: begin // j
-                RegDst = 1'b0;
+                RegDst = 2'b00;
                 ALUSrc = 1'b0;
                 ALUSrc2 = 1'b1;
                 MemtoReg = 1'b0;
@@ -533,7 +534,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
             end
             
             6'b000011: begin // jal
-                RegDst = 1'b0;
+                RegDst = 2'b10;
                 ALUSrc = 1'b0;
                 ALUSrc2 = 1'b1;
                 MemtoReg = 1'b0;
@@ -545,7 +546,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
             end
 
             default: begin
-                RegDst = 1'b0;
+                RegDst = 2'b00;
                 ALUSrc = 1'b0;
                 MemtoReg = 1'b0;
                 RegWrite = 1'b0;
