@@ -9,9 +9,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module Datapath(Clk, Rst);
+module Datapath(Clk, Rst, PCResult);
     input Clk, Rst;
-    
+    output wire [31:0] PCResult;
 
 //clock signal determined at end
     
@@ -25,7 +25,7 @@ module Datapath(Clk, Rst);
 /////////////////INSTRUCTION FETCH STAGE///////////////////////////////////////////    
     
     wire [31:0] IF_Instruction;
-    (* mark_debug = "true" *) wire [31:0] PCResult;
+    
     wire [31:0] PCAddResult;
     wire [31:0] PC_in;
     wire [31:0] PC4_or_PCoffset;
@@ -44,7 +44,7 @@ module Datapath(Clk, Rst);
     wire [31:0] ID_PCResult;
     wire [31:0] ID_Instruction;
     
-    IF_ID_Reg               IF_ID_Reg(IF_Instruction, PCResult, Clk, Rst, 1'b1 , ID_Instruction, ID_PCResult);
+    IF_ID_Reg               IF_ID_Reg(IF_Instruction, PCAddResult, Clk, Rst, 1'b1 , ID_Instruction, ID_PCResult);
     
 /////////////////INSTRUCTION DECODE STAGE////////////////////////////////////////////
    
@@ -177,6 +177,8 @@ module Datapath(Clk, Rst);
     
     DataMemory              Data_Memory(MEM_ALUResult, MEM_Data2, Clk, MEM_MemWrite, MEM_MemRead, MEM_Datatype, ReadData);
     
+    
+    //determine new pc
     Mux32Bit2To1            PC4_or_PC4Offset(PC4_or_PCoffset , PCAddResult, MEM_PCResult, PC_Src);
     Mux32Bit2To1            NextPC(PC_in, PC4_or_PCoffset, Imm_or_Rs, MEM_Jump);
       

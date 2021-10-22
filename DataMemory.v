@@ -48,8 +48,10 @@ module DataMemory(Address, WriteData, Clk, MemWrite, MemRead, Datatype, ReadData
     reg sign;
     
     output reg[31:0] ReadData; // Contents of memory location at Address
-
-    $readmemh("data_memory.mem", memory);
+    
+    initial begin
+        $readmemh("data_memory.mem", memory);
+    end
 
     /* Please fill in the implementation here */
     always@(posedge Clk) begin
