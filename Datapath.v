@@ -225,7 +225,7 @@ module Datapath(Clk, Rst, PCResult);
     
    // Compare                 compareFunc(WB_func, WriteHILO, MEM_or_HILO);
     
-    wire[31:0] WB_Data2;
+   // wire[31:0] WB_Data2;
     //wire[31:0] MovnData, MovzData;
     
     // wire MOVN, MOVZ;
@@ -235,7 +235,7 @@ module Datapath(Clk, Rst, PCResult);
     
     
     
-    Mux32Bit2To1            WriteBackData(WB_Data2, WB_ReadData, WB_ALUResult, WB_MemtoReg); //WB_Data2 = ReadData or ALUResult
+    Mux32Bit2To1            WriteBackData(WB_Data, WB_ReadData, WB_ALUResult, WB_MemtoReg); //WB_Data2 = ReadData or ALUResult
 
     //feed WB_Data2 into mux to choose between it and PC+4 using jump signal
 
