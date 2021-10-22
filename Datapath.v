@@ -17,12 +17,12 @@ module Datapath(Clk, Rst, PCResult);
     
     
     //Controller signals
-    output reg ALUSrc, ALUSrc2, MemtoReg, RegWrite, MemRead, MemWrite, Branch, Jump; 
-    output reg [1:0] RegDst;
-    output reg SignExtend;
-    output reg [1:0] Datatype;
-    output reg [1:0] HI_LO_Write; // 0: don't write, 1: HI, 2: LO, 3: Both
-    output reg [4:0] ALUControl;
+    wire ALUSrc, ALUSrc2, MemtoReg, RegWrite, MemRead, MemWrite, Branch, Jump; 
+    wire [1:0] RegDst;
+    wire SignExtend;
+    wire [1:0] Datatype;
+    wire [1:0] HI_LO_Write; // 0: don't write, 1: HI, 2: LO, 3: Both
+    wire [4:0] ALUControl;
     
 /////////////////INSTRUCTION FETCH STAGE///////////////////////////////////////////    
     
