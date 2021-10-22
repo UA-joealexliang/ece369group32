@@ -89,7 +89,6 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
 
                     6'b000100: begin // sllv
                         ALUControl = 5'b00111;
-                        ALUSrc2 = 1'b1;
                     end
 
                     6'b000010: begin
@@ -114,12 +113,10 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
                         case(Bit10_6)
                             5'b00000: begin // srlv
                                 ALUControl = 5'b01000;
-                                ALUSrc2 = 1'b1;
                             end
 
                             5'b00001: begin // rotrv
                                 ALUControl = 5'b01001;
-                                ALUSrc2 = 1'b1;
                             end
 
                             default: begin
