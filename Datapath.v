@@ -68,11 +68,11 @@ module Datapath(Clk, Rst, PCResult);
     wire [4:0]  EX_Instruction20_16, EX_Instruction15_11;
     wire [5:0] EX_Instruction5_0, EX_Instruction31_26;
     wire  EX_Jump;
-    wire ALUOp1_out, ALUOp0_out, RegDst_out, ALUSrc_out;
+    wire ALUOp1_out, ALUOp0_out, ALUSrc_out;
     wire [4:0] ALUControl_out;
     wire EX_Branch, EX_MemWrite, EX_MemRead, EX_MemtoReg, EX_RegWrite, EX_ALUSrc2;
     wire [1:0] HI_LO_Write;
-    wire [1:0] EX_Datatype;
+    wire [1:0] EX_Datatype, RegDst_out;
     
     /*ShiftLeft2              Shift_jr(ReadData1, jump_rs);
     

@@ -37,14 +37,14 @@ module ID_EX_Reg(ReadData1_in, ReadData2_in, SignExtend_in, PCResult_in, Instruc
     input [4:0] Instruction15_11;
     input [5:0] Instruction5_0;
     input Jump;
-    input ALUOp1, ALUOp0, RegDst, ALUSrc, ALUSrc2;
+    input ALUOp1, ALUOp0,  ALUSrc, ALUSrc2;
     input [4:0] ALUControl;
     input Branch, MemWrite, MemRead;
     input MemtoReg, RegWrite;
-    input [1:0] Datatype;
+    input [1:0] Datatype, RegDst;
     
-    output reg ALUOp1_out, ALUOp0_out, RegDst_out, ALUSrc_out, EX_ALUSrc2; 
-    output reg [1:0] EX_Datatype;
+    output reg ALUOp1_out, ALUOp0_out,  ALUSrc_out, EX_ALUSrc2; 
+    output reg [1:0] EX_Datatype, RegDst_out;
     output reg [4:0] ALUControl_out;
     output reg Branch_out, MemWrite_out, MemRead_out;
     output reg MemtoReg_out, RegWrite_out;
