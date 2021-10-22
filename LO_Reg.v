@@ -21,7 +21,6 @@
 
 
 module LO_Reg(in, out, Clk, Ld, Clr);
-
     input [31:0] in;
     input Clk, Ld, Clr;
     
@@ -31,15 +30,16 @@ module LO_Reg(in, out, Clk, Ld, Clr);
     
     always@(posedge Clk) begin
         if(Clr == 1) begin
-            out <= 0;
+            register <= 0;
         end
         
         else if(Ld == 1) begin
             register <= in;
         end
         
-        else if(Ld == 0) begin
-            out <= register;
-        end
+    end
+
+    always@(*) begin
+        out <= register;
     end
 endmodule
