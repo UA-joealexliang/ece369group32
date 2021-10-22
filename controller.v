@@ -28,6 +28,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
             // Arithmetic/Logic r-format
 
             6'b000000: begin // r-format instructions add, addu
+                //Datatype = 2'bXX;
                 RegDst = 2'b01;
                 ALUSrc = 1'b0;
                 ALUSrc2 = 1'b0;
@@ -181,6 +182,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
             end
 
             6'b011100: begin // mul, madd, msub
+                //Datatype = 2'bXX;
                 RegDst = 2'b01;
                 ALUSrc = 1'b0;
                 ALUSrc2 = 1'b0;
@@ -220,6 +222,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
             // Data
 
             6'b100011: begin // lw
+                Datatype = 2'b00;
                 RegDst = 2'b00;
                 ALUSrc = 1'b1;
                 ALUSrc2 = 1'b0;
@@ -236,6 +239,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
             end
 
             6'b100001: begin // lh
+                Datatype = 2'b01;
                 RegDst = 2'b00;
                 ALUSrc = 1'b1;
                 ALUSrc2 = 1'b0;
@@ -252,6 +256,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
             end
 
             6'b100000: begin // lb
+                Datatype = 2'b10;
                 RegDst = 2'b00;
                 ALUSrc = 1'b1;
                 ALUSrc2 = 1'b0;
@@ -284,6 +289,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
             end
 
             6'b101011: begin // sw
+                Datatype = 2'b00;
                 //RegDst = X;
                 ALUSrc = 1'b1;
                 ALUSrc2 = 1'b0;
@@ -300,6 +306,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
             end
 
             6'b101001: begin // sh
+                Datatype = 2'b01;
                 //RegDst = X;
                 ALUSrc = 1'b1;
                 ALUSrc2 = 1'b0;
@@ -316,6 +323,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
             end
 
             6'b101000: begin // sb
+                Datatype = 2'b10;
                 //RegDst = X;
                 ALUSrc = 1'b1;
                 ALUSrc2 = 1'b0;
@@ -334,6 +342,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
             // Branch
 
             6'b000001: begin // bgez, bltz
+                //Datatype = 2'bXX;
                 //RegDst = X;
                 ALUSrc = 1'b0;
                 ALUSrc2 = 1'b0;
@@ -360,6 +369,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
             end
 
             6'b000100: begin // beq
+                //Datatype = 2'bXX;
                 //RegDst = X;
                 ALUSrc = 1'b0;
                 ALUSrc2 = 1'b0;
@@ -376,6 +386,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
             end
 
             6'b000101: begin // bne
+                //Datatype = 2'bXX;
                 //RegDst = X;
                 ALUSrc = 1'b0;
                 ALUSrc2 = 1'b0;
@@ -392,6 +403,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
             end
 
             6'b000111: begin // bgtz
+                //Datatype = 2'bXX;
                 //RegDst = X;
                 ALUSrc = 1'b0;
                 ALUSrc2 = 1'b0;
@@ -408,6 +420,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
             end
 
             6'b000110: begin // blez
+                //Datatype = 2'bXX;
                 //RegDst = X;
                 ALUSrc = 1'b0;
                 ALUSrc2 = 1'b0;
@@ -426,6 +439,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
             // Arithmetic/Logic I-format
 
             6'b001001: begin // addiu
+                //Datatype = 2'bXX;
                 RegDst = 2'b00;
                 ALUSrc = 1'b1;
                 ALUSrc2 = 1'b0;
@@ -442,6 +456,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
             end
 
             6'b001000: begin // addi
+                //Datatype = 2'bXX;
                 RegDst = 2'b00;
                 ALUSrc = 1'b1;
                 ALUSrc2 = 1'b0;
@@ -458,6 +473,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
             end
 
             6'b001100: begin // andi
+                //Datatype = 2'bXX;
                 RegDst = 2'b00;
                 ALUSrc = 1'b1;
                 ALUSrc2 = 1'b0;
@@ -474,6 +490,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
             end
 
             6'b001101: begin // ori
+                //Datatype = 2'bXX;
                 RegDst = 2'b00;
                 ALUSrc = 1'b1;
                 ALUSrc2 = 1'b0;
@@ -490,6 +507,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
             end
 
             6'b001110: begin // xori
+                //Datatype = 2'bXX;
                 RegDst = 2'b00;
                 ALUSrc = 1'b1;
                 ALUSrc2 = 1'b0;
@@ -506,6 +524,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
             end
 
             6'b001010: begin // slti
+                //Datatype = 2'bXX;
                 RegDst = 2'b00;
                 ALUSrc = 1'b1;
                 ALUSrc2 = 1'b0;
@@ -522,6 +541,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
             end
 
             6'b001011: begin // sltiu
+                //Datatype = 2'bXX;
                 RegDst = 2'b00;
                 ALUSrc = 1'b1;
                 ALUSrc2 = 1'b0;
@@ -540,6 +560,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
             // Other
 
             6'b011111: begin // seh, seb
+                //Datatype = 2'bXX;
                 RegDst = 2'b01;
                 ALUSrc = 1'b0;
                 ALUSrc2 = 1'b0;
@@ -566,6 +587,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
             end
             
             6'b000010: begin // j
+                //Datatype = 2'bXX;
                 RegDst = 2'b00;
                 ALUSrc = 1'b0;
                 ALUSrc2 = 1'b1;
@@ -580,11 +602,12 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
             end
             
             6'b000011: begin // jal
+                //Datatype = 2'bXX;
                 RegDst = 2'b10;
                 ALUSrc = 1'b0;
                 ALUSrc2 = 1'b1;
                 MemtoReg = 1'b0;
-                RegWrite = 1'b1;
+                RegWrite = 1'b0;
                 MemRead = 1'b0;
                 MemWrite = 1'b0;
                 Branch = 1'b0;
@@ -594,6 +617,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
             end
 
             default: begin
+                //Datatype = 2'bXX;
                 RegDst = 2'b00;
                 ALUSrc = 1'b0;
                 MemtoReg = 1'b0;
