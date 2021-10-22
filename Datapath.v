@@ -157,7 +157,7 @@ module Datapath(Clk, Rst, PCResult);
     wire [31:0] MEM_ALUResult;
     wire [31:0] MEM_Data2;
     wire [31:0] MEM_RegDstData;
-    wire MEM_Branch;
+    wire MEM_Branch, MEM_ALUSRC2;
     wire MEM_Zero;
     wire MEM_MemWrite;
     wire MEM_MemRead;
@@ -178,9 +178,9 @@ module Datapath(Clk, Rst, PCResult);
                             
                             //Clk, Clr, Ld);
     EX_MEM_Reg              EX_MEM (EX_RegWrite, RegWrite2, EX_MemtoReg, EX_Branch, EX_MemWrite, EX_MemRead,
-                                    Zero, EXMEM_PC, ALUResult, EX_ReadData2, RegDstData[4:0], EX_Instruction5_0, EX_Jump, EX_jumpImm, EX_jumpRs, EX_Datatype,
+                                    Zero, EXMEM_PC, ALUResult, EX_ReadData2, RegDstData[4:0], EX_Instruction5_0, EX_Jump, EX_jumpImm, EX_jumpRs, EX_Datatype, EX_ALUSrc2,
                                     MEM_RegWrite, MEM_RegWrite2, MEM_MemtoReg, MEM_Branch, MEM_MemWrite, MEM_MemRead,
-                                    MEM_Zero, MEM_PCResult, MEM_ALUResult, MEM_Data2, MEM_RegDstData[4:0], MEM_func, MEM_Jump, MEM_jumpImm, MEM_jumpRs, MEM_Datatype,
+                                    MEM_Zero, MEM_PCResult, MEM_ALUResult, MEM_Data2, MEM_RegDstData[4:0], MEM_func, MEM_Jump, MEM_jumpImm, MEM_jumpRs, MEM_Datatype, MEM_ALUSrc2,
                                     Clk, Rst, 1'b1 );
     
     
@@ -192,7 +192,7 @@ module Datapath(Clk, Rst, PCResult);
     
     ANDGate                 AND_Branch(MEM_Branch, MEM_Zero, PC_Src); //Zero && Branch
     
-    Mux32Bit2To1            PCTarget(Imm_or_Rs, MEM_jumpRs, MEM_jumpImm, ); //imm or Rs TODO
+    Mux32Bit2To1            PCTarget(Imm_or_Rs, MEM_jumpRs, MEM_jumpImm, MEM_ALUSrc2); //imm or Rs TODO
 
                             //DataMemory(Address, WriteData, Clk, MemWrite, MemRead, Datatype, ReadData)
     DataMemory              Data_Memory(MEM_ALUResult, MEM_Data2, Clk, MEM_MemWrite, MEM_MemRead, MEM_Datatype, MemDataOut);
