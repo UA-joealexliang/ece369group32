@@ -1,3 +1,8 @@
+#ECE 369 Collaborative Testcases
+#These are free to use, but please
+#consider adding more testcases
+
+######################################################################################################################################
 .text				# Put program here 
 .globl main			# globally define 'main'
 addi $t0, $0, -3			#0 [addi] t0 = -3
@@ -15,7 +20,7 @@ nop
 nop
 nop
 nop
-addiu $t2, $t2, 0xFFFF 		#12 [addiu] t2 = -8 (sign extend 0xFFFF -> 0xFFFF_FFFF = -1; invert bits and add 1)
+addiu $t2, $t2, 0xFFFF 			#12 [addiu] t2 = -8 (sign extend 0xFFFF -> 0xFFFF_FFFF = -1; invert bits and add 1)
 nop
 nop
 nop
@@ -35,7 +40,7 @@ nop
 nop
 nop
 nop
-addi $t4, $0, 0x0FAD		#28 t4 = 0000_0FAD
+addi $t4, $0, 0x0FAD			#28 t4 = 0000_0FAD
 nop
 nop
 nop
@@ -104,22 +109,22 @@ nop
 nop
 nop
 nop
-lui $t0, $0, 0xAAAA			#80 t0 = AAAA_0000
+lui $t0, 0xAAAA			#80 t0 = AAAA_0000
 nop
 nop
 nop
 nop
-addi $t0, $0, 0xAAAA		#84 			t0 = AAAA_AAAA = 1010_1010_1010_1010_1010_1010_1010_1010
+addi $t0, $t0, 0xAAAA		   	#84 			t0 = AAAA_AAAA = 1010_1010_1010_1010_1010_1010_1010_1010
 nop
 nop
 nop
 nop
-lui $t1, $0, 0x9999			#88 			t1 = 9999_0000
+lui $t1, 0x9999			#88 			t1 = 9999_0000
 nop
 nop
 nop
 nop
-addi $t1, $0, 0x9999		#92 			t1 = 9999_9999 = 1001_1001_1001_1001_1001_1001_1001_1001
+addi $t1, $t1, 0x9999			#92 			t1 = 9999_9999 = 1001_1001_1001_1001_1001_1001_1001_1001
 nop
 nop
 nop
@@ -129,7 +134,7 @@ nop
 nop
 nop
 nop
-andi $t2, $t0, 0x7777		#100 [andi]		t2 = 0000_2222 = 0000_0010_0010_0010_0010_0010_0010_0010 (7777 = 0000_0000_0000_0000_0111_0111_0111_0111) ZERO-EXTEND
+andi $t2, $t0, 0x7777			#100 [andi]		t2 = 0000_2222 = 0000_0010_0010_0010_0010_0010_0010_0010 (7777 = 0000_0000_0000_0000_0111_0111_0111_0111) ZERO-EXTEND
 nop
 nop
 nop
@@ -149,12 +154,12 @@ nop
 nop
 nop
 nop
-ori $t2, $t0, 0x7777		#116 [ori]		t2 = AAAA_FFFF = 1010_1010_1010_1010_1111_1111_1111_1111
+ori $t2, $t0, 0x7777			#116 [ori]		t2 = AAAA_FFFF = 1010_1010_1010_1010_1111_1111_1111_1111
 nop
 nop
 nop
 nop
-xori $t2, $t0, 0x7777		#120 [xori]		t2 = AAAA_DDDD = 1010_1010_1010_1010_1101_1101_1101_1101 
+xori $t2, $t0, 0x7777			#120 [xori]		t2 = AAAA_DDDD = 1010_1010_1010_1010_1101_1101_1101_1101 
 nop
 nop
 nop
@@ -199,7 +204,7 @@ nop
 nop
 nop
 nop
-slti $t3, $t1, 0xFFFF		#156 [slti] t3 = 0	t1 < FFFF_FFFF = TRUE SIGNED SIGN-EXTEND (need to test that it sets to 1 as well)
+slti $t3, $t1, 0xFFFF			#156 [slti] t3 = 0	t1 < FFFF_FFFF = TRUE SIGNED SIGN-EXTEND (need to test that it sets to 1 as well)
 nop
 nop
 nop
@@ -239,7 +244,7 @@ nop
 nop
 nop
 nop
-sltiu $t3, $t1, 0xFFFF		#188 [sltiu] t3 = 1	t1 < FFFF_FFFF = TRUE UNSIGNED (need to test that it sets to 0 as well)
+sltiu $t3, $t1, 0xFFFF			#188 [sltiu] t3 = 1	t1 < FFFF_FFFF = TRUE UNSIGNED (need to test that it sets to 0 as well)
 nop
 nop
 nop
@@ -249,22 +254,22 @@ nop
 nop
 nop
 nop
-mfhi $t3					#196 t3 = 0000_000F 
+mfhi $t3				#196 t3 = 0000_000F 
 nop
 nop
 nop
 nop
-mflo $t4					#200 t3 = 0C02_F675
+mflo $t4				#200 t3 = 0C02_F675
 nop
 nop
 nop
 nop
-mthi $t4					#204 HI = 0C02_F675
+mthi $t4				#204 HI = 0C02_F675
 nop
 nop
 nop
 nop	
-mtlo $t3					#208 LO = 0000_000F
+mtlo $t3				#208 LO = 0000_000F
 nop
 nop
 nop
@@ -282,7 +287,7 @@ nop
 nop
 nop
 bgez $t3, bgezt3: 			#220 (go back to 216 if t3 >= 0)
-							#t3 = -1
+					#t3 = -1
 nop
 nop
 nop
@@ -299,7 +304,7 @@ nop
 nop
 nop
 beq $t3, $t4, beqt3			#232 (go back to 228 if t3 = t4)
-							#t3 = 1
+					#t3 = 1
 nop
 nop
 nop
@@ -316,7 +321,7 @@ nop
 nop
 nop
 bne $t3, $t4, bnet4			#244 (go back to 240 if t3 != t4)
-							#t4 = 1
+					#t4 = 1
 nop
 nop
 nop
@@ -333,7 +338,7 @@ nop
 nop
 nop
 bgtz $t4, bgtzt4			#256 (go back to 252 if t4 > 0)
-							#t4 = 0
+					#t4 = 0
 nop
 nop
 nop
@@ -350,7 +355,7 @@ nop
 nop
 nop
 blez $t4, blezt4			#268 (go back to 264 if t4 <= 0)
-							#t4 = 1
+					#t4 = 1
 nop
 nop
 nop
@@ -366,12 +371,12 @@ nop
 nop
 nop
 bltz $t4, -2				#280 (go back to 276 if t4 < 0)
-							#t4 = 0
+					#t4 = 0
 nop
 nop
 nop
 nop
-j addit4					#284 (jump to 292)
+j addit4				#284 (jump to 292)
 nop
 nop
 nop
@@ -392,7 +397,7 @@ nop
 nop
 nop
 nop
-jr $t4						#300 (jump to 308) THIS IS ACTUALLY INSTRUCTION 385 WHEN ALL NOPs ARE ADDED
+jr $t4					#300 (jump to 308) THIS IS ACTUALLY INSTRUCTION 385 WHEN ALL NOPs ARE ADDED
 nop
 nop
 nop
@@ -428,13 +433,13 @@ nop
 nop
 nop
 nop
-jr $ra						#324 (go back to ra = 332)
+jr $ra					#324 (go back to ra = 332)
 nop
 nop
 nop
 nop
 jalra:
-jal addit5					#328 (go to 320) ra = 332
+jal addit5				#328 (go to 320) ra = 332
 nop
 nop
 nop
