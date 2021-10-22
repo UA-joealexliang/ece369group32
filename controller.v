@@ -495,6 +495,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
                 MemRead = 1'b0;
                 MemWrite = 1'b0;
                 Branch = 1'b0;
+                Jump = 1'b1;
                 //ALUOp1 = 1'b0;
                 //ALUOp0 = 1'b0;
             end

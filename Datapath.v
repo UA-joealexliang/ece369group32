@@ -130,7 +130,7 @@ module Datapath(Clk, Rst);
 
     
 /////////hi and lo in     
-    ALU32Bit                ALU1  (ALUControl_out, ALUSrc1Data, ALUSrc2Data, Hi_out, Lo_out, EX_Instruction31_26, ALUResult, HiALUOut, LoALUOut, Zero, RegWrite2);
+    ALU32Bit                ALU1  (ALUControl_out, ALUSrc1Data, ALUSrc2Data, HI_out, LO_out, EX_Instruction31_26, ALUResult, HiALUOut, LoALUOut, Zero, RegWrite2);
     
                                   //ALUControl, A,          B,          Hi_in, Lo_in, Opcode, ALUResult, Hi, Lo, Zero, RegWrite2
 
