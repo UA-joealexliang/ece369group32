@@ -18,7 +18,7 @@ module Datapath(Clk, Rst);
     
     //Controller signals
     wire RegDst; 
-    wire ALUSrc, ALUSrc2, MemtoReg, RegWrite, MemRead, MemWrite, Branch, ALUOp1, ALUOp0, Opcode, Jump, JRegOrImm; 
+    wire ALUSrc, ALUSrc2, MemtoReg, RegWrite, MemRead, MemWrite, Branch, ALUOp1, ALUOp0, Opcode, Jump, JRegOrImm, SignExt; 
     wire [1:0] Datatype;
     wire [4:0] ALUControl;
     
@@ -76,7 +76,7 @@ module Datapath(Clk, Rst);
 
     Controller              Controller(ID_Instruction[31:26], ID_Instruction[21], ID_Instruction[20:16], ID_Instruction[10:6], ID_Instruction[5:0], 
                                                     RegDst, ALUSrc, ALUSrc2, MemtoReg, RegWrite, HI_LO_Write, 
-                                                    MemRead, MemWrite, Branch, Jump, Datatype, ALUControl);
+                                                    MemRead, MemWrite, Branch, Jump, Datatype, ALUControl, SignExt);
                                 
     wire [31:0] regWriteAddr;
     

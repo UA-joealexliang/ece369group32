@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 
-module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSrc2, MemtoReg, RegWrite, HI_LO_Write, MemRead, MemWrite, Branch, Jump, Datatype, ALUControl);
+module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSrc2, MemtoReg, RegWrite, HI_LO_Write, MemRead, MemWrite, Branch, Jump, Datatype, ALUControl, SignExtend);
 
     input [5:0] Opcode;     // left-most 6 bits of the instruction signifying the opcode
     input Bit21;            // used to differentiate srl vs rotr 
@@ -10,7 +10,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
 
     output reg ALUSrc, ALUSrc2, MemtoReg, RegWrite, MemRead, MemWrite, Branch, Jump; // 12 control signals
     output reg [1:0] RegDst;
-    //output reg SignExtend; // still needs to be implemented
+    output reg SignExtend; // still needs to be implemented
     output reg [1:0] Datatype;
     output reg [1:0] HI_LO_Write; // 0: don't write, 1: HI, 2: LO, 3: Both
     output reg [4:0] ALUControl;
@@ -38,6 +38,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
                 Branch = 1'b0;
                 Jump = 1'b0;
                 HI_LO_Write = 2'b00;
+                SignExtend = 1'b0;
                 //ALUOp1 = 1'b1;
                 //ALUOp0 = 1'b0;
 
@@ -189,6 +190,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
                 MemWrite = 1'b0;
                 Branch = 1'b0;
                 Jump = 1'b0;
+                SignExtend = 1'b0;
                 //ALUOp1 = 1'b1;
                 //ALUOp0 = 1'b0;
 
@@ -228,6 +230,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
                 Branch = 1'b0;
                 Jump = 1'b0;
                 HI_LO_Write = 2'b00;
+                SignExtend = 1'b0;
                 //ALUOp1 = 1'b0;
                 //ALUOp0 = 1'b0;
             end
@@ -243,6 +246,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
                 Branch = 1'b0;
                 Jump = 1'b0;
                 HI_LO_Write = 2'b00;
+                SignExtend = 1'b0;
                 //ALUOp1 = 1'b0;
                 //ALUOp0 = 1'b0;
             end
@@ -258,6 +262,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
                 Branch = 1'b0;
                 Jump = 1'b0;
                 HI_LO_Write = 2'b00;
+                SignExtend = 1'b0;
                 //ALUOp1 = 1'b0;
                 //ALUOp0 = 1'b0;
             end
@@ -273,6 +278,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
                 Branch = 1'b0;
                 Jump = 1'b0;
                 HI_LO_Write = 2'b00;
+                SignExtend = 1'b0;
                 //ALUOp1 = 1'b0;
                 //ALUOp0 = 1'b0;
             end
@@ -288,6 +294,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
                 Branch = 1'b0;
                 Jump = 1'b0;
                 HI_LO_Write = 2'b00;
+                SignExtend = 1'b0;
                 //ALUOp1 = 1'b0;
                 //ALUOp0 = 1'b0;
             end
@@ -303,6 +310,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
                 Branch = 1'b0;
                 Jump = 1'b0;
                 HI_LO_Write = 2'b00;
+                SignExtend = 1'b0;
                 //ALUOp1 = 1'b0;
                 //ALUOp0 = 1'b0;
             end
@@ -318,6 +326,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
                 Branch = 1'b0;
                 Jump = 1'b0;
                 HI_LO_Write = 2'b00;
+                SignExtend = 1'b0;
                 //ALUOp1 = 1'b0;
                 //ALUOp0 = 1'b0;
             end
@@ -335,6 +344,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
                 Branch = 1'b1;
                 Jump = 1'b0;
                 HI_LO_Write = 2'b00;
+                SignExtend = 1'b0;
                 //ALUOp1 = 1'b0;
                 //ALUOp0 = 1'b1;
 
@@ -360,6 +370,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
                 Branch = 1'b1;
                 Jump = 1'b0;
                 HI_LO_Write = 2'b00;
+                SignExtend = 1'b0;
                 //ALUOp1 = 1'b0;
                 //ALUOp0 = 1'b1;
             end
@@ -375,6 +386,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
                 Branch = 1'b1;
                 Jump = 1'b0;
                 HI_LO_Write = 2'b00;
+                SignExtend = 1'b0;
                 //ALUOp1 = 1'b0;
                 //ALUOp0 = 1'b1;
             end
@@ -390,6 +402,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
                 Branch = 1'b1;
                 Jump = 1'b0;
                 HI_LO_Write = 2'b00;
+                SignExtend = 1'b0;
                 //ALUOp1 = 1'b0;
                 //ALUOp0 = 1'b1;
             end
@@ -405,6 +418,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
                 Branch = 1'b1;
                 Jump = 1'b0;
                 HI_LO_Write = 2'b00;
+                SignExtend = 1'b0;
                 //ALUOp1 = 1'b0;
                 //ALUOp0 = 1'b1;
             end
@@ -422,6 +436,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
                 Branch = 1'b0;
                 Jump = 1'b0;
                 HI_LO_Write = 2'b00;
+                SignExtend = 1'b0;
                 //ALUOp1 = 1'b1;
                 //ALUOp0 = 1'b0;
             end
@@ -437,6 +452,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
                 Branch = 1'b0;
                 Jump = 1'b0;
                 HI_LO_Write = 2'b00;
+                SignExtend = 1'b0;
                 //ALUOp1 = 1'b1;
                 //ALUOp0 = 1'b0;
             end
@@ -452,6 +468,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
                 Branch = 1'b0;
                 Jump = 1'b0;
                 HI_LO_Write = 2'b00;
+                SignExtend = 1'b1;
                 //ALUOp1 = 1'b1;
                 //ALUOp0 = 1'b0;
             end
@@ -467,6 +484,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
                 Branch = 1'b0;
                 Jump = 1'b0;
                 HI_LO_Write = 2'b00;
+                SignExtend = 1'b1;
                 //ALUOp1 = 1'b1;
                 //ALUOp0 = 1'b0;
             end
@@ -482,6 +500,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
                 Branch = 1'b0;
                 Jump = 1'b0;
                 HI_LO_Write = 2'b00;
+                SignExtend = 1'b1;
                 //ALUOp1 = 1'b1;
                 //ALUOp0 = 1'b0;
             end
@@ -497,6 +516,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
                 Branch = 1'b0;
                 Jump = 1'b0;
                 HI_LO_Write = 2'b00;
+                SignExtend = 1'b0;
                 //ALUOp1 = 1'b1;
                 //ALUOp0 = 1'b0;
             end
@@ -512,6 +532,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
                 Branch = 1'b0;
                 Jump = 1'b0;
                 HI_LO_Write = 2'b00;
+                SignExtend = 1'b0;
                 //ALUOp1 = 1'b1;
                 //ALUOp0 = 1'b0;
             end
@@ -529,6 +550,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
                 Branch = 1'b0;
                 Jump = 1'b0;
                 HI_LO_Write = 2'b00;
+                SignExtend = 1'b0;
                 //ALUOp1 = 1'b1;
                 //ALUOp0 = 1'b0;
 
@@ -554,6 +576,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
                 Branch = 1'b0;
                 Jump = 1'b1;
                 HI_LO_Write = 2'b00;
+                SignExtend = 1'b0;
             end
             
             6'b000011: begin // jal
@@ -567,6 +590,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
                 Branch = 1'b0;
                 Jump = 1'b1;
                 HI_LO_Write = 2'b00;
+                SignExtend = 1'b0;
             end
 
             default: begin
@@ -579,6 +603,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
                 Branch = 1'b0;
                 Jump = 1'b0;
                 HI_LO_Write = 2'b00;
+                SignExtend = 1'b0;
                 //ALUOp1 = 1'b0;
                 //ALUOp0 = 1'b0;
             end
