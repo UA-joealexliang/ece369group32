@@ -584,7 +584,7 @@ module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSr
                 ALUSrc = 1'b0;
                 ALUSrc2 = 1'b1;
                 MemtoReg = 1'b0;
-                RegWrite = 1'b0;
+                RegWrite = 1'b1;
                 MemRead = 1'b0;
                 MemWrite = 1'b0;
                 Branch = 1'b0;
