@@ -22,7 +22,7 @@
 
 module EX_MEM_Reg(EX_RegWrite, RegWrite2, EX_MemtoReg, 
                   EX_Branch, EX_MemWrite, EX_MemRead,
-                  EX_Zero, EX_PCResult, EX_ALUResult, EX_Data2, EX_RegDstData, Jump, jumpImm, jumpRs, Datatype, ALUSrc2
+                  EX_Zero, EX_PCResult, EX_ALUResult, EX_Data2, EX_RegDstData, Jump, jumpImm, jumpRs, Datatype, ALUSrc2,
                   
                   MEM_RegWrite, MEM_RegWrite2, MEM_MemtoReg,
                   MEM_Branch, MEM_MemWrite, MEM_MemRead,
