@@ -187,9 +187,9 @@ module Datapath(Clk, Rst);
     wire [4:0] WB_RegDstData;
     wire [5:0] WB_func;
     
-    MEM_WB_Reg              MEM_WB(MEM_RegWrite, MEM_RegWrite2, MEM_MemtoReg, ReadData, MEM_ALUResult, MEM_RegDstData[4:0], MEM_HI, MEM_LO, MEM_func, MEM_Zero,
+    MEM_WB_Reg              MEM_WB(MEM_RegWrite, MEM_RegWrite2, MEM_MemtoReg, ReadData, MEM_ALUResult, MEM_RegDstData[4:0], MEM_HI, MEM_LO,
                                     Clk, Rst, 1'b1,
-                                    WB_RegWrite1, WB_RegWrite2, WB_MemtoReg, WB_ReadData, WB_ALUResult, WB_RegDstData, WB_HI, WB_LO, WB_func, WB_Zero);
+                                    WB_RegWrite1, WB_RegWrite2, WB_MemtoReg, WB_ReadData, WB_ALUResult, WB_RegDstData, WB_HI, WB_LO);
                                     
                                     
                                     
