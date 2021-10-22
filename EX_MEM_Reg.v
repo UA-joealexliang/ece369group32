@@ -22,11 +22,11 @@
 
 module EX_MEM_Reg(EX_RegWrite, RegWrite2, EX_MemtoReg, 
                   EX_Branch, EX_MemWrite, EX_MemRead,
-                  EX_Zero, EX_PCResult, EX_ALUResult, EX_Data2, EX_RegDstData, HI, LO, func, Jump, jumpImm, jumpRs, Datatype,
+                  EX_Zero, EX_PCResult, EX_ALUResult, EX_Data2, EX_RegDstData, Jump, jumpImm, jumpRs, Datatype,
                   
                   MEM_RegWrite, MEM_RegWrite2, MEM_MemtoReg,
                   MEM_Branch, MEM_MemWrite, MEM_MemRead,
-                  MEM_Zero, MEM_PCResult, MEM_ALUResult, MEM_Data2, MEM_RegDstData, MEM_HI, MEM_LO, func_out, Jump_out, MEM_jumpImm, MEM_jumpRs, MEM_Datatype,
+                  MEM_Zero, MEM_PCResult, MEM_ALUResult, MEM_Data2, MEM_RegDstData, Jump_out, MEM_jumpImm, MEM_jumpRs, MEM_Datatype,
                   
                   Clk, Clr, Ld);
                   
@@ -35,9 +35,8 @@ module EX_MEM_Reg(EX_RegWrite, RegWrite2, EX_MemtoReg,
               EX_Zero;
         input [1:0] Datatype;
               
-        input [31:0] EX_PCResult, EX_ALUResult, EX_Data2, HI, LO, jumpImm, jumpRs;
+        input [31:0] EX_PCResult, EX_ALUResult, EX_Data2, jumpImm, jumpRs;
         input [4:0] EX_RegDstData;
-        input [5:0] func;
         input Jump;
         
         input Clk, Clr, Ld;
@@ -47,9 +46,8 @@ module EX_MEM_Reg(EX_RegWrite, RegWrite2, EX_MemtoReg,
                    MEM_Zero;
         output reg [1:0] MEM_Datatype;
         
-        output reg [31:0] MEM_PCResult, MEM_ALUResult, MEM_Data2, MEM_HI, MEM_LO, MEM_jumpImm, MEM_jumpRs;
+        output reg [31:0] MEM_PCResult, MEM_ALUResult, MEM_Data2, MEM_jumpImm, MEM_jumpRs;
         output reg [4:0] MEM_RegDstData;
-        output reg [5:0] func_out;
         output reg Jump_out;
         
         always@(posedge Clk) begin
@@ -66,9 +64,6 @@ module EX_MEM_Reg(EX_RegWrite, RegWrite2, EX_MemtoReg,
                 MEM_ALUResult <= 0; 
                 MEM_Data2 <= 0;
                 MEM_RegDstData <= 0;
-                MEM_HI <= 0;
-                MEM_LO <= 0;
-                func_out <= 0;
                 Jump_out <= 0;
                 MEM_jumpImm <= 0;
                 MEM_jumpRs <= 0;
@@ -86,9 +81,6 @@ module EX_MEM_Reg(EX_RegWrite, RegWrite2, EX_MemtoReg,
                 MEM_ALUResult <= EX_ALUResult; 
                 MEM_Data2 <= EX_Data2;
                 MEM_RegDstData <= EX_RegDstData;
-                MEM_HI <= HI;
-                MEM_LO <= LO;
-                func_out <= func;
                 Jump_out <= Jump;
                 MEM_jumpImm <= jumpImm;
                 MEM_jumpRs <= jumpRs;
