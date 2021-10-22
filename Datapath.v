@@ -150,7 +150,7 @@ module Datapath(Clk, Rst, PCResult);
     
     wire [31:0] RegDstData;
     
-    Mux32Bit3To1            MuxRegDst (RegDstData, {27'd0, EX_Instruction20_16}, {27'd0, EX_Instruction15_11}, 32'd31, RegDst);
+    Mux32Bit3To1            MuxRegDst (RegDstData, {27'd0, EX_Instruction20_16}, {27'd0, EX_Instruction15_11}, 32'd31, RegDst_out);
     
     //outputs of the EXMEM Pipeline Register
     wire [31:0] MEM_PCResult;
