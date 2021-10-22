@@ -178,9 +178,9 @@ module Datapath(Clk, Rst, PCResult);
                             
                             //Clk, Clr, Ld);
     EX_MEM_Reg              EX_MEM (EX_RegWrite, RegWrite2, EX_MemtoReg, EX_Branch, EX_MemWrite, EX_MemRead,
-                                    Zero, EXMEM_PC, ALUResult, EX_ReadData2, RegDstData[4:0], HiALUOut, LoALUOut, EX_Instruction5_0, EX_Jump, EX_jumpImm, EX_jumpRs, EX_Datatype,
+                                    Zero, EXMEM_PC, ALUResult, EX_ReadData2, RegDstData[4:0], EX_Instruction5_0, EX_Jump, EX_jumpImm, EX_jumpRs, EX_Datatype,
                                     MEM_RegWrite, MEM_RegWrite2, MEM_MemtoReg, MEM_Branch, MEM_MemWrite, MEM_MemRead,
-                                    MEM_Zero, MEM_PCResult, MEM_ALUResult, MEM_Data2, MEM_RegDstData[4:0], MEM_HI, MEM_LO, MEM_func, MEM_Jump, MEM_jumpImm, MEM_jumpRs, MEM_Datatype,
+                                    MEM_Zero, MEM_PCResult, MEM_ALUResult, MEM_Data2, MEM_RegDstData[4:0], MEM_func, MEM_Jump, MEM_jumpImm, MEM_jumpRs, MEM_Datatype,
                                     Clk, Rst, 1'b1 );
     
     
@@ -213,9 +213,9 @@ module Datapath(Clk, Rst, PCResult);
                             //MEM_WB_Reg(MEM_RegWrite, MEM_RegWrite2, MEM_MemtoReg, MEM_ReadData, MEM_ALUResult, MEM_RegDstData, HI, LO,
                             //Clk, Clr, Ld,
                             //WB_RegWrite, WB_RegWrite2, WB_MemtoReg, WB_ReadData, WB_ALUResult, WB_RegDstData, WB_HI, WB_LO);
-    MEM_WB_Reg              MEM_WB(MEM_RegWrite, MEM_RegWrite2, MEM_MemtoReg, MemDataOut, MEM_ALUResult, MEM_RegDstData[4:0], MEM_HI, MEM_LO,
+    MEM_WB_Reg              MEM_WB(MEM_RegWrite, MEM_RegWrite2, MEM_MemtoReg, MemDataOut, MEM_ALUResult, MEM_RegDstData[4:0],
                                     Clk, Rst, 1'b1,
-                                    WB_RegWrite1, WB_RegWrite2, WB_MemtoReg, WB_ReadData, WB_ALUResult, WB_RegDstData, WB_HI, WB_LO);
+                                    WB_RegWrite1, WB_RegWrite2, WB_MemtoReg, WB_ReadData, WB_ALUResult, WB_RegDstData);
                                     
                                     
                                     
