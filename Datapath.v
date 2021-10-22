@@ -126,7 +126,7 @@ module Datapath(Clk, Rst);
     
     wire [31:0] HI_out, LO_out;
     
-    HI_Reg                  HI_Reg (HIAluOut, HI_out, Clk, HI_LO_Write[0], Rst);
+    HI_Reg                  HI_Reg (HiALUOut, HI_out, Clk, HI_LO_Write[0], Rst);
     LO_Reg                  LO_Reg (LoALUOut, LO_out, Clk, HI_LO_Write[1], Rst);
 
     
