@@ -22,10 +22,10 @@
 
 module ID_EX_Reg(ReadData1_in, ReadData2_in, SignExtend_in, PCResult_in, Instruction31_26, Instruction20_16, Instruction15_11, Instruction5_0,
             ALUOp1, ALUOp0, RegDst, ALUSrc, ALUControl, Branch, MemWrite, MemRead, MemtoReg, RegWrite, Jump, jump_imm, jump_rs, ALUSrc2, Datatype,
-            Clk, Clr, Ld, 
+            Clk, Clr, Ld, HI_LO_Write
             ReadData1_out, ReadData2_out, SignExtend_out, PCResult_out, Instruction31_26_out, Instruction20_16_out, Instruction15_11_out, Instruction5_0_out,
             ALUOp1_out, ALUOp0_out, RegDst_out, ALUSrc_out, ALUControl_out, Branch_out, 
-            MemWrite_out, MemRead_out, MemtoReg_out, RegWrite_out, Jump_out, EX_jumpImm, EX_jumpRs, EX_ALUSrc2, EX_Datatype);
+            MemWrite_out, MemRead_out, MemtoReg_out, RegWrite_out, Jump_out, EX_jumpImm, EX_jumpRs, EX_ALUSrc2, EX_Datatype, EX_HI_LO_Write);
             
     input Clk, Clr, Ld;
     input [31:0] ReadData1_in;
@@ -41,10 +41,10 @@ module ID_EX_Reg(ReadData1_in, ReadData2_in, SignExtend_in, PCResult_in, Instruc
     input [4:0] ALUControl;
     input Branch, MemWrite, MemRead;
     input MemtoReg, RegWrite;
-    input [1:0] Datatype, RegDst;
+    input [1:0] Datatype, RegDst, HI_LO_Write;
     
     output reg ALUOp1_out, ALUOp0_out,  ALUSrc_out, EX_ALUSrc2; 
-    output reg [1:0] EX_Datatype, RegDst_out;
+    output reg [1:0] EX_Datatype, RegDst_out, EX_HI_LO_Write;
     output reg [4:0] ALUControl_out;
     output reg Branch_out, MemWrite_out, MemRead_out;
     output reg MemtoReg_out, RegWrite_out;
@@ -85,7 +85,7 @@ module ID_EX_Reg(ReadData1_in, ReadData2_in, SignExtend_in, PCResult_in, Instruc
                 EX_ALUSrc2 <= 0;
                 EX_Datatype <= 0;
             end
-            /*else if(Ld == 1) begin*/
+            else if(Ld == 1) begin
                 ALUOp1_out <= ALUOp1;
                 ALUOp0_out <= ALUOp0;
                 RegDst_out <= RegDst;
@@ -105,7 +105,8 @@ module ID_EX_Reg(ReadData1_in, ReadData2_in, SignExtend_in, PCResult_in, Instruc
                 EX_jumpRs <= jump_rs;
                 EX_ALUSrc2 <= ALUSrc2;
                 EX_Datatype <= Datatype;
-            /*end*/
+                EX_HI_LO_Write <= HI_LO_Write;
+            end
             
         end
 endmodule

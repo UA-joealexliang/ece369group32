@@ -38,7 +38,7 @@ module Datapath(Clk, Rst, PCResult);
     Adder_32bit            PCAdder(PCResult, 32'd4, PCAddResult); //PCAddResult = PCResult + 4
     
                            //ProgramCounter(Address, PCResult, Reset, Clk);
-    ProgramCounter         ProgramCounter(PC_in, PCResult, Rst, Clk); //PCResult = PC_in if Rst ==0 // muxes for input occur in MEM stage
+    ProgramCounter         ProgramCounter(PC_in, PCResult, Rst, Clk); //PCResult = PC_in if Rst == 0 // muxes for input occur in MEM stage
     
                            //InstructionMemory(Address, Instruction);
     InstructionMemory      InstructionMemory(PCResult, IF_Instruction);
@@ -63,7 +63,7 @@ module Datapath(Clk, Rst, PCResult);
     //wires exiting IDEX register
     wire [31:0] EX_ReadData1;
     wire [31:0] EX_ReadData2;
-    wire [31:0] EX_SignExtend;
+    wire [31:0] EX_SignExtended;
     wire [31:0] EX_PCResult, EX_jumpImm, EX_jumpRs;
     wire [4:0]  EX_Instruction20_16, EX_Instruction15_11;
     wire [5:0] EX_Instruction5_0, EX_Instruction31_26;
@@ -100,13 +100,13 @@ module Datapath(Clk, Rst, PCResult);
                             //MemWrite_out, MemRead_out, MemtoReg_out, RegWrite_out, Jump_out, EX_jumpImm, EX_jumpRs, EX_ALUSrc2, EX_Datatype);
             
     ID_EX_Reg               ID_EX_Reg(ReadData1, ReadData2, SignExtended, ID_PCResult, ID_Instruction[31:26], ID_Instruction[20:16], ID_Instruction[15:11], ID_Instruction[5:0],
-                                     ALUOp1, ALUOp0, RegDst, ALUSrc, ALUControl, Branch, MemWrite, MemRead, MemtoReg, RegWrite, Jump,
+                                     RegDst, ALUSrc, ALUControl, Branch, MemWrite, MemRead, MemtoReg, RegWrite, Jump,
                                      {16'd0,ID_Instruction[15:0]}, ReadData1, ALUSrc2, Datatype,
-                                     Clk, Rst, 1'b1, 
-                                     EX_ReadData1, EX_ReadData2, EX_SignExtend, EX_PCResult, EX_Instruction31_26, EX_Instruction20_16, EX_Instruction15_11, EX_Instruction5_0,
-                                     ALUOp1_out, ALUOp0_out, RegDst_out, ALUSrc_out, ALUControl_out, 
+                                     Clk, Rst, 1'b1, HI_LO_Write,
+                                     EX_ReadData1, EX_ReadData2, EX_SignExtended, EX_PCResult, EX_Instruction31_26, EX_Instruction20_16, EX_Instruction15_11, EX_Instruction5_0,
+                                     RegDst_out, ALUSrc_out, ALUControl_out, 
                                      EX_Branch, EX_MemWrite, EX_MemRead, EX_MemtoReg, EX_RegWrite, EX_Jump, EX_jumpImm, 
-                                     EX_jumpRs, EX_ALUSrc2, EX_Datatype);
+                                     EX_jumpRs, EX_ALUSrc2, EX_Datatype, EX_HI_LO_Write);
     
 ////////////////////EXECUTION STAGE////////////////////////////////////////////////////
     //wires coming from IDEX
@@ -116,13 +116,13 @@ module Datapath(Clk, Rst, PCResult);
     wire [31:0] Imm_shifted;
 
                             //ShiftLeft2(In, Out);
-    ShiftLeft2              ShiftImm(EX_SignExtend, Imm_shifted);
+    ShiftLeft2              ShiftImm(EX_SignExtended, Imm_shifted);
 
                             //Adder_32bit(A, B, Out);
     Adder_32bit             PCAdd (EX_PCResult, Imm_shifted, EXMEM_PC); //EX_PCResult + Imm_shifted
     
-    Mux32Bit2To1            MuxALUinput1(ALUSrc1Data, EX_ReadData1, EX_SignExtend, EX_ALUSrc2); //decides between rs and imm
-    Mux32Bit2To1            MuxALUinput2(ALUSrc2Data, EX_ReadData2, EX_SignExtend, ALUSrc_out); //decides between rt and imm
+    Mux32Bit2To1            MuxALUinput1(ALUSrc1Data, EX_ReadData1, EX_SignExtended, EX_ALUSrc2); //decides between rs and imm
+    Mux32Bit2To1            MuxALUinput2(ALUSrc2Data, EX_ReadData2, EX_SignExtended, ALUSrc_out); //decides between rt and imm
 
     
     wire Zero, RegWrite2;
@@ -140,13 +140,13 @@ module Datapath(Clk, Rst, PCResult);
     wire [31:0] HI_out, LO_out;
 
                             //HI_Reg(in, out, Clk, Ld, Clr)
-    HI_Reg                  HI_Reg (HiALUOut, HI_out, Clk, HI_LO_Write[0], Rst);
+    HI_Reg                  HI_Reg (HiALUOut, HI_out, Clk, EX_HI_LO_Write[0], Rst);
                             //LO_Reg(in, out, Clk, Ld, Clr)
-    LO_Reg                  LO_Reg (LoALUOut, LO_out, Clk, HI_LO_Write[1], Rst);
+    LO_Reg                  LO_Reg (LoALUOut, LO_out, Clk, EX_HI_LO_Write[1], Rst);
 
     
 /////////hi and lo in     
-                            //ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Opcode, ALUResult, Hi, Lo, Zero, RegWrite2)
+                            //ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Opcode, ALUResult, Hi, Lo, Zero, RegWrite2);
     ALU32Bit                ALU1  (ALUControl_out, ALUSrc1Data, ALUSrc2Data, HI_out, LO_out, EX_Instruction31_26, ALUResult, HiALUOut, LoALUOut, Zero, RegWrite2);
     
     wire [31:0] RegDstData;
