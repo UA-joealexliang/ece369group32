@@ -21,10 +21,10 @@
 
 
 module ID_EX_Reg(ReadData1_in, ReadData2_in, SignExtend_in, PCResult_in, Instruction31_26, Instruction20_16, Instruction15_11,
-            ALUOp1, ALUOp0, RegDst, ALUSrc, ALUControl, Branch, MemWrite, MemRead, MemtoReg, RegWrite, Jump, jump_imm, jump_rs, ALUSrc2, Datatype,
-            Clk, Clr, Ld, HI_LO_Write
+            RegDst, ALUSrc, ALUControl, Branch, MemWrite, MemRead, MemtoReg, RegWrite, Jump, jump_imm, jump_rs, ALUSrc2, Datatype,
+            Clk, Clr, Ld, HI_LO_Write,
             ReadData1_out, ReadData2_out, SignExtend_out, PCResult_out, Instruction31_26_out, Instruction20_16_out, Instruction15_11_out,
-            ALUOp1_out, ALUOp0_out, RegDst_out, ALUSrc_out, ALUControl_out, Branch_out, 
+            RegDst_out, ALUSrc_out, ALUControl_out, Branch_out, 
             MemWrite_out, MemRead_out, MemtoReg_out, RegWrite_out, Jump_out, EX_jumpImm, EX_jumpRs, EX_ALUSrc2, EX_Datatype, EX_HI_LO_Write);
             
     input Clk, Clr, Ld;
@@ -36,13 +36,13 @@ module ID_EX_Reg(ReadData1_in, ReadData2_in, SignExtend_in, PCResult_in, Instruc
     input [4:0] Instruction20_16;
     input [4:0] Instruction15_11;
     input Jump;
-    input ALUOp1, ALUOp0,  ALUSrc, ALUSrc2;
+    input ALUSrc, ALUSrc2;
     input [4:0] ALUControl;
     input Branch, MemWrite, MemRead;
     input MemtoReg, RegWrite;
     input [1:0] Datatype, RegDst, HI_LO_Write;
     
-    output reg ALUOp1_out, ALUOp0_out,  ALUSrc_out, EX_ALUSrc2; 
+    output reg ALUSrc_out, EX_ALUSrc2; 
     output reg [1:0] EX_Datatype, RegDst_out, EX_HI_LO_Write;
     output reg [4:0] ALUControl_out;
     output reg Branch_out, MemWrite_out, MemRead_out;
@@ -63,8 +63,6 @@ module ID_EX_Reg(ReadData1_in, ReadData2_in, SignExtend_in, PCResult_in, Instruc
     always@(posedge Clk) begin
         
             if(Clr == 1) begin
-                ALUOp1_out <= 0;
-                ALUOp0_out <= 0;
                 RegDst_out <= 0;
                 ALUSrc_out <= 0;
                 ALUControl_out <= 0;
@@ -81,10 +79,9 @@ module ID_EX_Reg(ReadData1_in, ReadData2_in, SignExtend_in, PCResult_in, Instruc
                 EX_jumpRs <= 0;
                 EX_ALUSrc2 <= 0;
                 EX_Datatype <= 0;
+                EX_HI_LO_Write <= 0;
             end
             else if(Ld == 1) begin
-                ALUOp1_out <= ALUOp1;
-                ALUOp0_out <= ALUOp0;
                 RegDst_out <= RegDst;
                 ALUSrc_out <= ALUSrc;
                 ALUControl_out <= ALUControl;
