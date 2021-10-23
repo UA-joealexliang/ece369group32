@@ -22,11 +22,11 @@
 
 module EX_MEM_Reg(EX_RegWrite, RegWrite2, EX_MemtoReg, 
                   EX_Branch, EX_MemWrite, EX_MemRead,
-                  EX_Zero, EX_PCResult, EX_ALUResult, EX_Data2, EX_RegDstData, Jump, jumpImm, jumpRs, Datatype, ALUSrc2,
+                  EX_Zero, EXMEM_PC, EX_ALUResult, EX_Data2, EX_RegDstData, Jump, jumpImm, jumpRs, Datatype, ALUSrc2, EX_PCResult,
                   
                   MEM_RegWrite, MEM_RegWrite2, MEM_MemtoReg,
                   MEM_Branch, MEM_MemWrite, MEM_MemRead,
-                  MEM_Zero, MEM_PCResult, MEM_ALUResult, MEM_Data2, MEM_RegDstData, Jump_out, MEM_jumpImm, MEM_jumpRs, MEM_Datatype, MEM_ALUSrc2,
+                  MEM_Zero, MEM_PCResult, MEM_ALUResult, MEM_Data2, MEM_RegDstData, Jump_out, MEM_jumpImm, MEM_jumpRs, MEM_Datatype, MEM_ALUSrc2, MEM_PCAddResult,
                   
                   Clk, Clr, Ld);
                   
@@ -35,7 +35,7 @@ module EX_MEM_Reg(EX_RegWrite, RegWrite2, EX_MemtoReg,
               EX_Zero, ALUSrc2;
         input [1:0] Datatype;
               
-        input [31:0] EX_PCResult, EX_ALUResult, EX_Data2, jumpImm, jumpRs;
+        input [31:0] EXMEM_PC, EX_PCResult, EX_ALUResult, EX_Data2, jumpImm, jumpRs;
         input [4:0] EX_RegDstData;
         input Jump;
         
@@ -46,7 +46,7 @@ module EX_MEM_Reg(EX_RegWrite, RegWrite2, EX_MemtoReg,
                    MEM_Zero, MEM_ALUSrc2;
         output reg [1:0] MEM_Datatype;
         
-        output reg [31:0] MEM_PCResult, MEM_ALUResult, MEM_Data2, MEM_jumpImm, MEM_jumpRs;
+        output reg [31:0] MEM_PCResult, MEM_PCAddResult, MEM_ALUResult, MEM_Data2, MEM_jumpImm, MEM_jumpRs;
         output reg [4:0] MEM_RegDstData;
         output reg Jump_out;
         
@@ -78,7 +78,7 @@ module EX_MEM_Reg(EX_RegWrite, RegWrite2, EX_MemtoReg,
                 MEM_MemWrite <= EX_MemWrite; 
                 MEM_MemRead <= EX_MemRead;
                 MEM_Zero <= EX_Zero;
-                MEM_PCResult <= EX_PCResult; 
+                MEM_PCResult <= EXMEM_PC; 
                 MEM_ALUResult <= EX_ALUResult; 
                 MEM_Data2 <= EX_Data2;
                 MEM_RegDstData <= EX_RegDstData;
@@ -87,6 +87,7 @@ module EX_MEM_Reg(EX_RegWrite, RegWrite2, EX_MemtoReg,
                 MEM_jumpRs <= jumpRs;
                 MEM_Datatype <= Datatype;
                 MEM_ALUSrc2 <= ALUSrc2;
+                MEM_PCAddResult <= EX_PCResult;
             end
                           
         end

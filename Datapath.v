@@ -154,7 +154,7 @@ module Datapath(Clk, Rst, PCResult);
     Mux32Bit3To1            MuxRegDst (RegDstData, {27'd0, EX_Instruction20_16}, {27'd0, EX_Instruction15_11}, 32'd31, RegDst_out);
     
     //outputs of the EXMEM Pipeline Register
-    wire [31:0] MEM_PCResult, MEM_PC;
+    wire [31:0] MEM_PCResult, MEM_PCAddResult;
     wire [31:0] MEM_ALUResult;
     wire [31:0] MEM_Data2;
     wire [31:0] MEM_RegDstData;
@@ -179,9 +179,9 @@ module Datapath(Clk, Rst, PCResult);
                   
 //                                      Clk, Clr, Ld);
     EX_MEM_Reg              EX_MEM (EX_RegWrite, RegWrite2, EX_MemtoReg, EX_Branch, EX_MemWrite, EX_MemRead,
-                                    Zero, EXMEM_PC, ALUResult, EX_ReadData2, RegDstData[4:0], EX_Jump, EX_jumpImm, EX_jumpRs, EX_Datatype, EX_ALUSrc2,
+                                    Zero, EXMEM_PC, ALUResult, EX_ReadData2, RegDstData[4:0], EX_Jump, EX_jumpImm, EX_jumpRs, EX_Datatype, EX_ALUSrc2, EX_PCResult,
                                     MEM_RegWrite, MEM_RegWrite2, MEM_MemtoReg, MEM_Branch, MEM_MemWrite, MEM_MemRead,
-                                    MEM_Zero, MEM_PCResult, MEM_ALUResult, MEM_Data2, MEM_RegDstData[4:0], MEM_Jump, MEM_jumpImm, MEM_jumpRs, MEM_Datatype, MEM_ALUSrc2,
+                                    MEM_Zero, MEM_PCResult, MEM_ALUResult, MEM_Data2, MEM_RegDstData[4:0], MEM_Jump, MEM_jumpImm, MEM_jumpRs, MEM_Datatype, MEM_ALUSrc2, MEM_PCAddResult,
                                     Clk, Rst, 1'b1 );
     
     
@@ -200,7 +200,7 @@ module Datapath(Clk, Rst, PCResult);
     
     
     //determine new pc
-    Mux32Bit2To1            PC4_or_PC4Offset(PC4_or_PCoffset, PCAddResult, MEM_PCResult, PC_Src); //PC+4 or branch
+    Mux32Bit2To1            PC4_or_PC4Offset(PC4_or_PCoffset, MEM_PCAddResult, MEM_PCResult, PC_Src); //PC+4 or branch
     Mux32Bit2To1            NextPC(PC_in, PC4_or_PCoffset, Imm_or_Rs, MEM_Jump); //last choice or jump
       
     
