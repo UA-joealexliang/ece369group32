@@ -22,14 +22,15 @@
 
 module EX_MEM_Reg(EX_RegWrite, RegWrite2, EX_MemtoReg, 
                   EX_Branch, EX_MemWrite, EX_MemRead,
-                  EX_Zero, EXMEM_PC, EX_ALUResult, EX_Data2, EX_RegDst, Jump, jumpImm, jumpRs, Datatype, ALUSrc2, EX_PCResult,
+                  EX_Zero, EXMEM_PC, EX_ALUResult, EX_Data2, EX_RegDst, Jump, jumpImm, jumpRs, Datatype, ALUSrc2, EX_PCResult, EX_Instruction20_16, EX_Instruction15_11
                   
                   MEM_RegWrite, MEM_RegWrite2, MEM_MemtoReg,
                   MEM_Branch, MEM_MemWrite, MEM_MemRead,
-                  MEM_Zero, MEM_PCResult, MEM_ALUResult, MEM_Data2, MEM_RegDst, Jump_out, MEM_jumpImm, MEM_jumpRs, MEM_Datatype, MEM_ALUSrc2, MEM_PCAddResult,
+                  MEM_Zero, MEM_PCResult, MEM_ALUResult, MEM_Data2, MEM_RegDst, Jump_out, MEM_jumpImm, MEM_jumpRs, MEM_Datatype, MEM_ALUSrc2, MEM_PCAddResult, MEM_Instruction20_16, MEM_Instruction15_11,
                   
                   Clk, Clr, Ld);
-                  
+        
+        input [4:0] EX_Instruction20_16, EX_Instruction15_11;
         input EX_RegWrite, RegWrite2, EX_MemtoReg, 
               EX_Branch, EX_MemWrite, EX_MemRead,
               EX_Zero, ALUSrc2;
@@ -41,6 +42,7 @@ module EX_MEM_Reg(EX_RegWrite, RegWrite2, EX_MemtoReg,
         
         input Clk, Clr, Ld;
         
+        output reg [4:0] MEM_Instruction20_16, MEM_Instruction15_11;
         output reg MEM_RegWrite, MEM_RegWrite2, MEM_MemtoReg,
                    MEM_Branch, MEM_MemWrite, MEM_MemRead,
                    MEM_Zero, MEM_ALUSrc2;
@@ -69,6 +71,9 @@ module EX_MEM_Reg(EX_RegWrite, RegWrite2, EX_MemtoReg,
                 MEM_jumpRs <= 0;
                 MEM_Datatype <= 0;
                 MEM_ALUSrc2 <= 0;
+                MEM_PCAddResult <= 0;
+                MEM_Instruction20_16 <= 0;
+                MEM_Instruction15_11 <= 0;
             end
             else if(Ld == 1) begin
                 MEM_RegWrite <= EX_RegWrite; 
@@ -88,6 +93,8 @@ module EX_MEM_Reg(EX_RegWrite, RegWrite2, EX_MemtoReg,
                 MEM_Datatype <= Datatype;
                 MEM_ALUSrc2 <= ALUSrc2;
                 MEM_PCAddResult <= EX_PCResult;
+                MEM_Instruction20_16 <= EX_Instruction20_16;
+                MEM_Instruction15_11 <= EX_Instruction15_11;
             end
                           
         end

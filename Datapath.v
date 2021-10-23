@@ -99,11 +99,11 @@ module Datapath(Clk, Rst, PCResult);
                             //ALUOp1_out, ALUOp0_out, RegDst_out, ALUSrc_out, ALUControl_out, Branch_out, 
                             //MemWrite_out, MemRead_out, MemtoReg_out, RegWrite_out, Jump_out, EX_jumpImm, EX_jumpRs, EX_ALUSrc2, EX_Datatype);
             
-    ID_EX_Reg               ID_EX_Reg(ReadData1, ReadData2, SignExtended, ID_PCResult, ID_Instruction[31:26], ID_Instruction[20:16], ID_Instruction[15:11], ID_Instruction[5:0],
+    ID_EX_Reg               ID_EX_Reg(ReadData1, ReadData2, SignExtended, ID_PCResult, ID_Instruction[31:26], ID_Instruction[20:16], ID_Instruction[15:11],
                                      RegDst, ALUSrc, ALUControl, Branch, MemWrite, MemRead, MemtoReg, RegWrite, Jump,
                                      {16'd0,ID_Instruction[15:0]}, ReadData1, ALUSrc2, Datatype,
                                      Clk, Rst, 1'b1, HI_LO_Write,
-                                     EX_ReadData1, EX_ReadData2, EX_SignExtended, EX_PCResult, EX_Instruction31_26, EX_Instruction20_16, EX_Instruction15_11, EX_Instruction5_0,
+                                     EX_ReadData1, EX_ReadData2, EX_SignExtended, EX_PCResult, EX_Instruction31_26, EX_Instruction20_16, EX_Instruction15_11,
                                      RegDst_out, ALUSrc_out, ALUControl_out, 
                                      EX_Branch, EX_MemWrite, EX_MemRead, EX_MemtoReg, EX_RegWrite, EX_Jump, EX_jumpImm, 
                                      EX_jumpRs, EX_ALUSrc2, EX_Datatype, EX_HI_LO_Write);
@@ -151,7 +151,7 @@ module Datapath(Clk, Rst, PCResult);
     
     wire [31:0] RegDstData;
     
-    Mux32Bit3To1            MuxRegDst (RegDstData, {27'd0, EX_Instruction20_16}, {27'd0, EX_Instruction15_11}, 32'd31, WB_RegDst);
+    Mux32Bit3To1            MuxRegDst (RegDstData, {27'd0, WB_Instruction20_16}, {27'd0, WB_Instruction15_11}, 32'd31, WB_RegDst);
     
     //outputs of the EXMEM Pipeline Register
     wire [31:0] MEM_PCResult, MEM_PCAddResult;
@@ -169,6 +169,7 @@ module Datapath(Clk, Rst, PCResult);
     wire [31:0] MEM_HI, MEM_LO, MEM_jumpImm, MEM_jumpRs;
     wire [5:0] MEM_func;
     wire MEM_Jump;
+    wire [4:0]  MEM_Instruction20_16, MEM_Instruction15_11;
     
 //                            EX_MEM_Reg(EX_RegWrite, RegWrite2, EX_MemtoReg, 
 //                                      EX_Branch, EX_MemWrite, EX_MemRead,
@@ -180,9 +181,9 @@ module Datapath(Clk, Rst, PCResult);
                   
 //                                      Clk, Clr, Ld);
     EX_MEM_Reg              EX_MEM (EX_RegWrite, RegWrite2, EX_MemtoReg, EX_Branch, EX_MemWrite, EX_MemRead,
-                                    Zero, EXMEM_PC, ALUResult, EX_ReadData2, RegDst_out, EX_Jump, EX_jumpImm, EX_jumpRs, EX_Datatype, EX_ALUSrc2, EX_PCResult,
+                                    Zero, EXMEM_PC, ALUResult, EX_ReadData2, RegDst_out, EX_Jump, EX_jumpImm, EX_jumpRs, EX_Datatype, EX_ALUSrc2, EX_PCResult, EX_Instruction20_16, EX_Instruction15_11,
                                     MEM_RegWrite, MEM_RegWrite2, MEM_MemtoReg, MEM_Branch, MEM_MemWrite, MEM_MemRead,
-                                    MEM_Zero, MEM_PCResult, MEM_ALUResult, MEM_Data2, MEM_RegDst, MEM_Jump, MEM_jumpImm, MEM_jumpRs, MEM_Datatype, MEM_ALUSrc2, MEM_PCAddResult,
+                                    MEM_Zero, MEM_PCResult, MEM_ALUResult, MEM_Data2, MEM_RegDst, MEM_Jump, MEM_jumpImm, MEM_jumpRs, MEM_Datatype, MEM_ALUSrc2, MEM_PCAddResult, MEM_Instruction20_16, MEM_Instruction15_11,
                                     Clk, Rst, 1'b1 );
     
     
@@ -211,13 +212,14 @@ module Datapath(Clk, Rst, PCResult);
     
     wire [5:0] WB_func;
     wire [1:0] WB_RegDst;
+    wire [4:0] WB_Instruction20_16, WB_Instruction15_11;
 
                             //MEM_WB_Reg(MEM_RegWrite, MEM_RegWrite2, MEM_MemtoReg, MEM_ReadData, MEM_ALUResult, MEM_RegDstData, HI, LO,
                             //Clk, Clr, Ld,
                             //WB_RegWrite, WB_RegWrite2, WB_MemtoReg, WB_ReadData, WB_ALUResult, WB_RegDstData, WB_HI, WB_LO);
-    MEM_WB_Reg              MEM_WB(MEM_RegWrite, MEM_RegWrite2, MEM_MemtoReg, MemDataOut, MEM_ALUResult, MEM_RegDst,
+    MEM_WB_Reg              MEM_WB(MEM_RegWrite, MEM_RegWrite2, MEM_MemtoReg, MemDataOut, MEM_ALUResult, MEM_RegDst, MEM_Instruction20_16, MEM_Instruction15_11,
                                     Clk, Rst, 1'b1,
-                                    WB_RegWrite1, WB_RegWrite2, WB_MemtoReg, WB_ReadData, WB_ALUResult, WB_RegDst);
+                                    WB_RegWrite1, WB_RegWrite2, WB_MemtoReg, WB_ReadData, WB_ALUResult, WB_RegDst, WB_Instruction20_16, WB_Instruction15_11);
                                     
                                     
                                     

@@ -20,10 +20,10 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module ID_EX_Reg(ReadData1_in, ReadData2_in, SignExtend_in, PCResult_in, Instruction31_26, Instruction20_16, Instruction15_11, Instruction5_0,
+module ID_EX_Reg(ReadData1_in, ReadData2_in, SignExtend_in, PCResult_in, Instruction31_26, Instruction20_16, Instruction15_11,
             ALUOp1, ALUOp0, RegDst, ALUSrc, ALUControl, Branch, MemWrite, MemRead, MemtoReg, RegWrite, Jump, jump_imm, jump_rs, ALUSrc2, Datatype,
             Clk, Clr, Ld, HI_LO_Write
-            ReadData1_out, ReadData2_out, SignExtend_out, PCResult_out, Instruction31_26_out, Instruction20_16_out, Instruction15_11_out, Instruction5_0_out,
+            ReadData1_out, ReadData2_out, SignExtend_out, PCResult_out, Instruction31_26_out, Instruction20_16_out, Instruction15_11_out,
             ALUOp1_out, ALUOp0_out, RegDst_out, ALUSrc_out, ALUControl_out, Branch_out, 
             MemWrite_out, MemRead_out, MemtoReg_out, RegWrite_out, Jump_out, EX_jumpImm, EX_jumpRs, EX_ALUSrc2, EX_Datatype, EX_HI_LO_Write);
             
@@ -35,7 +35,6 @@ module ID_EX_Reg(ReadData1_in, ReadData2_in, SignExtend_in, PCResult_in, Instruc
     input [5:0] Instruction31_26;
     input [4:0] Instruction20_16;
     input [4:0] Instruction15_11;
-    input [5:0] Instruction5_0;
     input Jump;
     input ALUOp1, ALUOp0,  ALUSrc, ALUSrc2;
     input [4:0] ALUControl;
@@ -56,7 +55,6 @@ module ID_EX_Reg(ReadData1_in, ReadData2_in, SignExtend_in, PCResult_in, Instruc
     output reg [5:0] Instruction31_26_out;
     output reg [4:0] Instruction20_16_out;
     output reg [4:0] Instruction15_11_out;
-    output reg [5:0] Instruction5_0_out;
     output reg Jump_out;
     
     
@@ -78,7 +76,6 @@ module ID_EX_Reg(ReadData1_in, ReadData2_in, SignExtend_in, PCResult_in, Instruc
                 Instruction31_26_out <= 0;
                 Instruction20_16_out <= 0;
                 Instruction15_11_out <= 0;
-                Instruction5_0_out <= 0;
                 Jump_out <= 0;
                 EX_jumpImm <= 0;
                 EX_jumpRs <= 0;
@@ -99,7 +96,6 @@ module ID_EX_Reg(ReadData1_in, ReadData2_in, SignExtend_in, PCResult_in, Instruc
                 Instruction31_26_out <= Instruction31_26;
                 Instruction20_16_out <= Instruction20_16;
                 Instruction15_11_out <= Instruction15_11;
-                Instruction5_0_out <= Instruction5_0;
                 Jump_out <= Jump;
                 EX_jumpImm <= jump_imm;
                 EX_jumpRs <= jump_rs;
