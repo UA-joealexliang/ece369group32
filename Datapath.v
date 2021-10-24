@@ -65,6 +65,7 @@ module Datapath(Clk, Rst);
     wire [31:0] Rs_or_Imm; //is not fed into MEM_WB_Reg
     (* mark_debug = "true" *) wire [31:0] WriteData; //is not fed into MEM_WB_Reg
     wire [31:0] RegDstData;
+    wire [31:0] ALUResult_or_ReadData;
 
 /////////////////INSTRUCTION FETCH STAGE///////////////////////////////////////////    
     
@@ -209,7 +210,7 @@ module Datapath(Clk, Rst);
                             //Mux32Bit3To1(out, inA, inB, inC, sel);
     Mux32Bit3To1            MuxRegDst (RegDstData, {27'd0, WB_Instruction20_16}, {27'd0, WB_Instruction15_11}, 32'd31, WB_RegDst);
                             //Mux32Bit2To1(out, inA, inB, sel)
-    Mux32Bit2To1            WriteBackData(ALUResult_or_ReadData, WB_ALUResult, WB_ReadData, WB_MemtoReg);
+    Mux32Bit2To1            WriteBackData(ALUResult_or_ReadData, WB_ALUResult, WB_MemDataOut, WB_MemtoReg);
                             //Mux32Bit2To1(out, inA, inB, sel)
     Mux32Bit2To1            WriteBackJumpData(WriteData, ALUResult_or_ReadData, WB_PCAddResult, WB_Jump);
 
