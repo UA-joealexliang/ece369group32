@@ -19,87 +19,78 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-
-module ID_EX_Reg(ReadData1_in, ReadData2_in, SignExtend_in, PCResult_in, Instruction31_26, Instruction20_16, Instruction15_11,
-            RegDst, ALUSrc, ALUControl, Branch, MemWrite, MemRead, MemtoReg, RegWrite, Jump, jump_imm, jump_rs, ALUSrc2, Datatype,
-            Clk, Clr, Ld, HI_LO_Write,
-            ReadData1_out, ReadData2_out, SignExtend_out, PCResult_out, Instruction31_26_out, Instruction20_16_out, Instruction15_11_out,
-            RegDst_out, ALUSrc_out, ALUControl_out, Branch_out, 
-            MemWrite_out, MemRead_out, MemtoReg_out, RegWrite_out, Jump_out, EX_jumpImm, EX_jumpRs, EX_ALUSrc2, EX_Datatype, EX_HI_LO_Write);
+module ID_EX_Reg(
+            ID_ReadData1, ID_ReadData2, ID_SignExtended, ID_PCResult, ID_Instruction31_26, ID_Instruction20_16, ID_Instruction15_11,
+            ID_RegDst, ID_ALUSrc, ID_ALUControl, ID_Branch, ID_MemWrite, ID_MemRead, ID_MemtoReg, ID_RegWrite, 
+            ID_Jump, ID_jumpImm, ID_jumpRs, ID_ALUSrc2, ID_Datatype, ID_HiLoWrite,
+            Clk, Rst, Ld, //these help separate inputs and outputs, each i/o is neatly mapped in order
+            EX_ReadData1, EX_ReadData2, EX_SignExtended, EX_PCResult, EX_Instruction31_26, EX_Instruction20_16, EX_Instruction15_11,
+            EX_RegDst, EX_ALUSrc, EX_ALUControl, EX_Branch, EX_MemWrite, EX_MemRead, EX_MemtoReg, EX_RegWrite, 
+            EX_Jump, EX_jumpImm, EX_jumpRs, EX_ALUSrc2, EX_Datatype, EX_HiLoWrite
+            );
             
-    input Clk, Clr, Ld;
-    input [31:0] ReadData1_in;
-    input [31:0] ReadData2_in;
-    input [31:0] SignExtend_in;
-    input [31:0] PCResult_in, jump_imm, jump_rs;
-    input [5:0] Instruction31_26;
-    input [4:0] Instruction20_16;
-    input [4:0] Instruction15_11;
-    input Jump;
-    input ALUSrc, ALUSrc2;
-    input [4:0] ALUControl;
-    input Branch, MemWrite, MemRead;
-    input MemtoReg, RegWrite;
-    input [1:0] Datatype, RegDst, HI_LO_Write;
-    
-    output reg ALUSrc_out, EX_ALUSrc2; 
-    output reg [1:0] EX_Datatype, RegDst_out, EX_HI_LO_Write;
-    output reg [4:0] ALUControl_out;
-    output reg Branch_out, MemWrite_out, MemRead_out;
-    output reg MemtoReg_out, RegWrite_out;
-    
-    output reg [31:0] ReadData1_out;
-    output reg [31:0] ReadData2_out;
-    output reg [31:0] SignExtend_out;
-    output reg [31:0] PCResult_out, EX_jumpImm, EX_jumpRs;
-    output reg [5:0] Instruction31_26_out;
-    output reg [4:0] Instruction20_16_out;
-    output reg [4:0] Instruction15_11_out;
-    output reg Jump_out;
-    
-    
+    input Clk, Rst, Ld;
+    input [31:0] ID_ReadData1, ID_ReadData2, ID_SignExtended, ID_PCResult;
+    input [5:0] ID_Instruction31_26;
+    input [4:0] ID_Instruction20_16, ID_Instruction15_11, ID_ALUControl;
+    input [1:0] ID_RegDst, ID_Datatype, ID_HiLoWrite;
+    input ID_ALUSrc, ID_Branch, ID_MemWrite, ID_MemRead, ID_MemtoReg, ID_RegWrite, ID_Jump, ID_ALUSrc2;
+    input [31:0] ID_jumpImm, ID_jumpRs; //MAY HAVE TO CHANGE HOW JUMPS WORK LATER
+
+    output reg [31:0] EX_ReadData1, EX_ReadData2, EX_SignExtended, EX_PCResult;
+    output reg [5:0] EX_Instruction31_26;
+    output reg [4:0] EX_Instruction20_16, EX_Instruction15_11, EX_ALUControl;
+    output reg [1:0] EX_RegDst, EX_Datatype, EX_HiLoWrite;
+    output reg EX_ALUSrc, EX_Branch, EX_MemWrite, EX_MemRead, EX_MemtoReg, EX_RegWrite, EX_Jump, EX_ALUSrc2;
+    output reg [31:0] EX_jumpImm, EX_jumpRs; //MAY HAVE TO CHANGE HOW JUMPS WORK LATER
     
     //write your code here
     always@(posedge Clk) begin
-        
-            if(Clr == 1) begin
-                RegDst_out <= 0;
-                ALUSrc_out <= 0;
-                ALUControl_out <= 0;
-                
-                ReadData1_out <= 0;
-                ReadData2_out <= 0;
-                SignExtend_out <= 0;
-                PCResult_out <= 0;
-                Instruction31_26_out <= 0;
-                Instruction20_16_out <= 0;
-                Instruction15_11_out <= 0;
-                Jump_out <= 0;
-                EX_jumpImm <= 0;
-                EX_jumpRs <= 0;
-                EX_ALUSrc2 <= 0;
-                EX_Datatype <= 0;
-                EX_HI_LO_Write <= 0;
+            if(Rst == 1) begin
+                EX_ReadData1 <= 0; 
+                EX_ReadData2 <= 0;  
+                EX_SignExtended <= 0;  
+                EX_PCResult <= 0; 
+                EX_Instruction31_26 <= 0; 
+                EX_Instruction20_16 <= 0;  
+                EX_Instruction15_11 <= 0;  
+                EX_ALUControl <= 0; 
+                EX_RegDst <= 0; 
+                EX_Datatype <= 0; 
+                EX_HiLoWrite <= 0; 
+                EX_ALUSrc <= 0; 
+                EX_Branch <= 0; 
+                EX_MemWrite <= 0; 
+                EX_MemRead <= 0; 
+                EX_MemtoReg <= 0;  
+                EX_RegWrite <= 0;  
+                EX_Jump <= 0; 
+                EX_ALUSrc2 <= 0; 
+                EX_jumpImm <= 0; 
+                EX_jumpRs <= 0; 
             end
             else if(Ld == 1) begin
-                RegDst_out <= RegDst;
-                ALUSrc_out <= ALUSrc;
-                ALUControl_out <= ALUControl;
-                
-                ReadData1_out <= ReadData1_in;
-                ReadData2_out <= ReadData2_in;
-                SignExtend_out <= SignExtend_in;
-                PCResult_out <= PCResult_in;
-                Instruction31_26_out <= Instruction31_26;
-                Instruction20_16_out <= Instruction20_16;
-                Instruction15_11_out <= Instruction15_11;
-                Jump_out <= Jump;
-                EX_jumpImm <= jump_imm;
-                EX_jumpRs <= jump_rs;
-                EX_ALUSrc2 <= ALUSrc2;
-                EX_Datatype <= Datatype;
-                EX_HI_LO_Write <= HI_LO_Write;
+                EX_ReadData1 <= ID_ReadData1; 
+                EX_ReadData2 <= ID_ReadData2;  
+                EX_SignExtended <= ID_SignExtended;  
+                EX_PCResult <= ID_PCResult; 
+                EX_Instruction31_26 <= ID_Instruction31_26; 
+                EX_Instruction20_16 <= ID_Instruction20_16;  
+                EX_Instruction15_11 <= ID_Instruction15_11;  
+                EX_ALUControl <= ID_ALUControl; 
+                EX_RegDst <= ID_RegDst; 
+                EX_Datatype <= ID_Datatype; 
+                EX_HiLoWrite <= ID_HiLoWrite; 
+                EX_ALUSrc <= ID_ALUSrc; 
+                EX_Branch <= ID_Branch; 
+                EX_MemWrite <= ID_MemWrite; 
+                EX_MemRead <= ID_MemRead; 
+                EX_MemtoReg <= ID_MemtoReg;  
+                EX_RegWrite <= ID_RegWrite;  
+                EX_Jump <= ID_Jump; 
+                EX_ALUSrc2 <= ID_ALUSrc2; 
+                EX_jumpImm <= ID_jumpImm; 
+                EX_jumpRs <= ID_jumpRs; 
             end
-            
         end
 endmodule

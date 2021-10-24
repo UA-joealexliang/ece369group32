@@ -1,6 +1,10 @@
 `timescale 1ns / 1ps
 
-module Controller(Opcode, Bit21, Bit20_16, Bit10_6, funct, RegDst, ALUSrc, ALUSrc2, MemtoReg, RegWrite, HI_LO_Write, MemRead, MemWrite, Branch, Jump, Datatype, ALUControl, SignExtend);
+module Controller(
+            Opcode, Bit21, Bit20_16, Bit10_6, funct, 
+            RegDst, ALUSrc, ALUSrc2, MemtoReg, RegWrite, HI_LO_Write, MemRead, MemWrite, 
+            Branch, Jump, Datatype, ALUControl, SignExtend
+            );
 
     input [5:0] Opcode;     // left-most 6 bits of the instruction signifying the opcode
     input Bit21;            // used to differentiate srl vs rotr 
