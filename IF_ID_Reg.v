@@ -20,29 +20,25 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 module IF_ID_Reg(
-            IF_Instruction, IF_PCAddResult, 
-            Clk, Rst, Ld, 
-            ID_Instruction, ID_PCAddResult, 
-            );
+                IF_Instruction, IF_PCAddResult, 
+                Clk, Rst, Ld, 
+                ID_Instruction, ID_PCAddResult, 
+                );
 
     input Clk, Rst, Ld;
     input [31:0] IF_Instruction, IF_PCAddResult;
-
-    //reg [63:0] R;
 
     output reg [31:0] ID_Instruction, ID_PCAddResult;
     
     //write your code here
     always@(posedge Clk) begin
-        if(Clr == 1) begin
-            R <= 0;
+        if(Rst == 1) begin
+            ID_PCAddResult <= 0;
+            ID_Instruction <= 0;
         end
         else if(Ld == 1) begin
             ID_PCAddResult <= IF_PCAddResult;
             ID_Instruction <= IF_Instruction;
         end
-        /*else begin
-            R <= R;
-        end*/
     end
 endmodule
