@@ -51,7 +51,7 @@ module Datapath(Clk, Rst);
     wire [31:0] ALUSrc1Data, ALUSrc2Data; //is not fed into EX_MEM_Reg
     wire [31:0] Imm_shifted; //is not fed into EX_MEM_Reg
     wire [31:0] HiALUOut, LoALUOut; //is not fed into EX_MEM_Reg
-    (* mark_debug = "true" *) wire [31:0] Hi_out, Lo_out; //is not fed into EX_MEM_Reg
+    (* mark_debug = "true" *) wire [31:0] HI_out, LO_out; //is not fed into EX_MEM_Reg
     
     //variables from MEM_WB_Reg
     wire [31:0] MEM_MemDataOut;
