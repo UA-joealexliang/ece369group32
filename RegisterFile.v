@@ -64,14 +64,9 @@ module RegisterFile(ReadRegister1, ReadRegister2, WriteRegister, WriteData, RegW
     output reg [31:0] ReadData2;
     
     initial begin
-        register[0] = 0;
-        register[1] = 1;
-        register[2] = 2;
-        register[3] = 3;
-        register[4] = 4;
-
+       register[0] <= 0; 
     end
-    
+
     always@(posedge Clk) begin
         if(RegWrite == 1) begin
             register[WriteRegister] <= WriteData;
