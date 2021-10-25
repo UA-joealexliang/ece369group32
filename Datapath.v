@@ -40,6 +40,9 @@ module Datapath(Clk, Rst);
     wire [31:0] PC4_or_PCoffset; //is not fed into MEM_WB_Reg
     wire [31:0] Rs_or_Imm; //is not fed into MEM_WB_Reg
 
+    wire [31:0] ID_ALUSrc1Data, ID_ALUSrc2Data;
+    wire Zero;
+
     //variables from EX_MEM_Reg
     wire EX_RegWrite2;
     wire [31:0] EX_ALUResult;
@@ -136,11 +139,18 @@ module Datapath(Clk, Rst);
     ShiftLeft2              ShiftImm(ID_SignExtended, Imm_shifted); //Imm_shifted = ID_SignExtended*4
 
                             //Adder_32bit(A, B, Out);
-    Adder_32bit             PCAdd (ID_PCAddResult, Imm_shifted, PCOffsetResult); //ID_PCAddResult + Imm_shifted  
+    Adder_32bit             PCAdd(ID_PCAddResult, Imm_shifted, PCOffsetResult); //ID_PCAddResult + Imm_shifted  
     
+                            //Mux32Bit2To1(out, inA, inB, sel)
+    Mux32Bit2To1            ID_MuxALUinput1(ID_ALUSrc1Data, ID_ReadData1, ID_SignExtended, ID_ALUSrc2); //decides between rs and imm
+                            //Mux32Bit2To1(out, inA, inB, sel)
+    Mux32Bit2To1            ID_MuxALUinput2(ID_ALUSrc2Data, ID_ReadData2, ID_SignExtended, ID_ALUSrc); //decides between rt and imm
+
+    ALU32BitBranch          ALU32BitBranch(ID_ALUControl, ID_ALUSrc1Data, ID_ALUSrc2Data, ID_Instruction[31:26], Zero);
+
     //determine new pc
                             //Mux32Bit2To1(out, inA, inB, sel)
-    Mux32Bit2To1            PC4_or_PC4Offset(PC4_or_PCoffset, ID_PCAddResult, PCOffsetResult, ID_Branch & ID_Zero); //PC+4 or MEM_Branch
+    Mux32Bit2To1            PC4_or_PC4Offset(PC4_or_PCoffset, ID_PCAddResult, PCOffsetResult, ID_Branch & Zero); //PC+4 or MEM_Branch
                             //Mux32Bit2To1(out, inA, inB, sel)
     Mux32Bit2To1            PCTarget(Rs_or_Imm, ID_ReadData1, {27'd0, ID_Instruction[15:0]}, ID_ALUSrc2); //imm or Rs
                             //Mux32Bit2To1(out, inA, inB, sel)
@@ -154,12 +164,12 @@ module Datapath(Clk, Rst);
     Mux32Bit2To1            MuxALUinput2(ALUSrc2Data, EX_ReadData2, EX_SignExtended, EX_ALUSrc); //decides between rt and imm
 
                             //HI_Reg(in, out, Clk, Ld, Clr)
-    HI_Reg                  HI_Reg (HiALUOut, HI_out, Clk, EX_HiLoWrite[0], Rst); 
+    HI_Reg                  HI_Reg(HiALUOut, HI_out, Clk, EX_HiLoWrite[0], Rst); 
                             //LO_Reg(in, out, Clk, Ld, Clr)
-    LO_Reg                  LO_Reg (LoALUOut, LO_out, Clk, EX_HiLoWrite[1], Rst);
+    LO_Reg                  LO_Reg(LoALUOut, LO_out, Clk, EX_HiLoWrite[1], Rst);
 
                             //ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Opcode, ALUResult, Hi, Lo, Zero, RegWrite2);
-    ALU32Bit                ALU1  (EX_ALUControl, ALUSrc1Data, ALUSrc2Data, HI_out, LO_out, EX_Instruction31_26, EX_ALUResult, HiALUOut, LoALUOut, EX_Zero, EX_RegWrite2);
+    ALU32Bit                ALU1(EX_ALUControl, ALUSrc1Data, ALUSrc2Data, HI_out, LO_out, EX_Instruction31_26, EX_ALUResult, HiALUOut, LoALUOut, EX_Zero, EX_RegWrite2);
     
                             /*EX_MEM_Reg(
                                     EX_RegWrite, EX_RegWrite2, EX_MemtoReg, 
