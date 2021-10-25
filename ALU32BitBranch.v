@@ -26,7 +26,7 @@
 //   operations needed to support. 
 ////////////////////////////////////////////////////////////////////////////////
 
-module ALU32Bit(ALUControl, A, B, Opcode, Zero);
+module ALU32BitBranch(ALUControl, A, B, Opcode, Zero);
 
 	input [4:0] ALUControl; //control bits for ALU operation
                                 //you need to adjust the bitwidth as needed
