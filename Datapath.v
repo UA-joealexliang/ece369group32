@@ -116,21 +116,21 @@ module Datapath(Clk, Rst);
 
                             /*ID_EX_Reg(
                                         ID_ReadData1, ID_ReadData2, ID_SignExtended, ID_PCAddResult, ID_Instruction31_26, ID_Instruction20_16, ID_Instruction15_11,
-                                        ID_RegDst, ID_ALUSrc, ID_ALUControl, ID_Branch, ID_MemWrite, ID_MemRead, ID_MemtoReg, ID_RegWrite, 
-                                        ID_Jump, ID_jumpImm, ID_jumpRs, ID_ALUSrc2, ID_Datatype, ID_HiLoWrite,
+                                        ID_RegDst, ID_ALUSrc, ID_ALUControl, ID_MemWrite, ID_MemRead, ID_MemtoReg, ID_RegWrite, 
+                                        ID_Jump, ID_ALUSrc2, ID_Datatype, ID_HiLoWrite,
                                         Clk, Rst, Ld, //these help separate inputs and outputs, each i/o is neatly mapped in order
                                         EX_ReadData1, EX_ReadData2, EX_SignExtended, EX_PCAddResult, EX_Instruction31_26, EX_Instruction20_16, EX_Instruction15_11,
-                                        EX_RegDst, EX_ALUSrc, EX_ALUControl, EX_Branch, EX_MemWrite, EX_MemRead, EX_MemtoReg, EX_RegWrite, 
-                                        EX_Jump, EX_jumpImm, EX_jumpRs, EX_ALUSrc2, EX_Datatype, EX_HiLoWrite
+                                        EX_RegDst, EX_ALUSrc, EX_ALUControl, EX_MemWrite, EX_MemRead, EX_MemtoReg, EX_RegWrite, 
+                                        EX_Jump, EX_ALUSrc2, EX_Datatype, EX_HiLoWrite
                                         );*/
     ID_EX_Reg                 ID_EX_Reg(
                                         ID_ReadData1,  ID_ReadData2,  ID_SignExtended, ID_PCAddResult, ID_Instruction[31:26], ID_Instruction[20:16], ID_Instruction[15:11],
-                                        ID_RegDst, ID_ALUSrc, ID_ALUControl, ID_Branch, ID_MemWrite, ID_MemRead, ID_MemtoReg, ID_RegWrite, 
-                                        ID_Jump, {16'd0,ID_Instruction[15:0]}, ID_ReadData1, ID_ALUSrc2, ID_Datatype, ID_HiLoWrite,
+                                        ID_RegDst, ID_ALUSrc, ID_ALUControl, ID_MemWrite, ID_MemRead, ID_MemtoReg, ID_RegWrite, 
+                                        ID_Jump, ID_ALUSrc2, ID_Datatype, ID_HiLoWrite,
                                         Clk, Rst, 1'b1, 
                                         EX_ReadData1, EX_ReadData2, EX_SignExtended, EX_PCAddResult, EX_Instruction31_26, EX_Instruction20_16, EX_Instruction15_11,
-                                        EX_RegDst, EX_ALUSrc, EX_ALUControl, EX_Branch, EX_MemWrite, EX_MemRead, EX_MemtoReg, EX_RegWrite, 
-                                        EX_Jump, EX_jumpImm, EX_jumpRs, EX_ALUSrc2, EX_Datatype, EX_HiLoWrite
+                                        EX_RegDst, EX_ALUSrc, EX_ALUControl, EX_MemWrite, EX_MemRead, EX_MemtoReg, EX_RegWrite, 
+                                        EX_Jump, EX_ALUSrc2, EX_Datatype, EX_HiLoWrite
                                         );
     
 ////////////////////EXECUTION STAGE////////////////////////////////////////////////////
