@@ -36,6 +36,9 @@ module Datapath(Clk, Rst);
     
     wire SignExtend; //is not fed into ID_EX_Reg
     wire [31:0] Imm_shifted; //is not fed into ID_EX_Reg
+    wire [31:0] PCOffsetResult; //is not fed into ID_EX_Reg
+    wire [31:0] PC4_or_PCoffset; //is not fed into MEM_WB_Reg
+    wire [31:0] Rs_or_Imm; //is not fed into MEM_WB_Reg
 
     //variables from EX_MEM_Reg
     wire EX_RegWrite2;
@@ -59,8 +62,6 @@ module Datapath(Clk, Rst);
     wire [1:0] WB_RegDst;
     wire [4:0] WB_Instruction20_16, WB_Instruction15_11;
 
-    wire [31:0] PC4_or_PCoffset; //is not fed into MEM_WB_Reg
-    wire [31:0] Rs_or_Imm; //is not fed into MEM_WB_Reg
     (* mark_debug = "true" *) wire [31:0] WriteData; //is not fed into MEM_WB_Reg
     wire [31:0] RegDstData;
     wire [31:0] ALUResult_or_ReadData;
@@ -135,7 +136,15 @@ module Datapath(Clk, Rst);
     ShiftLeft2              ShiftImm(ID_SignExtended, Imm_shifted); //Imm_shifted = ID_SignExtended*4
 
                             //Adder_32bit(A, B, Out);
-    Adder_32bit             PCAdd (ID_PCAddResult, Imm_shifted, ID_PCOffsetResult); //ID_PCAddResult + Imm_shifted  
+    Adder_32bit             PCAdd (ID_PCAddResult, Imm_shifted, PCOffsetResult); //ID_PCAddResult + Imm_shifted  
+    
+    //determine new pc
+                            //Mux32Bit2To1(out, inA, inB, sel)
+    Mux32Bit2To1            PC4_or_PC4Offset(PC4_or_PCoffset, ID_PCAddResult, PCOffsetResult, ID_Branch & ID_Zero); //PC+4 or MEM_Branch
+                            //Mux32Bit2To1(out, inA, inB, sel)
+    Mux32Bit2To1            PCTarget(Rs_or_Imm, ID_ReadData1, {27'd0, ID_Instruction[15:0]}, ID_ALUSrc2); //imm or Rs
+                            //Mux32Bit2To1(out, inA, inB, sel)
+    Mux32Bit2To1            NextPC(PC_in, PC4_or_PCoffset, Rs_or_Imm, ID_Jump); //combination new mux to determine from last two muxes
 
 ////////////////////EXECUTION STAGE////////////////////////////////////////////////////        
 
@@ -179,14 +188,6 @@ module Datapath(Clk, Rst);
 
                             //DataMemory(Address, WriteData, Clk, ID_MemWrite, ID_MemRead, ID_Datatype, ReadData)
     DataMemory              Data_Memory(MEM_ALUResult, MEM_ReadData2, Clk, MEM_MemWrite, MEM_MemRead, MEM_Datatype, MEM_MemDataOut);
-    
-    //determine new pc
-                            //Mux32Bit2To1(out, inA, inB, sel)
-    Mux32Bit2To1            PC4_or_PC4Offset(PC4_or_PCoffset, MEM_PCAddResult, MEM_PCOffsetResult, MEM_Branch & MEM_Zero); //PC+4 or MEM_Branch
-                            //Mux32Bit2To1(out, inA, inB, sel)
-    Mux32Bit2To1            PCTarget(Rs_or_Imm, MEM_jumpRs, MEM_jumpImm, MEM_ALUSrc2); //imm or Rs
-                            //Mux32Bit2To1(out, inA, inB, sel)
-    Mux32Bit2To1            NextPC(PC_in, PC4_or_PCoffset, Rs_or_Imm, MEM_Jump); //combination new mux to determine from last two muxes
 
                             /*MEM_WB_Reg(
                                     MEM_RegWrite, MEM_RegWrite2, MEM_MemtoReg, MEM_MemDataOut, MEM_ALUResult, MEM_RegDst, MEM_Jump, MEM_PCAddResult,
