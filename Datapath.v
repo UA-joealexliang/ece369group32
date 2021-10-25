@@ -35,19 +35,19 @@ module Datapath(Clk, Rst);
     wire EX_ALUSrc, EX_MemWrite, EX_MemRead, EX_MemtoReg, EX_RegWrite, EX_Jump, EX_ALUSrc2;
     
     wire SignExtend; //is not fed into ID_EX_Reg
-    
+    wire [31:0] Imm_shifted; //is not fed into ID_EX_Reg
+
     //variables from EX_MEM_Reg
-    wire EX_RegWrite2, EX_Zero;
-    wire [31:0] EX_PCOffsetResult, EX_ALUResult;
+    wire EX_RegWrite2;
+    wire [31:0] EX_ALUResult;
     
-    wire MEM_RegWrite, MEM_RegWrite2, MEM_MemtoReg, MEM_Branch, MEM_MemWrite, MEM_MemRead, MEM_Zero, MEM_Jump, MEM_ALUSrc2;
-    wire [31:0] MEM_PCOffsetResult, MEM_ALUResult, MEM_ReadData2, MEM_PCAddResult;
+    wire MEM_RegWrite, MEM_RegWrite2, MEM_MemtoReg, MEM_MemWrite, MEM_MemRead, MEM_Jump;
+    wire [31:0] MEM_ALUResult, MEM_ReadData2, MEM_PCAddResult;
     wire [1:0] MEM_RegDst, MEM_Datatype;
     wire [4:0] MEM_Instruction20_16, MEM_Instruction15_11;
-    wire [31:0] MEM_jumpImm, MEM_jumpRs; //MAY HAVE TO CHANGE HOW JUMPS WORK LATER
 
     wire [31:0] ALUSrc1Data, ALUSrc2Data; //is not fed into EX_MEM_Reg
-    wire [31:0] Imm_shifted; //is not fed into EX_MEM_Reg
+    
     wire [31:0] HiALUOut, LoALUOut; //is not fed into EX_MEM_Reg
     (* mark_debug = "true" *) wire [31:0] HI_out, LO_out; //is not fed into EX_MEM_Reg
     
@@ -154,24 +154,24 @@ module Datapath(Clk, Rst);
     
                             /*EX_MEM_Reg(
                                     EX_RegWrite, EX_RegWrite2, EX_MemtoReg, 
-                                    EX_Branch, EX_MemWrite, EX_MemRead, EX_Zero, EX_PCOffsetResult, EX_ALUResult, EX_ReadData2, EX_RegDst, 
-                                    EX_Jump, EX_jumpImm, EX_jumpRs, EX_Datatype, EX_ALUSrc2, EX_PCAddResult
+                                    EX_MemWrite, EX_MemRead, EX_ALUResult, EX_ReadData2, EX_RegDst, 
+                                    EX_Jump, EX_Datatype, EX_PCAddResult
                                     EX_Instruction20_16, EX_Instruction15_11,
                                     Clk, Rst, Ld,
                                     MEM_RegWrite, MEM_RegWrite2, MEM_MemtoReg,
-                                    MEM_Branch, MEM_MemWrite, MEM_MemRead, MEM_Zero, MEM_PCOffsetResult, MEM_ALUResult, MEM_ReadData2, MEM_RegDst, 
-                                    MEM_Jump, MEM_jumpImm, MEM_jumpRs, MEM_Datatype, MEM_ALUSrc2, MEM_PCAddResult, 
+                                    MEM_MemWrite, MEM_MemRead, MEM_ALUResult, MEM_ReadData2, MEM_RegDst, 
+                                    MEM_Jump, MEM_Datatype, MEM_PCAddResult, 
                                     MEM_Instruction20_16, MEM_Instruction15_11,
                                     );*/
     EX_MEM_Reg              EX_MEM_Reg(
                                     EX_RegWrite, EX_RegWrite2, EX_MemtoReg, 
-                                    EX_Branch, EX_MemWrite, EX_MemRead, EX_Zero, EX_PCOffsetResult, EX_ALUResult, EX_ReadData2, EX_RegDst, 
-                                    EX_Jump, EX_jumpImm, EX_jumpRs, EX_Datatype, EX_ALUSrc2, EX_PCAddResult, 
+                                    EX_MemWrite, EX_MemRead, EX_ALUResult, EX_ReadData2, EX_RegDst, 
+                                    EX_Jump, EX_Datatype, EX_PCAddResult, 
                                     EX_Instruction20_16, EX_Instruction15_11,
                                     Clk, Rst, 1'b1,
                                     MEM_RegWrite, MEM_RegWrite2, MEM_MemtoReg, 
-                                    MEM_Branch, MEM_MemWrite, MEM_MemRead, MEM_Zero, MEM_PCOffsetResult, MEM_ALUResult, MEM_ReadData2, MEM_RegDst, 
-                                    MEM_Jump, MEM_jumpImm, MEM_jumpRs, MEM_Datatype, MEM_ALUSrc2, MEM_PCAddResult, 
+                                    MEM_MemWrite, MEM_MemRead, MEM_ALUResult, MEM_ReadData2, MEM_RegDst, 
+                                    MEM_Jump, MEM_Datatype, MEM_PCAddResult, 
                                     MEM_Instruction20_16, MEM_Instruction15_11,
                                     );
     
