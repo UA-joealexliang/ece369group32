@@ -39,7 +39,7 @@ module Datapath(Clk, Rst);
     wire [31:0] PCOffsetResult; //is not fed into ID_EX_Reg
     wire [31:0] PC4_or_PCoffset; //is not fed into MEM_WB_Reg
     wire [31:0] Rs_or_Imm; //is not fed into MEM_WB_Reg
-    wire [31:0] Shifted_Rs_or_Imm;
+    wire [31:0] Shifted_Imm; //imm shifted, not rs
 
     wire [31:0] ID_ALUSrc1Data, ID_ALUSrc2Data;
     wire Zero;
@@ -151,17 +151,17 @@ module Datapath(Clk, Rst);
     ALU32BitBranch          ALU32BitBranch(ID_ALUControl, ID_ALUSrc1Data, ID_ALUSrc2Data, ID_Instruction[31:26], Zero);
 //    ALU32BitBranch          ALU32BitBranch(EX_ALUControl, EX_ALUSrc1Data, EX_ALUSrc2Data, EX_Instruction31_26, Zero);
 
+                            //ShiftLeft2(In, Out)
+    ShiftLeft2              ShiftLeft2({27'd0, ID_Instruction[15:0]}, Shifted_Imm);
+
     //determine new pc
                             //Mux32Bit2To1(out, inA, inB, sel)
     Mux32Bit2To1            PC4_or_PC4Offset(PC4_or_PCoffset, ID_PCAddResult, PCOffsetResult, ID_Branch & Zero); //PC+4 or MEM_Branch
                             //Mux32Bit2To1(out, inA, inB, sel)
-    Mux32Bit2To1            PCTarget(Rs_or_Imm, ID_ReadData1, {27'd0, ID_Instruction[15:0]}, ID_ALUSrc2); //imm or Rs
-
-                            //ShiftLeft2(In, Out)
-    ShiftLeft2              ShiftLeft2(Rs_or_Imm, Shifted_Rs_or_Imm);
+    Mux32Bit2To1            PCTarget(Rs_or_Imm, ID_ReadData1, Shifted_Imm, ID_ALUSrc2); //imm or Rs
 
                             //Mux32Bit2To1(out, inA, inB, sel)
-    Mux32Bit2To1            NextPC(PC_in, PC4_or_PCoffset, Shifted_Rs_or_Imm, ID_Jump); //combination new mux to determine from last two muxes
+    Mux32Bit2To1            NextPC(PC_in, PC4_or_PCoffset, Rs_or_Imm, ID_Jump); //combination new mux to determine from last two muxes
 
 ////////////////////EXECUTION STAGE////////////////////////////////////////////////////        
 
