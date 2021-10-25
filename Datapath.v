@@ -27,14 +27,12 @@ module Datapath(Clk, Rst);
     wire [4:0] ID_Instruction20_16, ID_Instruction15_11, ID_ALUControl;
     wire [1:0] ID_RegDst, ID_Datatype, ID_HiLoWrite;
     wire ID_ALUSrc, ID_Branch, ID_MemWrite, ID_MemRead, ID_MemtoReg, ID_RegWrite, ID_Jump, ID_ALUSrc2;
-    wire [31:0] ID_jumpImm, ID_jumpRs; //MAY HAVE TO CHANGE HOW JUMPS WORK LATER
 
     wire [31:0] EX_ReadData1, EX_ReadData2, EX_SignExtended, EX_PCAddResult;
     wire [5:0] EX_Instruction31_26;
     wire [4:0] EX_Instruction20_16, EX_Instruction15_11, EX_ALUControl;
     wire [1:0] EX_RegDst, EX_Datatype, EX_HiLoWrite;
-    wire EX_ALUSrc, EX_Branch, EX_MemWrite, EX_MemRead, EX_MemtoReg, EX_RegWrite, EX_Jump, EX_ALUSrc2;
-    wire [31:0] EX_jumpImm, EX_jumpRs; //MAY HAVE TO CHANGE HOW JUMPS WORK LATER
+    wire EX_ALUSrc, EX_MemWrite, EX_MemRead, EX_MemtoReg, EX_RegWrite, EX_Jump, EX_ALUSrc2;
     
     wire SignExtend; //is not fed into ID_EX_Reg
     
@@ -132,14 +130,14 @@ module Datapath(Clk, Rst);
                                         EX_RegDst, EX_ALUSrc, EX_ALUControl, EX_MemWrite, EX_MemRead, EX_MemtoReg, EX_RegWrite, 
                                         EX_Jump, EX_ALUSrc2, EX_Datatype, EX_HiLoWrite
                                         );
-    
-////////////////////EXECUTION STAGE////////////////////////////////////////////////////
 
                             //ShiftLeft2(In, Out);
-    ShiftLeft2              ShiftImm(EX_SignExtended, Imm_shifted);
+    ShiftLeft2              ShiftImm(ID_SignExtended, Imm_shifted); //Imm_shifted = ID_SignExtended*4
 
                             //Adder_32bit(A, B, Out);
-    Adder_32bit             PCAdd (EX_PCAddResult, Imm_shifted, EX_PCOffsetResult); //EX_PCAddResult + Imm_shifted
+    Adder_32bit             PCAdd (ID_PCAddResult, Imm_shifted, ID_PCOffsetResult); //ID_PCAddResult + Imm_shifted  
+
+////////////////////EXECUTION STAGE////////////////////////////////////////////////////        
 
                             //Mux32Bit2To1(out, inA, inB, sel)
     Mux32Bit2To1            MuxALUinput1(ALUSrc1Data, EX_ReadData1, EX_SignExtended, EX_ALUSrc2); //decides between rs and imm
