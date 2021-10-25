@@ -45,7 +45,7 @@ module InstructionMemory(Address, Instruction);
     reg [31:0] memory [0:1023];
 
     initial begin
-        $readmemh("instruction_memory_1.mem", memory);    
+        $readmemh("instruction_memory_jump.mem", memory);    
     end
     
     always @(*) begin

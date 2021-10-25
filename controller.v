@@ -468,7 +468,7 @@ module Controller(
                 Branch = 1'b0;
                 Jump = 1'b0;
                 HI_LO_Write = 2'b00;
-                SignExtend = 1'b1;
+                SignExtend = 1'b0;
                 //ALUOp1 = 1'b1;
                 //ALUOp0 = 1'b0;
             end
