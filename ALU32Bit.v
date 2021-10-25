@@ -410,8 +410,8 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Opcode, ALUResult, Hi, Lo, Zero,
 
 					5'b10100: begin // madd
 						temp <= {Hi_in, Lo_in} + ($signed(A) * $signed(B));
-						Hi <= temp[63:32];
-						Lo <= temp[31:0]; 
+						Hi <= temp[63:32] + Hi_in;
+						Lo <= temp[31:0] + Lo_in; 
 					end
 
 					5'b10101: begin // msub

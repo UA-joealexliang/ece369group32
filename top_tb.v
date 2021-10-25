@@ -1,23 +1,10 @@
 `timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
+// LAB GROUP 32
+//      CAMERON MATSUMOTO, ASHTON ROWE, JOE LIANG
+//      
+//      PERCENT EFFORT:
+//          CAMERON 33%     ASHTON 33%      JOE 33%
 // 
-// Create Date: 10/11/2021 03:53:20 PM
-// Design Name: 
-// Module Name: Datapath_tb
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
-//////////////////////////////////////////////////////////////////////////////////
 
 
 module Datapath_tb();
