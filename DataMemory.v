@@ -35,14 +35,14 @@
 // of the "Address" input to index any of the 256 words. 
 ////////////////////////////////////////////////////////////////////////////////
 
-module DataMemory(Address, WriteData, Clk, MemWrite, MemRead, Datatype, ReadData); 
+module DataMemory(Address, WriteData, Clk, MemWrite, MemRead, ReadData); 
 
     input [31:0] Address; 	// Input Address 
     input [31:0] WriteData; // Data that needs to be written into the address 
     input Clk;
     input MemWrite; 		// Control signal for memory write 
     input MemRead; 			// Control signal for memory read 
-    input [1:0] Datatype;   // 0 = word, 1 = halfword, 2 = btye
+    //input [1:0] Datatype;   // 0 = word, 1 = halfword, 2 = btye
     
     reg [31:0] memory [0:1023];
     reg sign;
@@ -56,41 +56,43 @@ module DataMemory(Address, WriteData, Clk, MemWrite, MemRead, Datatype, ReadData
     /* Please fill in the implementation here */
     always@(posedge Clk) begin
         if (MemWrite == 1) begin
-            if (Datatype == 0) begin
-                memory[Address[11:2]] <= WriteData;
-            end
-            else if (Datatype == 1) begin
-                memory[Address[11:2]][Address[1:0]*8+:16] <= WriteData[15:0];
-            end
-            else if (Datatype == 2) begin
-                memory[Address[11:2]][Address[1:0]*8+:8] <= WriteData[7:0];
-            end
+//            if (Datatype == 0) begin
+//                memory[Address[11:2]] <= WriteData;
+//            end
+//            else if (Datatype == 1) begin
+//                memory[Address[11:2]][Address[1:0]*8+:16] <= WriteData[15:0];
+//            end
+//            else if (Datatype == 2) begin
+//                memory[Address[11:2]][Address[1:0]*8+:8] <= WriteData[7:0];
+//            end
+            memory[Address[11:2]] <= WriteData;
         end
     end
     
     always@(*)begin
         if (MemRead == 1)begin
-            if (Datatype == 0) begin
-                ReadData <= memory[Address[11:2]];
-            end
-            else if (Datatype == 1) begin
-                sign = memory[Address[11:2]][Address[1:0]*8];
-                if (sign == 0) begin
-                    ReadData <= {16'h0000, memory[Address[11:2]][Address[1:0]*8+:16]};
-                end
-                else if (sign == 1) begin
-                    ReadData <= {16'hFFFF, memory[Address[11:2]][Address[1:0]*8+:16]};
-                end
-            end
-            else if (Datatype == 2) begin
-                sign = memory[Address[11:2]][Address[1:0]*8];
-                if (sign == 0) begin
-                    ReadData <= {24'h0000, memory[Address[11:2]][Address[1:0]*8+:8]};
-                end
-                else if (sign == 1) begin
-                    ReadData <= {24'hFFFF, memory[Address[11:2]][Address[1:0]*8+:8]};
-                end
-            end
+//            if (Datatype == 0) begin
+//                ReadData <= memory[Address[11:2]];
+//            end
+//            else if (Datatype == 1) begin
+//                sign = memory[Address[11:2]][Address[1:0]*8];
+//                if (sign == 0) begin
+//                    ReadData <= {16'h0000, memory[Address[11:2]][Address[1:0]*8+:16]};
+//                end
+//                else if (sign == 1) begin
+//                    ReadData <= {16'hFFFF, memory[Address[11:2]][Address[1:0]*8+:16]};
+//                end
+//            end
+//            else if (Datatype == 2) begin
+//                sign = memory[Address[11:2]][Address[1:0]*8];
+//                if (sign == 0) begin
+//                    ReadData <= {24'h0000, memory[Address[11:2]][Address[1:0]*8+:8]};
+//                end
+//                else if (sign == 1) begin
+//                    ReadData <= {24'hFFFF, memory[Address[11:2]][Address[1:0]*8+:8]};
+//                end
+//            end
+            ReadData <= memory[Address[11:2]];
         end
     end
 endmodule

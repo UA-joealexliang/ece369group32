@@ -59,6 +59,7 @@ module Datapath(Clk, Rst);
     
     //variables from MEM_WB_Reg
     wire [31:0] MEM_MemDataOut;
+    wire [31:0] WriteDataIn, ReadDataOut;
 
     wire WB_RegWrite, WB_RegWrite2, WB_MemtoReg, WB_Jump;
     wire [31:0] WB_MemDataOut, WB_ALUResult, WB_PCAddResult;
@@ -196,8 +197,13 @@ module Datapath(Clk, Rst);
     
 ////////////////////MEMORY STAGE////////////////////////////////////////////////////
 
+                            //DataMemoryInput(WriteDataIn, Datatype, WriteDataOut); 
+    DataMemoryInput         Data_Memory_Input(MEM_ReadData2, MEM_Datatype, WriteDataIn);
+    
                             //DataMemory(Address, WriteData, Clk, ID_MemWrite, ID_MemRead, ID_Datatype, ReadData)
-    DataMemory              Data_Memory(MEM_ALUResult, MEM_ReadData2, Clk, MEM_MemWrite, MEM_MemRead, MEM_Datatype, MEM_MemDataOut);
+    DataMemory              Data_Memory(MEM_ALUResult, WriteDataIn, Clk, MEM_MemWrite, MEM_MemRead, ReadDataOut);
+
+    DataMemoryOutput        Data_Memory_Output(ReadDataOut, MEM_Datatype, MEM_MemDataOut);
 
                             /*MEM_WB_Reg(
                                     MEM_RegWrite, MEM_RegWrite2, MEM_MemtoReg, MEM_MemDataOut, MEM_ALUResult, MEM_RegDst, MEM_Jump, MEM_PCAddResult,
