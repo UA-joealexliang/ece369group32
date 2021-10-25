@@ -148,6 +148,7 @@ module Datapath(Clk, Rst);
     Mux32Bit2To1            ID_MuxALUinput2(ID_ALUSrc2Data, ID_ReadData2, ID_SignExtended, ID_ALUSrc); //decides between rt and imm
 
     ALU32BitBranch          ALU32BitBranch(ID_ALUControl, ID_ALUSrc1Data, ID_ALUSrc2Data, ID_Instruction[31:26], Zero);
+//    ALU32BitBranch          ALU32BitBranch(EX_ALUControl, EX_ALUSrc1Data, EX_ALUSrc2Data, EX_Instruction31_26, Zero);
 
     //determine new pc
                             //Mux32Bit2To1(out, inA, inB, sel)

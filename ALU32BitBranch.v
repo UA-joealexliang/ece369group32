@@ -531,7 +531,7 @@ module ALU32BitBranch(ALUControl, A, B, Opcode, Zero);
 			6'b000001: begin
 				case(ALUControl)
 					5'b11000: begin // bgez
-						if (A >= 0) begin
+						if ($signed(A) >= 0) begin
 							Zero <= 1;
 						end
 						else begin
@@ -540,7 +540,7 @@ module ALU32BitBranch(ALUControl, A, B, Opcode, Zero);
 					end
 
 					5'b11001: begin // bltz
-						if (A < 0) begin
+						if ($signed(A) < 0) begin
 							Zero <= 1;
 						end
 						else begin
@@ -551,7 +551,7 @@ module ALU32BitBranch(ALUControl, A, B, Opcode, Zero);
 			end
 
 			6'b000100: begin // beq
-				if (A == B) begin
+				if ($signed(A) == $signed(B)) begin
 					Zero <= 1;
 				end
 				else begin
@@ -560,7 +560,7 @@ module ALU32BitBranch(ALUControl, A, B, Opcode, Zero);
 			end
 
 			6'b000101: begin // bne
-				if(A != B) begin
+				if($signed(A) != $signed(B)) begin
 					Zero <= 1;
 				end
 				else begin
@@ -569,7 +569,7 @@ module ALU32BitBranch(ALUControl, A, B, Opcode, Zero);
 			end
 
 			6'b000111: begin // bgtz
-				if (A > 0) begin
+				if ($signed(A) > 0) begin
 					Zero <= 1;
 				end
 				else begin
@@ -578,7 +578,7 @@ module ALU32BitBranch(ALUControl, A, B, Opcode, Zero);
 			end
 
 			6'b000110: begin // blez
-				if (A <= 0) begin
+				if ($signed(A) <= 0) begin
 					Zero <= 1;
 				end
 				else begin
