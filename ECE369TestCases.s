@@ -114,7 +114,7 @@ nop
 nop
 nop
 nop
-addi $t0, $t0, 0xAAAA		   	#84 			t0 = AAAA_AAAA = 1010_1010_1010_1010_1010_1010_1010_1010
+addi $t0, $t0, 0xAAAA		   	#84 			t0 = AAA9_AAAA
 nop
 nop
 nop
@@ -124,12 +124,12 @@ nop
 nop
 nop
 nop
-addi $t1, $t1, 0x9999			#92 			t1 = 9999_9999 = 1001_1001_1001_1001_1001_1001_1001_1001
+addi $t1, $t1, 0x9999			#92 			t1 = 9998_9999
 nop
 nop
 nop
 nop
-and $t2, $t0, $t1			#96 [and]		t2 = 8888_8888 = 1000_1000_1000_1000_1000_1000_1000_1000
+and $t2, $t0, $t1			#96 [and]		t2 = 8888_8888
 nop
 nop
 nop
@@ -139,27 +139,27 @@ nop
 nop
 nop
 nop
-or $t2, $t0, $t1			#104 [or]		t2 = BBBB_BBBB = 1011_1011_1011_1011_1011_1011_1011_1011
+or $t2, $t0, $t1			#104 [or]		t2 = BBB9_BBBB
 nop
 nop
 nop
 nop
-nor $t2, $t0, $t1			#108 [nor]		t2 = 4444_4444 = 0100_0100_0100_0100_0100_0100_0100_0100
+nor $t2, $t0, $t1			#108 [nor]		t2 = 4446_4444
 nop
 nop
 nop
 nop
-xor $t2, $t0, $t1			#112 [xor]		t2 = 1111_1111 = 0001_0001_0001_0001_0001_0001_0001_0001
+xor $t2, $t0, $t1			#112 [xor]		t2 = 3331_3333 
 nop
 nop
 nop
 nop
-ori $t2, $t0, 0x7777			#116 [ori]		t2 = AAAA_FFFF = 1010_1010_1010_1010_1111_1111_1111_1111
+ori $t2, $t0, 0x7777			#116 [ori]		t2 = AAA9_FFFF
 nop
 nop
 nop
 nop
-xori $t2, $t0, 0x7777			#120 [xori]		t2 = AAAA_DDDD = 1010_1010_1010_1010_1101_1101_1101_1101 
+xori $t2, $t0, 0x7777			#120 [xori]		t2 = AAA9_DDDD 
 nop
 nop
 nop
