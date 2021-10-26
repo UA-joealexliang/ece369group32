@@ -9,12 +9,12 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module Datapath(Clk, Rst);
+module Datapath(Clk, Rst, PCResult);
     input Clk, Rst;
 
     //variables from Program Counter
     wire [31:0] PC_in;
-    wire [31:0] PCResult;
+    output [31:0] PCResult;
 
     //variables from IF_ID_Reg
     wire [31:0] IF_Instruction; 
@@ -116,7 +116,7 @@ module Datapath(Clk, Rst);
                             //ORGate(A, B, Out);
     ORGate                 ORGate(WB_RegWrite, WB_RegWrite2, OrResult);
                             //RegisterFile(ReadRegister1, ReadRegister2, WriteRegister, WriteData, RegWrite, Clk, ReadData1, ReadData2);
-    RegisterFile            Registers(ID_Instruction[25:21], ID_Instruction[20:16], RegDstData, WriteData, OrResult, Clk,  ID_ReadData1,  ID_ReadData2);
+    RegisterFile            Registers(ID_Instruction[25:21], ID_Instruction[20:16], RegDstData[4:0], WriteData, OrResult, Clk,  ID_ReadData1,  ID_ReadData2);
     
                             //SignExtension(in, out, signOrZero);
     SignExtension           SignExtension(ID_Instruction[15:0],  ID_SignExtended, SignExtend);
@@ -155,7 +155,7 @@ module Datapath(Clk, Rst);
 //    ALU32BitBranch          ALU32BitBranch(EX_ALUControl, EX_ALUSrc1Data, EX_ALUSrc2Data, EX_Instruction31_26, Zero);
 
                             //ShiftLeft2(In, Out)
-    ShiftLeft2              ShiftLeft2({27'd0, ID_Instruction[15:0]}, Shifted_Imm);
+    ShiftLeft2              ShiftLeft2({16'd0, ID_Instruction[15:0]}, Shifted_Imm);
 
     wire AndResult;
     //ANDGate(A, B, Out);
