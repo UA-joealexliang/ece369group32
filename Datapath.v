@@ -106,10 +106,11 @@ module Datapath(Clk, Rst, PCResult, WriteData, HI_out, LO_out);
                                         RegDst, ALUSrc, ALUSrc2, MemtoReg, RegWrite, HI_LO_Write, MemRead, MemWrite, 
                                         Branch, Jump, Datatype, ALUControl, SignExtend
                                         );*/
+    wire 15_0or10_6;
     Controller                Controller(
                                         ID_Instruction[31:26], ID_Instruction[21], ID_Instruction[20:16], ID_Instruction[10:6], ID_Instruction[5:0], 
                                         ID_RegDst, ID_ALUSrc, ID_ALUSrc2, ID_MemtoReg, ID_RegWrite, ID_HiLoWrite, ID_MemRead, ID_MemWrite, 
-                                        ID_Branch, ID_Jump, ID_Datatype, ID_ALUControl, SignExtend
+                                        ID_Branch, ID_Jump, ID_Datatype, ID_ALUControl, SignExtend, 15_0or10_6
                                         );
 
     wire OrResult;
@@ -118,6 +119,9 @@ module Datapath(Clk, Rst, PCResult, WriteData, HI_out, LO_out);
                             //RegisterFile(ReadRegister1, ReadRegister2, WriteRegister, WriteData, RegWrite, Clk, ReadData1, ReadData2);
     RegisterFile            Registers(ID_Instruction[25:21], ID_Instruction[20:16], RegDstData[4:0], WriteData, OrResult, Clk,  ID_ReadData1,  ID_ReadData2);
     
+
+                            //Mux32Bit2To1(out, inA, inB, sel)
+    Mux32Bit2To1            choose15_0_or_10_6(ID_ALUSrc1Data, {16d'0, ID_Instruction[15:0]}, {27d'0, ID_Instruction[10:6]}, 15_0or10_6); //decides between rs and imm
                             //SignExtension(in, out, signOrZero);
     SignExtension           SignExtension(ID_Instruction[15:0],  ID_SignExtended, SignExtend);
 
@@ -155,7 +159,10 @@ module Datapath(Clk, Rst, PCResult, WriteData, HI_out, LO_out);
 //    ALU32BitBranch          ALU32BitBranch(EX_ALUControl, EX_ALUSrc1Data, EX_ALUSrc2Data, EX_Instruction31_26, Zero);
 
                             //ShiftLeft2(In, Out)
-    ShiftLeft2              ShiftLeft2({16'd0, ID_Instruction[15:0]}, Shifted_Imm);
+    ShiftLeft2              ShiftLeft2_Imm({16'd0, ID_Instruction[15:0]}, Shifted_Imm); 
+    wire [31:0] Shifted_Jump;
+                            //ShiftLeft2(In, Out)
+    ShiftLeft2              ShiftLeft2_Jump({6'd0, ID_Instruction[25:0]}, Shifted_Jump); //for jumps
 
     wire AndResult;
     //ANDGate(A, B, Out);
@@ -165,7 +172,7 @@ module Datapath(Clk, Rst, PCResult, WriteData, HI_out, LO_out);
                             //Mux32Bit2To1(out, inA, inB, sel)
     Mux32Bit2To1            PC4_or_PC4Offset(PC4_or_PCoffset, ID_PCAddResult, PCOffsetResult, AndResult); //PC+4 or MEM_Branch
                             //Mux32Bit2To1(out, inA, inB, sel)
-    Mux32Bit2To1            PCTarget(Rs_or_Imm, ID_ReadData1, Shifted_Imm, ID_ALUSrc2); //imm or Rs
+    Mux32Bit2To1            PCTarget(Rs_or_Imm, ID_ReadData1, Shifted_Jump, ID_ALUSrc2); //imm or Rs
 
                             //Mux32Bit2To1(out, inA, inB, sel)
     Mux32Bit2To1            NextPC(PC_in, PC4_or_PCoffset, Rs_or_Imm, ID_Jump); //combination new mux to determine from last two muxes
