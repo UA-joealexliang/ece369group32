@@ -123,7 +123,7 @@ module Datapath(Clk, Rst, PCResult, WriteData, HI_out, LO_out);
                             //Mux32Bit2To1(out, inA, inB, sel)
     Mux32Bit2To1            chooseindex(ID_ALUSrc1Data, {16'd0, ID_Instruction[15:0]}, {27'd0, ID_Instruction[10:6]}, index); //decides between rs and imm
                             //SignExtension(in, out, signOrZero);
-    SignExtension           SignExtension(ID_Instruction[15:0],  ID_SignExtended, SignExtend);
+    SignExtension           SignExtension(ID_ALUSrc1Data, ID_SignExtended, SignExtend);
 
                             /*ID_EX_Reg(
                                         ID_ReadData1, ID_ReadData2, ID_SignExtended, ID_PCAddResult, ID_Instruction31_26, ID_Instruction20_16, ID_Instruction15_11,

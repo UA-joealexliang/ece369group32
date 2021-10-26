@@ -44,47 +44,55 @@ module Controller(
                 Jump = 1'b0;
                 HI_LO_Write = 2'b00;
                 SignExtend = 1'b0;
-                index = 0;
                 //ALUOp1 = 1'b1;
                 //ALUOp0 = 1'b0;
 
                 case(funct)
                     6'b100000: begin // add
                         ALUControl = 5'b00000;
+                        index = 0;
                     end
 
                     6'b100001: begin // addu
                         ALUControl = 5'b00000;
+                        index = 0;
                     end
 
                     6'b100010: begin // sub
                         ALUControl = 5'b00001;
+                        index = 0;
                     end
 
                     6'b011000: begin // mult
                         ALUControl = 5'b00010;
                         HI_LO_Write = 2'b11;
+                        index = 0;
                     end
 
                     6'b011001: begin // multu
                         ALUControl = 5'b00010;
                         HI_LO_Write = 2'b11;
+                        index = 0;
                     end
 
                     6'b100100: begin // and
                         ALUControl = 5'b00011;
+                        index = 0;
                     end
 
                     6'b100101: begin // or
                         ALUControl = 5'b00100;
+                        index = 0;
                     end
 
                     6'b100111: begin // nor
                         ALUControl = 5'b00101;
+                        index = 0;
                     end
 
                     6'b100110: begin // xor
                         ALUControl = 5'b00110;
+                        index = 0;
                     end
 
                     6'b000000: begin // sll
@@ -95,6 +103,7 @@ module Controller(
 
                     6'b000100: begin // sllv
                         ALUControl = 5'b00111;
+                        index = 0;
                     end
 
                     6'b000010: begin
@@ -121,10 +130,12 @@ module Controller(
                         case(Bit10_6)
                             5'b00000: begin // srlv
                                 ALUControl = 5'b01000;
+                                index = 0;
                             end
 
                             5'b00001: begin // rotrv
                                 ALUControl = 5'b01001;
+                                index = 0;
                             end
 
                             default: begin
@@ -135,14 +146,17 @@ module Controller(
 
                     6'b101010: begin // slt
                         ALUControl = 5'b01010;
+                        index = 0;
                     end
 
                     6'b001011: begin // movn
                         ALUControl = 5'b01011;
+                        index = 0;
                     end
 
                     6'b001010: begin // movz
                         ALUControl = 5'b01100;
+                        index = 0;
                     end
 
                     6'b000011: begin // sra
@@ -152,33 +166,40 @@ module Controller(
 
                     6'b000111: begin // srav
                         ALUControl = 5'b01101;
+                        index = 0;
                     end
 
                     6'b101011: begin // sltu
                         ALUControl = 5'b01110;
+                        index = 0;
                     end
 
                     6'b010001: begin // mthi
                         ALUControl = 5'b01111;
                         HI_LO_Write = 2'b01;
+                        index = 0;
                     end
 
                     6'b010011: begin // mtlo
                         ALUControl = 5'b10000;
                         HI_LO_Write = 2'b10;
+                        index = 0;
                     end
 
                     6'b010000: begin // mfhi
                         ALUControl = 5'b10001;
+                        index = 0;
                     end
 
                     6'b010010: begin // mflo
                         ALUControl = 5'b10010;
+                        index = 0;
                     end
                     
                     6'b001000: begin // jr
                         ALUControl = 5'b11111;
                         Jump = 1'b1;
+                        index = 0;
                     end
 
                     default: begin
