@@ -60,7 +60,7 @@ module Datapath(Clk, Rst, PCResult, WriteData, HI_out, LO_out);
     
     //variables from MEM_WB_Reg
     wire [31:0] MEM_MemDataOut;
-    wire [31:0] WriteDataIn, ReadDataOut;
+    //wire [31:0] WriteDataIn, ReadDataOut;
 
     wire WB_RegWrite, WB_RegWrite2, WB_MemtoReg, WB_Jump;
     wire [31:0] WB_MemDataOut, WB_ALUResult, WB_PCAddResult;

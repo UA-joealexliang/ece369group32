@@ -523,7 +523,7 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Opcode, ALUResult, Hi, Lo, Zero,
 			end
 
 			6'b001111: begin // lui
-				ALUResult <= B<<16;
+				ALUResult <= {B[15:0], 16'd0};
 			end
 			/*
 			// branch instructions
