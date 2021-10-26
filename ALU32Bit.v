@@ -368,7 +368,7 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Opcode, ALUResult, Hi, Lo, Zero,
 							ALUResult <= s;
 						end
 						else if (B[31] == 0) begin
-							ALUResult <= B >> A[4:0];
+							ALUResult <= B >> A[10:6];
 						end
 					end
 
