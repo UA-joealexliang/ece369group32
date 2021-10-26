@@ -162,6 +162,7 @@ module Controller(
                     6'b000011: begin // sra
                         ALUControl = 5'b01101;
                         index = 1;
+                        ALUSrc2 = 1'b1;
                     end
 
                     6'b000111: begin // srav

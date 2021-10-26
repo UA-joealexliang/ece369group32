@@ -58,7 +58,6 @@ module DataMemory(Address, WriteData, Clk, MemWrite, MemRead, Datatype, ReadData
     always@(posedge Clk) begin
         if (MemWrite == 1) begin
             if (Datatype == 0) begin //sw
-                $display("sw");
                 memory[Address[11:2]] <= WriteData;
             end
             else if (Datatype == 1) begin //sh

@@ -364,8 +364,7 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Opcode, ALUResult, Hi, Lo, Zero,
 
 					5'b01101: begin // sra, srav ; shift right but signed
 						if (B[31] == 1) begin
-							$display("signed negative");
-							temp <= {32'b1, B};		
+							temp <= {32'hffffffff, B};		
 							ALUResult <= temp[A[4:0]+:32];
 						end
 						else if (B[31] == 0) begin
@@ -437,10 +436,10 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Opcode, ALUResult, Hi, Lo, Zero,
 
 					5'b10111: begin // seb
 						if (B[7] == 1) begin
-							ALUResult <= {24'hffff, B[7:0]};
+							ALUResult <= {24'hffffff, B[7:0]};
 						end
 						else begin
-							ALUResult <= {24'h0000, B[7:0]};
+							ALUResult <= {24'h000000, B[7:0]};
 						end
 					end
 				endcase
@@ -470,22 +469,6 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Opcode, ALUResult, Hi, Lo, Zero,
 
 			6'b001010: begin // slti
 				ALUResult <= $signed(A) < $signed(B);
-				/*if (A[31] != B[31]) begin //if they are not the same sign
-					if (A[31] == 1) begin //rs is negative
-						ALUResult <= 1;
-					end
-					else if (B[31] == 1) begin //rt is negative
-						ALUResult <= 0;
-					end
-				end
-				else begin //if they are the same sign, normal comparison works (1000 < 1111 since 1000 = -8 and 1111 = -1)
-					if (A < B) begin
-						ALUResult <= 1;
-					end
-					else begin
-						ALUResult <= 0;
-					end
-				end*/
 			end
 
 			6'b001011: begin // sltiu
@@ -527,66 +510,6 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Opcode, ALUResult, Hi, Lo, Zero,
 			6'b001111: begin // lui
 				ALUResult <= {B[15:0], 16'd0};
 			end
-			/*
-			// branch instructions
-
-			6'b000001: begin
-				case(ALUControl)
-					5'b11000: begin // bgez
-						if ($signed(A) >= 0) begin
-							Zero <= 1;
-						end
-						else begin
-							Zero <= 0;
-						end
-					end
-
-					5'b11001: begin // bltz
-						if ($signed(A) < 0) begin
-							Zero <= 1;
-						end
-						else begin
-							Zero <= 0;
-						end
-					end
-				endcase
-			end
-
-			6'b000100: begin // beq
-				if ($signed(A) == $signed(B)) begin
-					Zero <= 1;
-				end
-				else begin
-					Zero <= 0;
-				end
-			end
-
-			6'b000101: begin // bne
-				if($signed(A) != $signed(B)) begin
-					Zero <= 1;
-				end
-				else begin
-					Zero <= 0;
-				end
-			end
-
-			6'b000111: begin // bgtz
-				if ($signed(A) > 0) begin
-					Zero <= 1;
-				end
-				else begin
-					Zero <= 0;
-				end
-			end
-
-			6'b000110: begin // blez
-				if ($signed(A) <= 0) begin
-					Zero <= 1;
-				end
-				else begin
-					Zero <= 0;
-				end
-			end*/
 
 			default: begin // j, jal
 			end

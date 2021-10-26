@@ -93,12 +93,12 @@ nop
 nop
 nop
 nop
-lh $t5, 6($s0)				#68 [lh] t5 = FFFF_BAE9 (sign extends BAE9 -> B = 1011 so the most significant bit is 1)
+lh $t5, 6($0)				#68 [lh] t5 = FFFF_BAE9 (sign extends BAE9 -> B = 1011 so the most significant bit is 1)
 nop
 nop
 nop
 nop
-lb $t5, 5($s0)				#72 [lb] t5 = 0000_000F (sign extends 0F)
+lb $t5, 5($0)				#72 [lb] t5 = 0000_000F (sign extends 0F)
 nop
 nop
 nop
@@ -164,7 +164,7 @@ nop
 nop
 nop
 nop
-seh $t2, $t2				#124 [seh]		t2 = FFFF_DDDD = 1111_1111_1111_1111_1101_1101_1101_1101 SIGN-EXTEND HALFWORD
+seh $t2, $t2				#124 [seh]		t2 = FFFF_DDDD = 1111_1111_1111_1111_1101_1101_1101_1101 SIGN-EXTEND HALFWORD //doesn't work
 nop
 nop
 nop
@@ -229,17 +229,17 @@ nop
 nop
 nop
 nop
-sra $t3, $t1, 4				#176 [sra] 		t3 = F999_8998 = (9998_9989 >> 4) 
+sra $t3, $t1, 4				#176 [sra] 		t3 = F999_8998 = (9998_9989 >> 4) //doesn't work
 nop
 nop
 nop
 nop
-srav $t3, $t1, $t1			#180 [srav]		t3 = FFCC_CC4C = (9998_9989 >> 01001)
+srav $t3, $t1, $t1			#180 [srav]		t3 = FFCC_CC4C = (9998_9989 >> 01001) //doesn't work
 nop
 nop
 nop
 nop
-seb $t3, $t1				#184 [seb] 		t3 = FFFF_FF89
+seb $t3, $t1				#184 [seb] 		t3 = FFFF_FF89 //doesn't work
 nop
 nop
 nop
