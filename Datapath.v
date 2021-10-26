@@ -152,7 +152,7 @@ module Datapath(Clk, Rst, PCResult);
 //    ALU32BitBranch          ALU32BitBranch(EX_ALUControl, EX_ALUSrc1Data, EX_ALUSrc2Data, EX_Instruction31_26, Zero);
 
                             //ShiftLeft2(In, Out)
-    ShiftLeft2              ShiftLeft2({17'd0, ID_Instruction[15:0]}, Shifted_Imm);
+    ShiftLeft2              ShiftLeft2({16'd0, ID_Instruction[15:0]}, Shifted_Imm);
 
     //determine new pc
                             //Mux32Bit2To1(out, inA, inB, sel)
