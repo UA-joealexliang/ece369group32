@@ -318,8 +318,9 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Opcode, ALUResult, Hi, Lo, Zero,
 					end
 
 					5'b01001: begin // rotr, rotrv
-						temp <= {B, B}; //ex B = 101 temp = 101101 rotr0/3 = 101 rotr1 = 110 rotr2 = 011 
-						ALUResult <= temp[A[4:0]+:32];
+						ALUResult <= (A >> B) | (A << (32 - B));
+						//temp <= {B, B}; //ex B = 101 temp = 101101 rotr0/3 = 101 rotr1 = 110 rotr2 = 011 
+						//ALUResult <= temp[A[4:0]+:32];
 					end
 
 					5'b01010: begin // slt
@@ -361,9 +362,9 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Opcode, ALUResult, Hi, Lo, Zero,
 						end
 					end
 
-					5'b01101: begin // sra, srav
+					5'b01101: begin // sra, srav ; shift right but signed
 						if (B[31] == 1) begin
-							s <= $signed(B) >>> A[4:0];		
+							s <= $signed(B) >>> A[10:6];		
 							ALUResult <= s;
 						end
 						else if (B[31] == 0) begin
@@ -494,7 +495,7 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Opcode, ALUResult, Hi, Lo, Zero,
 					ALUResult <= 0;
 				end
 			end
-
+			
 			// data instructions
 
 			6'b100011: begin // lw
@@ -524,13 +525,13 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Opcode, ALUResult, Hi, Lo, Zero,
 			6'b001111: begin // lui
 				ALUResult <= B<<16;
 			end
-
+			/*
 			// branch instructions
 
 			6'b000001: begin
 				case(ALUControl)
 					5'b11000: begin // bgez
-						if (A >= 0) begin
+						if ($signed(A) >= 0) begin
 							Zero <= 1;
 						end
 						else begin
@@ -539,7 +540,7 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Opcode, ALUResult, Hi, Lo, Zero,
 					end
 
 					5'b11001: begin // bltz
-						if (A < 0) begin
+						if ($signed(A) < 0) begin
 							Zero <= 1;
 						end
 						else begin
@@ -550,7 +551,7 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Opcode, ALUResult, Hi, Lo, Zero,
 			end
 
 			6'b000100: begin // beq
-				if (A == B) begin
+				if ($signed(A) == $signed(B)) begin
 					Zero <= 1;
 				end
 				else begin
@@ -559,7 +560,7 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Opcode, ALUResult, Hi, Lo, Zero,
 			end
 
 			6'b000101: begin // bne
-				if(A != B) begin
+				if($signed(A) != $signed(B)) begin
 					Zero <= 1;
 				end
 				else begin
@@ -568,7 +569,7 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Opcode, ALUResult, Hi, Lo, Zero,
 			end
 
 			6'b000111: begin // bgtz
-				if (A > 0) begin
+				if ($signed(A) > 0) begin
 					Zero <= 1;
 				end
 				else begin
@@ -577,13 +578,13 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Opcode, ALUResult, Hi, Lo, Zero,
 			end
 
 			6'b000110: begin // blez
-				if (A <= 0) begin
+				if ($signed(A) <= 0) begin
 					Zero <= 1;
 				end
 				else begin
 					Zero <= 0;
 				end
-			end
+			end*/
 
 			default: begin // j, jal
 			end
