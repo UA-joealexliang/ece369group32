@@ -318,9 +318,9 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Opcode, ALUResult, Hi, Lo, Zero,
 					end
 
 					5'b01001: begin // rotr, rotrv
-						ALUResult <= (A >> B) | (A << (32 - B));
-						//temp <= {B, B}; //ex B = 101 temp = 101101 rotr0/3 = 101 rotr1 = 110 rotr2 = 011 
-						//ALUResult <= temp[A[4:0]+:32];
+						//ALUResult <= (B >> A) | (B << (32 - A));
+						temp <= {B, B}; //ex B = 101 temp = 101101 rotr0/3 = 101 rotr1 = 110 rotr2 = 011 
+						ALUResult <= temp[A[4:0]+:32];
 					end
 
 					5'b01010: begin // slt
@@ -364,11 +364,12 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Opcode, ALUResult, Hi, Lo, Zero,
 
 					5'b01101: begin // sra, srav ; shift right but signed
 						if (B[31] == 1) begin
-							s <= $signed(B) >>> A[10:6];		
-							ALUResult <= s;
+							$display("signed negative");
+							temp <= {32'b1, B};		
+							ALUResult <= temp[A[4:0]+:32];
 						end
 						else if (B[31] == 0) begin
-							ALUResult <= B >> A[10:6];
+							ALUResult <= B >> A[4:0];
 						end
 					end
 
@@ -468,7 +469,8 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Opcode, ALUResult, Hi, Lo, Zero,
 			end
 
 			6'b001010: begin // slti
-				if (A[31] != B[31]) begin //if they are not the same sign
+				ALUResult <= $signed(A) < $signed(B);
+				/*if (A[31] != B[31]) begin //if they are not the same sign
 					if (A[31] == 1) begin //rs is negative
 						ALUResult <= 1;
 					end
@@ -483,7 +485,7 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Opcode, ALUResult, Hi, Lo, Zero,
 					else begin
 						ALUResult <= 0;
 					end
-				end
+				end*/
 			end
 
 			6'b001011: begin // sltiu

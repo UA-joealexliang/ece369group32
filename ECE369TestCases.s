@@ -184,12 +184,12 @@ nop
 nop
 nop
 nop
-sllv $t2, $t2, $t2			#140 [sllv] 		t2 = FFFD_D380 = 1111_1111_1111_1011_1011_0011_1000_0000 (00111 = 7 bits)
+sllv $t2, $t2, $t2			#140 [sllv] 		t2 = FFFB_B380 = 1111_1111_1111_1011_1011_0011_1000_0000 (00111 = 7 bits)
 nop
 nop
 nop
 nop
-addi $t1, $t1, -16			#144			t1 = 9999_9989 = 1001_1001_1001_1001_1001_1001_1000_1001
+addi $t1, $t1, -16			#144			t1 = 9998_9989 = 1001_1001_1001_1001_1001_1001_1000_1001
 nop
 nop
 nop
@@ -204,12 +204,12 @@ nop
 nop
 nop
 nop
-slti $t3, $t1, 0xFFFF			#156 [slti] t3 = 0	t1 < FFFF_FFFF = TRUE SIGNED SIGN-EXTEND (need to test that it sets to 1 as well)
+slti $t3, $t1, 0xFFFF			#156 [slti] t3 = 1	t1 < FFFF_FFFF = TRUE SIGNED SIGN-EXTEND (need to test that it sets to 1 as well)
 nop
 nop
 nop
 nop
-movn $t3, $t1, $t2			#160 [movn] 		t3 = 9999_9989 (need to test that it doesn't move as well)
+movn $t3, $t1, $t2			#160 [movn] 		t3 = 9998_9989 (need to test that it doesn't move as well)
 nop
 nop
 nop
@@ -219,37 +219,37 @@ nop
 nop
 nop
 nop
-rotrv $t3, $t3, $t2			#168 [rotrv] 		t3 = 03FF_EEC8 = 0000_0011_1111_1111_1110_1110_1100_1000 (11101 = 29 bits)
+rotrv $t3, $t3, $t2			#168 [rotrv] 		t3 = 3FFE_EC80 (11001 = 25 bits)
 nop
 nop
 nop
 nop
-rotr $t3, $t3, 3			#172 [rotr] 		t3 = 007F_FDD9 = 0000_0000_0111_1111_1111_1101_1101_1001
+rotr $t3, $t3, 3			#172 [rotr] 		t3 = 07FF_DD90 = 0000_0111_1111_1111_1110_1110_1001_0000
 nop
 nop
 nop
 nop
-sra $t3, $t1, 4				#176 [sra] 		t3 = F999_9998 = 1111_1001_1001_1001_1001_1001_1001_1000
+sra $t3, $t1, 4				#176 [sra] 		t3 = F999_8998 = (9998_9989 >> 4) 
 nop
 nop
 nop
 nop
-srav $t3, $t1, $t1			#180 [srav]		t3 = FFCC_CCCC = 1111_1111_1100_1100_1100_1100_1100_1100 (01001 = 9 bits)
+srav $t3, $t1, $t1			#180 [srav]		t3 = FFCC_CC4C = (9998_9989 >> 01001)
 nop
 nop
 nop
 nop
-seb $t3, $t1				#184 [seb] 		t3 = FFFF_FF89 = 1111_1111_1111_1111_1111_1111_1000_1001
+seb $t3, $t1				#184 [seb] 		t3 = FFFF_FF89
 nop
 nop
 nop
 nop
-sltiu $t3, $t1, 0xFFFF			#188 [sltiu] t3 = 1	t1 < FFFF_FFFF = TRUE UNSIGNED (need to test that it sets to 0 as well)
+sltiu $t3, $t1, 0xFFFF			#188 [sltiu] t3 = 1	= 9998_9989 < FFFF_FFFF = TRUE UNSIGNED (need to test that it sets to 0 as well)
 nop
 nop
 nop
 nop
-sltu $t3, $t1, $t2			#192 [sltu] t3 = 0 	t1 < t2 = FALSE UNSIGNED (need to test that it sets to 1 as well)
+sltu $t3, $t1, $t2			#192 [sltu] t3 = 0 	t1 < t2 = 9998_9989 < 007F_FDD9 = FALSE UNSIGNED (need to test that it sets to 1 as well)
 nop
 nop
 nop
@@ -411,39 +411,39 @@ nop
 nop
 nop
 nop
-addi $t5, $0, 4				#308 t5 = 4
+addi $t5, $0, 4				#312 t5 = 4
 nop
 nop
 nop
 nop
-bne $t5, $0, jalra			#312 (go to 328 if t5 != 0)
+bne $t5, $0, jalra			#316 (go to 328 if t5 != 0)
 nop
 nop
 nop
 nop
-addi $t5, $t5, -4			#316 (SKIPPED)
+addi $t5, $t5, -4			#320 (SKIPPED)
 nop
 nop
 nop
 nop
 addit5:
-addi $t5, $t5, -4			#320 t5 = 0 (NOT -4)
+addi $t5, $t5, -4			#324 t5 = 0 (NOT -4)
 nop
 nop
 nop
 nop
-jr $ra					#324 (go back to ra = 332)
+jr $ra					#328 (go back to ra = 332)
 nop
 nop
 nop
 nop
 jalra:
-jal addit5				#328 (go to 320) ra = 332
+jal addit5				#332 (go to 320) ra = 332
 nop
 nop
 nop
 nop
-addi $t4, $t4, 1			#332 t4 = 310 For NOPs, t4 = 387
+addi $t4, $t4, 1			#336 t4 = 310 For NOPs, t4 = 387
 nop
 nop
 nop
