@@ -11,7 +11,8 @@ module Datapath_tb();
 
     reg Clk, Rst;
     
-    Datapath a1(Clk,Rst);
+    wire [31:0] PCResult, WriteData, HI_out, LO_out;
+    Datapath a1(Clk,Rst, PCResult, WriteData, HI_out, LO_out);
     
     always begin
         Clk <= 0;

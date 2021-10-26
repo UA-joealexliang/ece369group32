@@ -9,7 +9,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module Datapath(Clk, Rst, PCResult);
+module Datapath(Clk, Rst, PCResult, WriteData, HI_out, LO_out);
     input Clk, Rst;
 
     //variables from Program Counter
@@ -56,7 +56,7 @@ module Datapath(Clk, Rst, PCResult);
     wire [31:0] ALUSrc1Data, ALUSrc2Data; //is not fed into EX_MEM_Reg
     
     wire [31:0] HiALUOut, LoALUOut; //is not fed into EX_MEM_Reg
-    (* mark_debug = "true" *) wire [31:0] HI_out, LO_out; //is not fed into EX_MEM_Reg
+    output [31:0] HI_out, LO_out; //is not fed into EX_MEM_Reg
     
     //variables from MEM_WB_Reg
     wire [31:0] MEM_MemDataOut;
@@ -67,7 +67,7 @@ module Datapath(Clk, Rst, PCResult);
     wire [1:0] WB_RegDst;
     wire [4:0] WB_Instruction20_16, WB_Instruction15_11;
 
-    (* mark_debug = "true" *) wire [31:0] WriteData; //is not fed into MEM_WB_Reg
+    output [31:0] WriteData; //is not fed into MEM_WB_Reg
     wire [31:0] RegDstData;
     wire [31:0] ALUResult_or_ReadData;
 
@@ -210,14 +210,18 @@ module Datapath(Clk, Rst, PCResult);
     
 ////////////////////MEMORY STAGE////////////////////////////////////////////////////
 
-                            //DataMemoryInput(WriteDataIn, Datatype, WriteDataOut); 
+    /*                        //DataMemoryInput(WriteDataIn, Datatype, WriteDataOut); 
     DataMemoryInput         Data_Memory_Input(MEM_ReadData2, MEM_Datatype, WriteDataIn);
-    
+
                             //DataMemory(Address, WriteData, Clk, MemWrite, MemRead, ReadData)
     DataMemory              Data_Memory(MEM_ALUResult, WriteDataIn, Clk, MEM_MemWrite, MEM_MemRead, ReadDataOut);
 
     DataMemoryOutput        Data_Memory_Output(ReadDataOut, MEM_Datatype, MEM_MemDataOut);
+    */
 
+                            //DataMemory(Address, WriteData, Clk, MemWrite, MemRead, Datatype, ReadData);
+    DataMemory              Data_Memory(MEM_ALUResult, MEM_ReadData2, Clk, MEM_MemWrite, MEM_MemRead, MEM_Datatype, MEM_MemDataOut);                        
+    
                             /*MEM_WB_Reg(
                                     MEM_RegWrite, MEM_RegWrite2, MEM_MemtoReg, MEM_MemDataOut, MEM_ALUResult, MEM_RegDst, MEM_Jump, MEM_PCAddResult,
                                     MEM_Instruction20_16, MEM_Instruction15_11,

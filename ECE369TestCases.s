@@ -83,12 +83,12 @@ nop
 nop
 nop
 nop
-sb $t2, 4($0)				#60 [sb] Memory[1] = E900_0FAD (stores least significant byte of t2 -> E9) #Memory 0:{[][][][]} ; 4:{[E9][00][0F][AD]}
+sb $t2, 4($0)				#60 [sb] Memory[1] = 0000_0FE9 (stores least significant byte of t2 -> E9)
 nop
 nop
 nop
 nop
-sh $t2, 6($0)				#64 [sh] Memory[1] = E900_BAE9 (stores least significant half of t2 -> BAE9)#Memory 0:{[][][][]} ; 4:{[E9][00][BA][E9]}
+sh $t2, 6($0)				#64 [sh] Memory[1] = BAE9_0FE9 (stores least significant half of t2 -> BAE9)
 nop
 nop
 nop
@@ -98,7 +98,7 @@ nop
 nop
 nop
 nop
-lb $t5, 5($s0)				#72 [lb] t5 = 0000_0000 (sign extends 00)
+lb $t5, 5($s0)				#72 [lb] t5 = 0000_000F (sign extends 0F)
 nop
 nop
 nop
