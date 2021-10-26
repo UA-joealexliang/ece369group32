@@ -22,7 +22,7 @@
 module IF_ID_Reg(
                 IF_Instruction, IF_PCAddResult, 
                 Clk, Rst, Ld, 
-                ID_Instruction, ID_PCAddResult, 
+                ID_Instruction, ID_PCAddResult 
                 );
 
     input Clk, Rst, Ld;
