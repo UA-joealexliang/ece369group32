@@ -112,8 +112,11 @@ module Datapath(Clk, Rst);
                                         ID_Branch, ID_Jump, ID_Datatype, ID_ALUControl, SignExtend
                                         );
 
+    wire OrResult;
+                            //ORGate(A, B, Out);
+    ORGate                 ORGate(WB_RegWrite, WB_RegWrite2, OrResult);
                             //RegisterFile(ReadRegister1, ReadRegister2, WriteRegister, WriteData, RegWrite, Clk, ReadData1, ReadData2);
-    RegisterFile            Registers(ID_Instruction[25:21], ID_Instruction[20:16], RegDstData, WriteData, WB_RegWrite | WB_RegWrite2, Clk,  ID_ReadData1,  ID_ReadData2);
+    RegisterFile            Registers(ID_Instruction[25:21], ID_Instruction[20:16], RegDstData, WriteData, OrResult, Clk,  ID_ReadData1,  ID_ReadData2);
     
                             //SignExtension(in, out, signOrZero);
     SignExtension           SignExtension(ID_Instruction[15:0],  ID_SignExtended, SignExtend);
@@ -154,9 +157,13 @@ module Datapath(Clk, Rst);
                             //ShiftLeft2(In, Out)
     ShiftLeft2              ShiftLeft2({27'd0, ID_Instruction[15:0]}, Shifted_Imm);
 
+    wire AndResult;
+    //ANDGate(A, B, Out);
+    ANDGate                 ANDGate(ID_Branch, Zero, AndResult);
+
     //determine new pc
                             //Mux32Bit2To1(out, inA, inB, sel)
-    Mux32Bit2To1            PC4_or_PC4Offset(PC4_or_PCoffset, ID_PCAddResult, PCOffsetResult, ID_Branch & Zero); //PC+4 or MEM_Branch
+    Mux32Bit2To1            PC4_or_PC4Offset(PC4_or_PCoffset, ID_PCAddResult, PCOffsetResult, AndResult); //PC+4 or MEM_Branch
                             //Mux32Bit2To1(out, inA, inB, sel)
     Mux32Bit2To1            PCTarget(Rs_or_Imm, ID_ReadData1, Shifted_Imm, ID_ALUSrc2); //imm or Rs
 
@@ -206,7 +213,7 @@ module Datapath(Clk, Rst);
                             //DataMemoryInput(WriteDataIn, Datatype, WriteDataOut); 
     DataMemoryInput         Data_Memory_Input(MEM_ReadData2, MEM_Datatype, WriteDataIn);
     
-                            //DataMemory(Address, WriteData, Clk, ID_MemWrite, ID_MemRead, ID_Datatype, ReadData)
+                            //DataMemory(Address, WriteData, Clk, MemWrite, MemRead, ReadData)
     DataMemory              Data_Memory(MEM_ALUResult, WriteDataIn, Clk, MEM_MemWrite, MEM_MemRead, ReadDataOut);
 
     DataMemoryOutput        Data_Memory_Output(ReadDataOut, MEM_Datatype, MEM_MemDataOut);

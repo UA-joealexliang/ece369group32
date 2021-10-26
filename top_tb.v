@@ -24,7 +24,6 @@ module Datapath_tb();
     initial begin
         Rst <= 1;
         @(posedge Clk);
-        @(posedge Clk);
         Rst <= 0;
     end
 

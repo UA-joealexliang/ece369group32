@@ -3,9 +3,9 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date: 10/06/2021 04:34:05 PM
+// Create Date: 10/25/2021 11:06:55 PM
 // Design Name: 
-// Module Name: ANDGate
+// Module Name: ORGate
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -20,11 +20,11 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module ANDGate(A, B, Out);
+module ORGate(A, B, Out);
     input A, B;
     output reg Out;
     
     always@(*) begin
-        Out <= A && B;
+        Out <= A || B;
     end
 endmodule
