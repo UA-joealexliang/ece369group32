@@ -106,11 +106,11 @@ module Datapath(Clk, Rst, PCResult, WriteData, HI_out, LO_out);
                                         RegDst, ALUSrc, ALUSrc2, MemtoReg, RegWrite, HI_LO_Write, MemRead, MemWrite, 
                                         Branch, Jump, Datatype, ALUControl, SignExtend
                                         );*/
-    wire 15_0or10_6;
+    wire index;
     Controller                Controller(
                                         ID_Instruction[31:26], ID_Instruction[21], ID_Instruction[20:16], ID_Instruction[10:6], ID_Instruction[5:0], 
                                         ID_RegDst, ID_ALUSrc, ID_ALUSrc2, ID_MemtoReg, ID_RegWrite, ID_HiLoWrite, ID_MemRead, ID_MemWrite, 
-                                        ID_Branch, ID_Jump, ID_Datatype, ID_ALUControl, SignExtend, 15_0or10_6
+                                        ID_Branch, ID_Jump, ID_Datatype, ID_ALUControl, SignExtend, index
                                         );
 
     wire OrResult;
@@ -121,7 +121,7 @@ module Datapath(Clk, Rst, PCResult, WriteData, HI_out, LO_out);
     
 
                             //Mux32Bit2To1(out, inA, inB, sel)
-    Mux32Bit2To1            choose15_0_or_10_6(ID_ALUSrc1Data, {16d'0, ID_Instruction[15:0]}, {27d'0, ID_Instruction[10:6]}, 15_0or10_6); //decides between rs and imm
+    Mux32Bit2To1            chooseindex(ID_ALUSrc1Data, {16d'0, ID_Instruction[15:0]}, {27d'0, ID_Instruction[10:6]}, index); //decides between rs and imm
                             //SignExtension(in, out, signOrZero);
     SignExtension           SignExtension(ID_Instruction[15:0],  ID_SignExtended, SignExtend);
 

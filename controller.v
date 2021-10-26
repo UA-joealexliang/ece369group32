@@ -3,7 +3,7 @@
 module Controller(
             Opcode, Bit21, Bit20_16, Bit10_6, funct, 
             RegDst, ALUSrc, ALUSrc2, MemtoReg, RegWrite, HI_LO_Write, MemRead, MemWrite, 
-            Branch, Jump, Datatype, ALUControl, SignExtend, 15_0or10_6
+            Branch, Jump, Datatype, ALUControl, SignExtend, index
             );
 
     input [5:0] Opcode;     // left-most 6 bits of the instruction signifying the opcode
@@ -12,7 +12,7 @@ module Controller(
     input [4:0] Bit10_6;    // used to differentiate seb vs seh and Bit6 used to differentiate srlv vs rotrv
     input [5:0] funct;      // right-most 6 bits of the instruction signifying the function under operation type
 
-    output reg ALUSrc, ALUSrc2, MemtoReg, RegWrite, MemRead, MemWrite, Branch, Jump, 15_0or10_6; // 12 control signals
+    output reg ALUSrc, ALUSrc2, MemtoReg, RegWrite, MemRead, MemWrite, Branch, Jump, index; // 12 control signals
     output reg [1:0] RegDst;
     output reg SignExtend; // still needs to be implemented
     output reg [1:0] Datatype;
@@ -44,7 +44,7 @@ module Controller(
                 Jump = 1'b0;
                 HI_LO_Write = 2'b00;
                 SignExtend = 1'b0;
-                15_0or10_6 = 0;
+                index = 0;
                 //ALUOp1 = 1'b1;
                 //ALUOp0 = 1'b0;
 
@@ -90,7 +90,7 @@ module Controller(
                     6'b000000: begin // sll
                         ALUControl = 5'b00111;
                         ALUSrc2 = 1'b1;
-                        15_0or10_6 = 1;
+                        index = 1;
                     end
 
                     6'b000100: begin // sllv
@@ -102,13 +102,13 @@ module Controller(
                             1'b0: begin // srl
                                 ALUControl = 5'b01000;
                                 ALUSrc2 = 1'b1;
-                                15_0or10_6 = 1;
+                                index = 1;
                             end
 
                             1'b1: begin // rotr
                                 ALUControl = 5'b01001;
                                 ALUSrc2 = 1'b1;
-                                15_0or10_6 = 1;
+                                index = 1;
                             end
 
                             default: begin
@@ -147,7 +147,7 @@ module Controller(
 
                     6'b000011: begin // sra
                         ALUControl = 5'b01101;
-                        15_0or10_6 = 1;
+                        index = 1;
                     end
 
                     6'b000111: begin // srav
@@ -199,7 +199,7 @@ module Controller(
                 Branch = 1'b0;
                 Jump = 1'b0;
                 SignExtend = 1'b0;
-                15_0or10_6 = 0;
+                index = 0;
                 //ALUOp1 = 1'b1;
                 //ALUOp0 = 1'b0;
 
@@ -241,7 +241,7 @@ module Controller(
                 Jump = 1'b0;
                 HI_LO_Write = 2'b00;
                 SignExtend = 1'b0;
-                15_0or10_6 = 0;
+                index = 0;
                 //ALUOp1 = 1'b0;
                 //ALUOp0 = 1'b0;
             end
@@ -259,7 +259,7 @@ module Controller(
                 Jump = 1'b0;
                 HI_LO_Write = 2'b00;
                 SignExtend = 1'b0;
-                15_0or10_6 = 0;
+                index = 0;
                 //ALUOp1 = 1'b0;
                 //ALUOp0 = 1'b0;
             end
@@ -277,7 +277,7 @@ module Controller(
                 Jump = 1'b0;
                 HI_LO_Write = 2'b00;
                 SignExtend = 1'b0;
-                15_0or10_6 = 0;
+                index = 0;
                 //ALUOp1 = 1'b0;
                 //ALUOp0 = 1'b0;
             end
@@ -294,7 +294,7 @@ module Controller(
                 Jump = 1'b0;
                 HI_LO_Write = 2'b00;
                 SignExtend = 1'b0;
-                15_0or10_6 = 0;
+                index = 0;
                 //ALUOp1 = 1'b0;
                 //ALUOp0 = 1'b0;
             end
@@ -312,7 +312,7 @@ module Controller(
                 Jump = 1'b0;
                 HI_LO_Write = 2'b00;
                 SignExtend = 1'b0;
-                15_0or10_6 = 0;
+                index = 0;
                 //ALUOp1 = 1'b0;
                 //ALUOp0 = 1'b0;
             end
@@ -330,7 +330,7 @@ module Controller(
                 Jump = 1'b0;
                 HI_LO_Write = 2'b00;
                 SignExtend = 1'b0;
-                15_0or10_6 = 0;
+                index = 0;
                 //ALUOp1 = 1'b0;
                 //ALUOp0 = 1'b0;
             end
@@ -348,7 +348,7 @@ module Controller(
                 Jump = 1'b0;
                 HI_LO_Write = 2'b00;
                 SignExtend = 1'b0;
-                15_0or10_6 = 0;
+                index = 0;
                 //ALUOp1 = 1'b0;
                 //ALUOp0 = 1'b0;
             end
@@ -368,7 +368,7 @@ module Controller(
                 Jump = 1'b0;
                 HI_LO_Write = 2'b00;
                 SignExtend = 1'b0;
-                15_0or10_6 = 0;
+                index = 0;
                 //ALUOp1 = 1'b0;
                 //ALUOp0 = 1'b1;
 
@@ -396,7 +396,7 @@ module Controller(
                 Jump = 1'b0;
                 HI_LO_Write = 2'b00;
                 SignExtend = 1'b0;
-                15_0or10_6 = 0;
+                index = 0;
                 //ALUOp1 = 1'b0;
                 //ALUOp0 = 1'b1;
             end
@@ -414,7 +414,7 @@ module Controller(
                 Jump = 1'b0;
                 HI_LO_Write = 2'b00;
                 SignExtend = 1'b0;
-                15_0or10_6 = 0;
+                index = 0;
                 //ALUOp1 = 1'b0;
                 //ALUOp0 = 1'b1;
             end
@@ -432,7 +432,7 @@ module Controller(
                 Jump = 1'b0;
                 HI_LO_Write = 2'b00;
                 SignExtend = 1'b0;
-                15_0or10_6 = 0;
+                index = 0;
                 //ALUOp1 = 1'b0;
                 //ALUOp0 = 1'b1;
             end
@@ -450,7 +450,7 @@ module Controller(
                 Jump = 1'b0;
                 HI_LO_Write = 2'b00;
                 SignExtend = 1'b0;
-                15_0or10_6 = 0;
+                index = 0;
                 //ALUOp1 = 1'b0;
                 //ALUOp0 = 1'b1;
             end
@@ -470,7 +470,7 @@ module Controller(
                 Jump = 1'b0;
                 HI_LO_Write = 2'b00;
                 SignExtend = 1'b0;
-                15_0or10_6 = 0;
+                index = 0;
                 //ALUOp1 = 1'b1;
                 //ALUOp0 = 1'b0;
             end
@@ -488,7 +488,7 @@ module Controller(
                 Jump = 1'b0;
                 HI_LO_Write = 2'b00;
                 SignExtend = 1'b0;
-                15_0or10_6 = 0;
+                index = 0;
                 //ALUOp1 = 1'b1;
                 //ALUOp0 = 1'b0;
             end
@@ -506,7 +506,7 @@ module Controller(
                 Jump = 1'b0;
                 HI_LO_Write = 2'b00;
                 SignExtend = 1'b1;
-                15_0or10_6 = 0;
+                index = 0;
                 //ALUOp1 = 1'b1;
                 //ALUOp0 = 1'b0;
             end
@@ -524,7 +524,7 @@ module Controller(
                 Jump = 1'b0;
                 HI_LO_Write = 2'b00;
                 SignExtend = 1'b1;
-                15_0or10_6 = 0;
+                index = 0;
                 //ALUOp1 = 1'b1;
                 //ALUOp0 = 1'b0;
             end
@@ -542,7 +542,7 @@ module Controller(
                 Jump = 1'b0;
                 HI_LO_Write = 2'b00;
                 SignExtend = 1'b1;
-                15_0or10_6 = 0;
+                index = 0;
                 //ALUOp1 = 1'b1;
                 //ALUOp0 = 1'b0;
             end
@@ -560,7 +560,7 @@ module Controller(
                 Jump = 1'b0;
                 HI_LO_Write = 2'b00;
                 SignExtend = 1'b0;
-                15_0or10_6 = 0;
+                index = 0;
                 //ALUOp1 = 1'b1;
                 //ALUOp0 = 1'b0;
             end
@@ -578,7 +578,7 @@ module Controller(
                 Jump = 1'b0;
                 HI_LO_Write = 2'b00;
                 SignExtend = 1'b0;
-                15_0or10_6 = 0;
+                index = 0;
                 //ALUOp1 = 1'b1;
                 //ALUOp0 = 1'b0;
             end
@@ -598,7 +598,7 @@ module Controller(
                 Jump = 1'b0;
                 HI_LO_Write = 2'b00;
                 SignExtend = 1'b0;
-                15_0or10_6 = 0;
+                index = 0;
                 //ALUOp1 = 1'b1;
                 //ALUOp0 = 1'b0;
 
@@ -626,7 +626,7 @@ module Controller(
                 Jump = 1'b1;
                 HI_LO_Write = 2'b00;
                 SignExtend = 1'b0;
-                15_0or10_6 = 0;
+                index = 0;
             end
             
             6'b000011: begin // jal
@@ -642,7 +642,7 @@ module Controller(
                 Jump = 1'b1;
                 HI_LO_Write = 2'b00;
                 SignExtend = 1'b0;
-                15_0or10_6 = 0;
+                index = 0;
             end
 
             default: begin
@@ -657,7 +657,7 @@ module Controller(
                 Jump = 1'b0;
                 HI_LO_Write = 2'b00;
                 SignExtend = 1'b0;
-                15_0or10_6 = 0;
+                index = 0;
                 //ALUOp1 = 1'b0;
                 //ALUOp0 = 1'b0;
             end
