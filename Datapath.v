@@ -56,6 +56,7 @@ module Datapath(Clk, Rst, PCResult, WriteData, HI_out, LO_out);
     wire [31:0] ALUSrc1Data, ALUSrc2Data; //is not fed into EX_MEM_Reg
     
     wire [31:0] HiALUOut, LoALUOut; //is not fed into EX_MEM_Reg
+    
     output [31:0] HI_out, LO_out; //is not fed into EX_MEM_Reg
     
     //variables from MEM_WB_Reg
@@ -68,6 +69,7 @@ module Datapath(Clk, Rst, PCResult, WriteData, HI_out, LO_out);
     wire [4:0] WB_Instruction20_16, WB_Instruction15_11;
 
     output [31:0] WriteData; //is not fed into MEM_WB_Reg
+    
     wire [31:0] RegDstData;
     wire [31:0] ALUResult_or_ReadData;
 
