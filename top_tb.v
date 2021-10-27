@@ -7,12 +7,16 @@
 // 
 
 
-module Datapath_tb();
+module Top_tb();
 
     reg Clk, Rst;
     
-    wire [31:0] PCResult, WriteData, HI_out, LO_out;
-    Datapath a1(Clk,Rst, PCResult, WriteData, HI_out, LO_out);
+    wire [6:0] out7;
+    wire [7:0] en_out;
+    
+    //wire [31:0] PCResult, WriteData, HI_out, LO_out;
+    //Datapath a1(Clk,Rst, PCResult, WriteData, HI_out, LO_out);
+    TopLevel a1(Clk, Rst, out7, en_out);
     
     always begin
         Clk <= 0;
