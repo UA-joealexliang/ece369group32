@@ -9,7 +9,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module Datapath(Clk, Rst, PCResult, WriteData, HI_out, LO_out);
+module Datapath(Clk, Rst, PCResult, WriteData);
     input Clk, Rst;
 
     //variables from Program Counter
@@ -57,7 +57,7 @@ module Datapath(Clk, Rst, PCResult, WriteData, HI_out, LO_out);
     
     wire [31:0] HiALUOut, LoALUOut; //is not fed into EX_MEM_Reg
     
-    output [31:0] HI_out, LO_out; //is not fed into EX_MEM_Reg
+    wire [31:0] HI_out, LO_out; //is not fed into EX_MEM_Reg
     
     //variables from MEM_WB_Reg
     wire [31:0] MEM_MemDataOut;
