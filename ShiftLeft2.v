@@ -25,7 +25,7 @@ module ShiftLeft2(In, Out);
     
     output reg [31:0] Out;
     
-    always@(*) begin
+    always@(In) begin
         Out <= In << 32'd2;
     end
 endmodule

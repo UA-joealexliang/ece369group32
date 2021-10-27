@@ -48,7 +48,7 @@ module InstructionMemory(Address, Instruction);
         $readmemh("instruction_memory.mem", memory);    
     end
     
-    always @(*) begin
+    always @(Address) begin
         Instruction <= memory[Address[11:2]];
     end
     
