@@ -5,37 +5,37 @@
 ######################################################################################################################################
 .text				# Put program here 
 .globl main			# globally define 'main'
-addi $t0, $0, -3			#0 [addi] t0 = -3
+addi $t0, $0, -3			#0 [addi] t0 = -3 FFFF_FFFD
 nop
 nop
 nop
 nop
-add $t1, $t0, $t0			#4 [add] t1 = -6
+add $t1, $t0, $t0			#4 [add] t1 = -6 FFFF_FFFA
 nop
 nop
 nop
 nop
-addi $t2, $t0, -4			#8 t2 = -7
+addi $t2, $t0, -4			#8 t2 = -7 FFFF_FFF9
 nop
 nop
 nop
 nop
-addiu $t2, $t2, 0xFFFF 			#12 [addiu] t2 = -8 (sign extend 0xFFFF -> 0xFFFF_FFFF = -1; invert bits and add 1)
+addiu $t2, $t2, 0xFFFF 			#12 [addiu] t2 = -8 FFFF_FFF8 (sign extend 0xFFFF -> 0xFFFF_FFFF = -1; invert bits and add 1)
 nop
 nop
 nop
 nop
-addi $t3, $0, -1			#16 t3 = -1
+addi $t3, $0, -1			#16 t3 = -1 FFFF_FFFF
 nop
 nop
 nop
 nop
-addu $t2, $t2, $t3			#20 [addu] t2 = -9
+addu $t2, $t2, $t3			#20 [addu] t2 = -9 FFFF_FFFF7
 nop
 nop
 nop
 nop
-sub $t2, $t2, $t1			#24 [sub] t2 = -3	
+sub $t2, $t2, $t1			#24 [sub] t2 = -3 FFFF_FFFD
 nop
 nop
 nop
