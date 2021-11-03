@@ -6,7 +6,7 @@ module Hazard(ID_EX_Rd, EX_MEM_Rd, IF_ID_Rs, ID_EX_Rs, IF_ID_Rt, ID_EX_Rt, ID_EX
 
     output reg FlushSignal; // 0 for original control signals, 1 for nop
 
-    always(*) begin
+    always@(*) begin
         // rd + rs/rt hazards
         if (ID_EX_RegWrite == 1) begin
             if ((ID_EX_Rd == IF_ID_Rs) || (ID_EX_Rd == IF_ID_Rt)) begin
