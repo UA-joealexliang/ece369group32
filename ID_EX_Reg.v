@@ -20,25 +20,25 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 module ID_EX_Reg(
-                ID_ReadData1, ID_ReadData2, ID_SignExtended, ID_PCAddResult, ID_Instruction31_26, ID_Instruction20_16, ID_Instruction15_11,
+                ID_ReadData1, ID_ReadData2, ID_SignExtended, ID_PCAddResult, ID_Instruction,
                 ID_RegDst, ID_ALUSrc, ID_ALUControl, ID_MemWrite, ID_MemRead, ID_MemtoReg, ID_RegWrite, 
                 ID_Jump, ID_ALUSrc2, ID_Datatype, ID_HiLoWrite,
                 Clk, Rst, Ld, //these help separate inputs and outputs, each i/o is neatly mapped in order
-                EX_ReadData1, EX_ReadData2, EX_SignExtended, EX_PCAddResult, EX_Instruction31_26, EX_Instruction20_16, EX_Instruction15_11,
+                EX_ReadData1, EX_ReadData2, EX_SignExtended, EX_PCAddResult, EX_Instruction,
                 EX_RegDst, EX_ALUSrc, EX_ALUControl, EX_MemWrite, EX_MemRead, EX_MemtoReg, EX_RegWrite, 
                 EX_Jump, EX_ALUSrc2, EX_Datatype, EX_HiLoWrite
                 );
             
     input Clk, Rst, Ld;
     input [31:0] ID_ReadData1, ID_ReadData2, ID_SignExtended, ID_PCAddResult;
-    input [5:0] ID_Instruction31_26;
-    input [4:0] ID_Instruction20_16, ID_Instruction15_11, ID_ALUControl;
+    input [31:0] ID_Instruction;
+    input [4:0] ID_ALUControl;
     input [1:0] ID_RegDst, ID_Datatype, ID_HiLoWrite;
     input ID_ALUSrc, ID_MemWrite, ID_MemRead, ID_MemtoReg, ID_RegWrite, ID_Jump, ID_ALUSrc2;
 
     output reg [31:0] EX_ReadData1, EX_ReadData2, EX_SignExtended, EX_PCAddResult;
-    output reg [5:0] EX_Instruction31_26;
-    output reg [4:0] EX_Instruction20_16, EX_Instruction15_11, EX_ALUControl;
+    output reg [31:0] EX_Instruction;
+    output reg [4:0] EX_ALUControl;
     output reg [1:0] EX_RegDst, EX_Datatype, EX_HiLoWrite;
     output reg EX_ALUSrc, EX_MemWrite, EX_MemRead, EX_MemtoReg, EX_RegWrite, EX_Jump, EX_ALUSrc2;
     
@@ -48,10 +48,8 @@ module ID_EX_Reg(
                 EX_ReadData1 <= 0; 
                 EX_ReadData2 <= 0;  
                 EX_SignExtended <= 0;  
-                EX_PCAddResult <= 0; 
-                EX_Instruction31_26 <= 0; 
-                EX_Instruction20_16 <= 0;  
-                EX_Instruction15_11 <= 0;  
+                EX_PCAddResult <= 0;
+                EX_Instruction <= 0; 
                 EX_ALUControl <= 0; 
                 EX_RegDst <= 0; 
                 EX_Datatype <= 0; 
@@ -68,10 +66,8 @@ module ID_EX_Reg(
                 EX_ReadData1 <= ID_ReadData1; 
                 EX_ReadData2 <= ID_ReadData2;  
                 EX_SignExtended <= ID_SignExtended;  
-                EX_PCAddResult <= ID_PCAddResult; 
-                EX_Instruction31_26 <= ID_Instruction31_26; 
-                EX_Instruction20_16 <= ID_Instruction20_16;  
-                EX_Instruction15_11 <= ID_Instruction15_11;  
+                EX_PCAddResult <= ID_PCAddResult;
+                EX_Instruction <= ID_Instruction; 
                 EX_ALUControl <= ID_ALUControl; 
                 EX_RegDst <= ID_RegDst; 
                 EX_Datatype <= ID_Datatype; 

@@ -23,14 +23,13 @@ module Datapath(Clk, Rst, PCResult, WriteData);
 
     //variables from ID_EX_Reg
     wire [31:0] ID_ReadData1, ID_ReadData2, ID_SignExtended, ID_PCAddResult;
-    wire [5:0] ID_Instruction31_26;
-    wire [4:0] ID_Instruction20_16, ID_Instruction15_11, ID_ALUControl;
+    wire [4:0] ID_ALUControl;
     wire [1:0] ID_RegDst, ID_Datatype, ID_HiLoWrite;
-    wire ID_ALUSrc, ID_Branch, ID_MemWrite, ID_MemRead, ID_MemtoReg, ID_RegWrite, ID_Jump, ID_ALUSrc2;
+    wire ID_ALUSrc, ID_Branch, ID_MemWrite, ID_MemRead, ID_MemtoReg, ID_RegWrite, ID_Jump, ID_ALUSrc2, FlushSignal;
 
     wire [31:0] EX_ReadData1, EX_ReadData2, EX_SignExtended, EX_PCAddResult;
-    wire [5:0] EX_Instruction31_26;
-    wire [4:0] EX_Instruction20_16, EX_Instruction15_11, EX_ALUControl;
+    wire[31:0] EX_Instruction;
+    wire [4:0] EX_ALUControl;
     wire [1:0] EX_RegDst, EX_Datatype, EX_HiLoWrite;
     wire EX_ALUSrc, EX_MemWrite, EX_MemRead, EX_MemtoReg, EX_RegWrite, EX_Jump, EX_ALUSrc2;
     
@@ -51,7 +50,7 @@ module Datapath(Clk, Rst, PCResult, WriteData);
     wire MEM_RegWrite, MEM_RegWrite2, MEM_MemtoReg, MEM_MemWrite, MEM_MemRead, MEM_Jump;
     wire [31:0] MEM_ALUResult, MEM_ReadData2, MEM_PCAddResult;
     wire [1:0] MEM_RegDst, MEM_Datatype;
-    wire [4:0] MEM_Instruction20_16, MEM_Instruction15_11;
+    wire [31:0] MEM_Instruction;
 
     wire [31:0] ALUSrc1Data, ALUSrc2Data; //is not fed into EX_MEM_Reg
     
@@ -66,7 +65,7 @@ module Datapath(Clk, Rst, PCResult, WriteData);
     wire WB_RegWrite, WB_RegWrite2, WB_MemtoReg, WB_Jump;
     wire [31:0] WB_MemDataOut, WB_ALUResult, WB_PCAddResult;
     wire [1:0] WB_RegDst;
-    wire [4:0] WB_Instruction20_16, WB_Instruction15_11;
+    wire [31:0] WB_Instruction;
 
     output [31:0] WriteData; //is not fed into MEM_WB_Reg
     
@@ -103,6 +102,15 @@ module Datapath(Clk, Rst, PCResult, WriteData);
     
     ShiftLeft2              Shift_jaddr(ID_Instruction[25:0], jump_imm);*/
 
+                            /*Hazard(ID_EX_Rd, EX_MEM_Rd, IF_ID_Rs, 
+                                    ID_EX_Rs, IF_ID_Rt, ID_EX_Rt, 
+                                    ID_EX_MemRead, EX_MEM_MemRead, ID_EX_RegWrite, EX_MEM_RegWrite, 
+                                    ID_EX_Branch, EX_MEM_Branch, FlushSignal);*/
+    Hazard                  Hazard(EX_Instruction[25:21], MEM_Instruction[25:21], ID_Instruction[20:16], 
+                                    EX_Instruction[20:16], ID_Instruction[15:11], EX_Instruction[15:11],
+                                    EX_MemRead, MEM_MemRead, EX_RegWrite, MEM_RegWrite,
+                                    EX_Branch, MEM_Branch, FlushSignal);
+
                             /*Controller(
                                         Opcode, Bit21, Bit20_16, Bit10_6, funct, 
                                         RegDst, ALUSrc, ALUSrc2, MemtoReg, RegWrite, HI_LO_Write, MemRead, MemWrite, 
@@ -110,7 +118,7 @@ module Datapath(Clk, Rst, PCResult, WriteData);
                                         );*/
     wire index;
     Controller                Controller(
-                                        ID_Instruction[31:26], ID_Instruction[21], ID_Instruction[20:16], ID_Instruction[10:6], ID_Instruction[5:0], 
+                                        ID_Instruction[31:26], ID_Instruction[21], ID_Instruction[20:16], ID_Instruction[10:6], ID_Instruction[5:0], FlushSignal,
                                         ID_RegDst, ID_ALUSrc, ID_ALUSrc2, ID_MemtoReg, ID_RegWrite, ID_HiLoWrite, ID_MemRead, ID_MemWrite, 
                                         ID_Branch, ID_Jump, ID_Datatype, ID_ALUControl, SignExtend, index
                                         );
@@ -128,20 +136,20 @@ module Datapath(Clk, Rst, PCResult, WriteData);
     SignExtension           SignExtension(chosen_Imm[15:0], ID_SignExtended, SignExtend);
 
                             /*ID_EX_Reg(
-                                        ID_ReadData1, ID_ReadData2, ID_SignExtended, ID_PCAddResult, ID_Instruction31_26, ID_Instruction20_16, ID_Instruction15_11,
+                                        ID_ReadData1, ID_ReadData2, ID_SignExtended, ID_PCAddResult, ID_Instruction,
                                         ID_RegDst, ID_ALUSrc, ID_ALUControl, ID_MemWrite, ID_MemRead, ID_MemtoReg, ID_RegWrite, 
                                         ID_Jump, ID_ALUSrc2, ID_Datatype, ID_HiLoWrite,
                                         Clk, Rst, Ld, //these help separate inputs and outputs, each i/o is neatly mapped in order
-                                        EX_ReadData1, EX_ReadData2, EX_SignExtended, EX_PCAddResult, EX_Instruction31_26, EX_Instruction20_16, EX_Instruction15_11,
+                                        EX_ReadData1, EX_ReadData2, EX_SignExtended, EX_PCAddResult, EX_Instruction,
                                         EX_RegDst, EX_ALUSrc, EX_ALUControl, EX_MemWrite, EX_MemRead, EX_MemtoReg, EX_RegWrite, 
                                         EX_Jump, EX_ALUSrc2, EX_Datatype, EX_HiLoWrite
                                         );*/
     ID_EX_Reg                 ID_EX_Reg(
-                                        ID_ReadData1,  ID_ReadData2,  ID_SignExtended, ID_PCAddResult, ID_Instruction[31:26], ID_Instruction[20:16], ID_Instruction[15:11],
+                                        ID_ReadData1,  ID_ReadData2,  ID_SignExtended, ID_PCAddResult, ID_Instruction,
                                         ID_RegDst, ID_ALUSrc, ID_ALUControl, ID_MemWrite, ID_MemRead, ID_MemtoReg, ID_RegWrite, 
                                         ID_Jump, ID_ALUSrc2, ID_Datatype, ID_HiLoWrite,
                                         Clk, Rst, 1'b1, 
-                                        EX_ReadData1, EX_ReadData2, EX_SignExtended, EX_PCAddResult, EX_Instruction31_26, EX_Instruction20_16, EX_Instruction15_11,
+                                        EX_ReadData1, EX_ReadData2, EX_SignExtended, EX_PCAddResult, EX_Instruction,
                                         EX_RegDst, EX_ALUSrc, EX_ALUControl, EX_MemWrite, EX_MemRead, EX_MemtoReg, EX_RegWrite, 
                                         EX_Jump, EX_ALUSrc2, EX_Datatype, EX_HiLoWrite
                                         );
@@ -158,7 +166,7 @@ module Datapath(Clk, Rst, PCResult, WriteData);
     Mux32Bit2To1            ID_MuxALUinput2(ID_ALUSrc2Data, ID_ReadData2, ID_SignExtended, ID_ALUSrc); //decides between rt and imm
 
     ALU32BitBranch          ALU32BitBranch(ID_ALUControl, ID_ALUSrc1Data, ID_ALUSrc2Data, ID_Instruction[31:26], Zero);
-//    ALU32BitBranch          ALU32BitBranch(EX_ALUControl, EX_ALUSrc1Data, EX_ALUSrc2Data, EX_Instruction31_26, Zero);
+//    ALU32BitBranch          ALU32BitBranch(EX_ALUControl, EX_ALUSrc1Data, EX_ALUSrc2Data, EX_Instruction[31:26], Zero);
 
                             //ShiftLeft2(In, Out)
     ShiftLeft2              ShiftLeft2_Imm({16'd0, ID_Instruction[15:0]}, Shifted_Imm); 
@@ -192,29 +200,29 @@ module Datapath(Clk, Rst, PCResult, WriteData);
     LO_Reg                  LO_Reg(LoALUOut, LO_out, Clk, EX_HiLoWrite[1], Rst);
 
                             //ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Opcode, ALUResult, Hi, Lo, Zero, RegWrite2);
-    ALU32Bit                ALU1(EX_ALUControl, ALUSrc1Data, ALUSrc2Data, HI_out, LO_out, EX_Instruction31_26, EX_ALUResult, HiALUOut, LoALUOut, EX_Zero, EX_RegWrite2);
+    ALU32Bit                ALU1(EX_ALUControl, ALUSrc1Data, ALUSrc2Data, HI_out, LO_out, EX_Instruction[31:26], EX_ALUResult, HiALUOut, LoALUOut, EX_Zero, EX_RegWrite2);
     
                             /*EX_MEM_Reg(
                                     EX_RegWrite, EX_RegWrite2, EX_MemtoReg, 
                                     EX_MemWrite, EX_MemRead, EX_ALUResult, EX_ReadData2, EX_RegDst, 
                                     EX_Jump, EX_Datatype, EX_PCAddResult
-                                    EX_Instruction20_16, EX_Instruction15_11,
+                                    EX_Instruction,
                                     Clk, Rst, Ld,
                                     MEM_RegWrite, MEM_RegWrite2, MEM_MemtoReg,
                                     MEM_MemWrite, MEM_MemRead, MEM_ALUResult, MEM_ReadData2, MEM_RegDst, 
                                     MEM_Jump, MEM_Datatype, MEM_PCAddResult, 
-                                    MEM_Instruction20_16, MEM_Instruction15_11,
+                                    MEM_Instruction
                                     );*/
     EX_MEM_Reg              EX_MEM_Reg(
                                     EX_RegWrite, EX_RegWrite2, EX_MemtoReg, 
                                     EX_MemWrite, EX_MemRead, EX_ALUResult, EX_ReadData2, EX_RegDst, 
                                     EX_Jump, EX_Datatype, EX_PCAddResult, 
-                                    EX_Instruction20_16, EX_Instruction15_11,
+                                    EX_Instruction,
                                     Clk, Rst, 1'b1,
                                     MEM_RegWrite, MEM_RegWrite2, MEM_MemtoReg, 
                                     MEM_MemWrite, MEM_MemRead, MEM_ALUResult, MEM_ReadData2, MEM_RegDst, 
                                     MEM_Jump, MEM_Datatype, MEM_PCAddResult, 
-                                    MEM_Instruction20_16, MEM_Instruction15_11,
+                                    MEM_Instruction
                                     );
     
 ////////////////////MEMORY STAGE////////////////////////////////////////////////////
@@ -233,23 +241,23 @@ module Datapath(Clk, Rst, PCResult, WriteData);
     
                             /*MEM_WB_Reg(
                                     MEM_RegWrite, MEM_RegWrite2, MEM_MemtoReg, MEM_MemDataOut, MEM_ALUResult, MEM_RegDst, MEM_Jump, MEM_PCAddResult,
-                                    MEM_Instruction20_16, MEM_Instruction15_11,
+                                    MEM_Instruction,
                                     Clk, Rst, Ld,
                                     WB_RegWrite, WB_RegWrite2, WB_MemtoReg, WB_MemDataOut, WB_ALUResult, WB_RegDst, WB_Jump, WB_PCAddResult,
-                                    WB_Instruction20_16, WB_Instruction15_11
+                                    WB_Instruction
                                     );*/
     MEM_WB_Reg              MEM_WB_Reg(
                                     MEM_RegWrite, MEM_RegWrite2, MEM_MemtoReg, MEM_MemDataOut, MEM_ALUResult, MEM_RegDst, MEM_Jump, MEM_PCAddResult,
-                                    MEM_Instruction20_16, MEM_Instruction15_11,
+                                    MEM_Instruction,
                                     Clk, Rst, 1'b1,
                                     WB_RegWrite, WB_RegWrite2, WB_MemtoReg, WB_MemDataOut, WB_ALUResult, WB_RegDst, WB_Jump, WB_PCAddResult,
-                                    WB_Instruction20_16, WB_Instruction15_11
+                                    WB_Instruction
                                     );
                                                      
 ////////////////////WRITEBACK STAGE////////////////////////////////////////////////////
 
                             //Mux32Bit3To1(out, inA, inB, inC, sel);
-    Mux32Bit3To1            MuxRegDst (RegDstData, {27'd0, WB_Instruction20_16}, {27'd0, WB_Instruction15_11}, 32'd31, WB_RegDst);
+    Mux32Bit3To1            MuxRegDst (RegDstData, {27'd0, WB_Instruction[20:16]}, {27'd0, WB_Instruction[15:11]}, 32'd31, WB_RegDst);
                             //Mux32Bit2To1(out, inA, inB, sel)
     Mux32Bit2To1            WriteBackData(ALUResult_or_ReadData, WB_ALUResult, WB_MemDataOut, WB_MemtoReg);
                             //Mux32Bit2To1(out, inA, inB, sel)
