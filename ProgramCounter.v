@@ -31,16 +31,7 @@ module ProgramCounter(Address, PCResult, Reset, Clk);
 
 	output reg [31:0] PCResult;
 
-        /*always @(*) begin
-            if (Reset == 1) begin
-                PCResult <= 32'd0;
-            end
-            else begin
-                PCResult <= Address;
-            end
-        end*/
-        
-        always @(negedge Clk or posedge Reset) begin
+        always @(*) begin
             if (Reset == 1) begin
                 PCResult <= 32'd0;
             end
@@ -48,6 +39,15 @@ module ProgramCounter(Address, PCResult, Reset, Clk);
                 PCResult <= Address;
             end
         end
+        
+        /*always @(negedge Clk or posedge Reset) begin
+            if (Reset == 1) begin
+                PCResult <= 32'd0;
+            end
+            else begin
+                PCResult <= Address;
+            end
+        end*/
         
 endmodule
 
