@@ -2,7 +2,7 @@
 
 module Hazard(ID_EX_Rd, EX_MEM_Rd, IF_ID_Rs, ID_EX_Rs, IF_ID_Rt, ID_EX_Rt, ID_EX_MemRead, EX_MEM_MemRead, ID_EX_RegWrite, EX_MEM_RegWrite, ID_EX_Branch, EX_MEM_Branch, FlushSignal);
     input [4:0] ID_EX_Rd, EX_MEM_Rd, IF_ID_Rs, ID_EX_Rs, IF_ID_Rt, ID_EX_Rt;
-    input ID_EX_MemRead, EX_MEM_MemRead, ID_EX_RegWrite, EX_MEM_MemRead, ID_EX_Branch, EX_MEM_Branch;
+    input ID_EX_MemRead, EX_MEM_MemRead, ID_EX_RegWrite, EX_MEM_RegWrite, ID_EX_Branch, EX_MEM_Branch;
 
     output reg FlushSignal; // 0 for original control signals, 1 for nop
 
