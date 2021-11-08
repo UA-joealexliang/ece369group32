@@ -189,7 +189,7 @@ module Datapath(Clk, Rst, PCResult, WriteData);
                             //Mux32Bit2To1(out, inA, inB, sel)
     Mux32Bit2To1            PCTarget(Rs_or_Imm, ID_ReadData1, Shifted_Jump, ID_ALUSrc2); //imm or Rs
 
-    wire NextPC_Out;
+    wire [31:0] NextPC_Out;
                             //Mux32Bit2To1(out, inA, inB, sel)
     Mux32Bit2To1            NextPC(NextPC_Out, PC4_or_PCoffset, Rs_or_Imm, ID_Jump); //combination new mux to determine from last two muxes
 
