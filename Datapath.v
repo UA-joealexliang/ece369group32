@@ -85,6 +85,11 @@ module Datapath(Clk, Rst, PCResult, WriteData);
                            //InstructionMemory(Address, Instruction);
     InstructionMemory      InstructionMemory(PCResult, IF_Instruction);
 
+    wire Flush_Reset_Result;
+
+    ORGate                  FlushOrRst(Rst, FlushSignal, Flush_Reset_Result);
+    
+    
                             /*IF_ID_Reg(
                                         IF_Instruction, IF_PCAddResult, 
                                         Clk, Rst, Ld, 
@@ -92,7 +97,7 @@ module Datapath(Clk, Rst, PCResult, WriteData);
                                         );*/
     IF_ID_Reg                 IF_ID_Reg(
                                         IF_Instruction, IF_PCAddResult, 
-                                        Clk, Rst, 1'b1, 
+                                        Clk, Flush_Reset_Result, 1'b1, 
                                         ID_Instruction, ID_PCAddResult
                                         );
     
@@ -103,11 +108,11 @@ module Datapath(Clk, Rst, PCResult, WriteData);
     ShiftLeft2              Shift_jaddr(ID_Instruction[25:0], jump_imm);*/
 
                             /*Hazard(ID_EX_Rd, EX_MEM_Rd, IF_ID_Rs, 
-                                    ID_EX_Rs, IF_ID_Rt, ID_EX_Rt, 
+                                    ID_EX_Rs, IF_ID_Rt, ID_EX_Rt, EX_MEM_Rt, 
                                     ID_EX_MemRead, EX_MEM_MemRead, ID_EX_RegWrite, EX_MEM_RegWrite, 
                                     ID_EX_Branch, EX_MEM_Branch, FlushSignal);*/
     Hazard                  Hazard(EX_Instruction[25:21], MEM_Instruction[25:21], ID_Instruction[20:16], 
-                                    EX_Instruction[20:16], ID_Instruction[15:11], EX_Instruction[15:11],
+                                    EX_Instruction[20:16], ID_Instruction[15:11], EX_Instruction[15:11], MEM_Instruction[15:11],
                                     EX_MemRead, MEM_MemRead, EX_RegWrite, MEM_RegWrite,
                                     EX_Branch, MEM_Branch, FlushSignal);
 
@@ -148,7 +153,7 @@ module Datapath(Clk, Rst, PCResult, WriteData);
                                         ID_ReadData1,  ID_ReadData2,  ID_SignExtended, ID_PCAddResult, ID_Instruction,
                                         ID_RegDst, ID_ALUSrc, ID_ALUControl, ID_MemWrite, ID_MemRead, ID_MemtoReg, ID_RegWrite, 
                                         ID_Jump, ID_ALUSrc2, ID_Datatype, ID_HiLoWrite,
-                                        Clk, Rst, 1'b1, 
+                                        Clk, Flush_Reset_Result, 1'b1, 
                                         EX_ReadData1, EX_ReadData2, EX_SignExtended, EX_PCAddResult, EX_Instruction,
                                         EX_RegDst, EX_ALUSrc, EX_ALUControl, EX_MemWrite, EX_MemRead, EX_MemtoReg, EX_RegWrite, 
                                         EX_Jump, EX_ALUSrc2, EX_Datatype, EX_HiLoWrite
