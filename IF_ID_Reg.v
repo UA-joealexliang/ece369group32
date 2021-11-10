@@ -32,7 +32,7 @@ module IF_ID_Reg(
     
     //write your code here
     always@(posedge Clk) begin
-        if(Rst == 1) begin
+        if(Rst == 1 || Ld == 0) begin
             ID_PCAddResult <= 0;
             ID_Instruction <= 0;
         end

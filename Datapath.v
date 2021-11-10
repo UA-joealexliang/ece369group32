@@ -39,7 +39,7 @@ module Datapath(Clk, Rst, PCResult, WriteData);
     wire [31:0] PCOffsetResult; //is not fed into ID_EX_Reg
     wire [31:0] PC4_or_PCoffset; //is not fed into MEM_WB_Reg
     wire [31:0] Rs_or_Imm; //is not fed into MEM_WB_Reg
-    wire [31:0] Shifted_Imm; //imm shifted, not rs
+    //wire [31:0] Shifted_Imm; //imm shifted, not rs
 
     wire [31:0] ID_ALUSrc1Data, ID_ALUSrc2Data;
     wire Zero;
@@ -98,7 +98,7 @@ module Datapath(Clk, Rst, PCResult, WriteData);
                                         );*/
     IF_ID_Reg                 IF_ID_Reg(
                                         IF_Instruction, IF_PCAddResult, 
-                                        Clk, FlushSignal[0] | Rst, 1'b1, 
+                                        Clk, Rst, ~(FlushSignal[0]), 
                                         ID_Instruction, ID_PCAddResult
                                         );
     
@@ -122,25 +122,26 @@ module Datapath(Clk, Rst, PCResult, WriteData);
                                     EX_Branch, MEM_Branch, FlushSignal);*/
 
                             /*Controller(
-                                        Opcode, Bit21, Bit20_16, Bit10_6, funct, 
+                                        Opcode, Bit21, Bit20_16, Bit10_6, funct, FlushSignal,
                                         RegDst, ALUSrc, ALUSrc2, MemtoReg, RegWrite, HI_LO_Write, MemRead, MemWrite, 
-                                        Branch, Jump, Datatype, ALUControl, SignExtend
+                                        Branch, Jump, Datatype, ALUControl, SignExtend, index, RegisterTypes
                                         );*/
     wire index;
-    //wire [3:0] ID_RegisterTypes;
+    wire [3:0] RegisterTypes;
     Controller                Controller(
                                         ID_Instruction[31:26], ID_Instruction[21], ID_Instruction[20:16], ID_Instruction[10:6], ID_Instruction[5:0], FlushSignal[0],
                                         ID_RegDst, ID_ALUSrc, ID_ALUSrc2, ID_MemtoReg, ID_RegWrite, ID_HiLoWrite, ID_MemRead, ID_MemWrite, 
-                                        ID_Branch, ID_Jump, ID_Datatype, ID_ALUControl, SignExtend, index//, ID_RegisterTypes
+                                        ID_Branch, ID_Jump, ID_Datatype, ID_ALUControl, SignExtend, index, RegisterTypes
                                         );
 
     wire OrResult;
                             //ORGate(A, B, Out);
-    ORGate                 ORGate(WB_RegWrite, WB_RegWrite2, OrResult);
+    ORGate                  ORGate(WB_RegWrite, WB_RegWrite2, OrResult);
                             //RegisterFile(ReadRegister1, ReadRegister2, WriteRegister, WriteData, RegWrite, Clk, ReadData1, ReadData2);
     RegisterFile            Registers(ID_Instruction[25:21], ID_Instruction[20:16], RegDstData[4:0], WriteData, OrResult, Clk,  ID_ReadData1,  ID_ReadData2);
     
     wire [31:0] chosen_Imm;
+                            //chooseindex mux chooses between 15:0 imm vs 10:6 imm for shifts
                             //Mux32Bit2To1(out, inA, inB, sel)
     Mux32Bit2To1            chooseindex(chosen_Imm, {16'd0, ID_Instruction[15:0]}, {27'd0, ID_Instruction[10:6]}, index);
                             //SignExtension(in, out, signOrZero);
@@ -159,7 +160,7 @@ module Datapath(Clk, Rst, PCResult, WriteData);
                                         ID_ReadData1,  ID_ReadData2,  ID_SignExtended, ID_PCAddResult, ID_Instruction,
                                         ID_RegDst, ID_ALUSrc, ID_ALUControl, ID_MemWrite, ID_MemRead, ID_MemtoReg, ID_RegWrite, 
                                         ID_Jump, ID_ALUSrc2, ID_Datatype, ID_HiLoWrite,
-                                        Clk, FlushSignal[1] | Rst, 1'b1, 
+                                        Clk, Rst, 1'b1, 
                                         EX_ReadData1, EX_ReadData2, EX_SignExtended, EX_PCAddResult, EX_Instruction,
                                         EX_RegDst, EX_ALUSrc, EX_ALUControl, EX_MemWrite, EX_MemRead, EX_MemtoReg, EX_RegWrite, 
                                         EX_Jump, EX_ALUSrc2, EX_Datatype, EX_HiLoWrite
@@ -180,7 +181,7 @@ module Datapath(Clk, Rst, PCResult, WriteData);
 //    ALU32BitBranch          ALU32BitBranch(EX_ALUControl, EX_ALUSrc1Data, EX_ALUSrc2Data, EX_Instruction[31:26], Zero);
 
                             //ShiftLeft2(In, Out)
-    ShiftLeft2              ShiftLeft2_Imm({16'd0, ID_Instruction[15:0]}, Shifted_Imm); 
+    //ShiftLeft2              ShiftLeft2_Imm({16'd0, ID_Instruction[15:0]}, Shifted_Imm); 
     wire [31:0] Shifted_Jump;
                             //ShiftLeft2(In, Out)
     ShiftLeft2              ShiftLeft2_Jump({6'd0, ID_Instruction[25:0]}, Shifted_Jump); //for jumps
