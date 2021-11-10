@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 
 module Controller(
-            Opcode, Bit21, Bit20_16, Bit10_6, funct, FlushSignal,
+            Opcode, Bit21, Bit20_16, Bit10_6, funct,
             RegDst, ALUSrc, ALUSrc2, MemtoReg, RegWrite, HI_LO_Write, MemRead, MemWrite, 
             Branch, Jump, Datatype, ALUControl, SignExtend, index, RegisterTypes
             );
@@ -11,7 +11,6 @@ module Controller(
     input [4:0] Bit20_16;   // used to differentiate bgez vs bltz
     input [4:0] Bit10_6;    // used to differentiate seb vs seh and Bit6 used to differentiate srlv vs rotrv
     input [5:0] funct;      // right-most 6 bits of the instruction signifying the function under operation type
-    input FlushSignal;      // 1 for nop
     input [3:0] RegisterTypes;
 
     output reg ALUSrc, ALUSrc2, MemtoReg, RegWrite, MemRead, MemWrite, Branch, Jump, index; // 12 control signals
@@ -30,7 +29,7 @@ module Controller(
     //ALUControl: match ALU32Bit.v values
 
     always@(*) begin
-        if (FlushSignal == 1 || (Opcode == 0 && Bit21 == 0 && Bit20_16 == 0 && Bit10_6 == 0 && funct == 0)) begin
+        if (Opcode == 0 && Bit21 == 0 && Bit20_16 == 0 && Bit10_6 == 0 && funct == 0) begin
             //Datatype = 2'bXX;
             RegDst = 2'b00;
             ALUSrc = 1'b0;
@@ -45,6 +44,7 @@ module Controller(
             SignExtend = 1'b0;
             ALUControl = 5'b11111;
             index = 0;
+            RegisterTypes = 4'b1011;
         end
         else begin
             case(Opcode)
