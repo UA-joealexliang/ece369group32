@@ -29,7 +29,7 @@ module Controller(
     //ALUControl: match ALU32Bit.v values
 
     always@(*) begin
-        if (FlushSignal == 1) begin
+        if (FlushSignal == 1 || (Opcode == 0 && Bit21 == 0 && Bit20_16 == 0 && Bit10_6 == 0 && funct == 0)) begin
             //Datatype = 2'bXX;
             RegDst = 2'b00;
             ALUSrc = 1'b0;

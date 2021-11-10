@@ -53,6 +53,7 @@ always begin
     initial begin
         Rst <= 1;
         @(posedge Clk);
+        #50;
         Rst <= 0;
         //@(posedge Clk);
         //@(posedge Clk)

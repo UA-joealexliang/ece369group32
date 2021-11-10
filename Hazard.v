@@ -21,6 +21,10 @@ module Hazard(ID_EX_Rd, EX_MEM_Rd, IF_ID_Rs, ID_EX_Rs, IF_ID_Rt, ID_EX_Rt, EX_ME
     output reg [1:0] FlushSignal; // 0 for original control signals, 1 for nop
 
     always@(*) begin
+
+        if (ID_EX_RegWrite == 1 || ID_EX_RegWrite == 0) begin
+            FlushSignal <= 2'b00;
+        end
         // rd + rs/rt hazards
         if (ID_EX_RegWrite == 0 && EX_MEM_RegWrite == 0 && ID_EX_MemRead == 0 && EX_MEM_MemRead == 0) begin
             FlushSignal <= 2'b00;
