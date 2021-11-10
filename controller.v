@@ -3,7 +3,7 @@
 module Controller(
             Opcode, Bit21, Bit20_16, Bit10_6, funct, FlushSignal,
             RegDst, ALUSrc, ALUSrc2, MemtoReg, RegWrite, HI_LO_Write, MemRead, MemWrite, 
-            Branch, Jump, Datatype, ALUControl, SignExtend, index
+            Branch, Jump, Datatype, ALUControl, SignExtend, index, RegisterTypes
             );
 
     input [5:0] Opcode;     // left-most 6 bits of the instruction signifying the opcode
@@ -12,6 +12,7 @@ module Controller(
     input [4:0] Bit10_6;    // used to differentiate seb vs seh and Bit6 used to differentiate srlv vs rotrv
     input [5:0] funct;      // right-most 6 bits of the instruction signifying the function under operation type
     input FlushSignal;      // 1 for nop
+    input [3:0] RegisterTypes;
 
     output reg ALUSrc, ALUSrc2, MemtoReg, RegWrite, MemRead, MemWrite, Branch, Jump, index; // 12 control signals
     output reg [1:0] RegDst;
@@ -69,59 +70,70 @@ module Controller(
                         6'b100000: begin // add
                             ALUControl = 5'b00000;
                             index = 0;
+                            RegisterTypes <= 4'b0000;
                         end
 
                         6'b100001: begin // addu
                             ALUControl = 5'b00000;
                             index = 0;
+                            RegisterTypes <= 4'b0000;
                         end
 
                         6'b100010: begin // sub
                             ALUControl = 5'b00001;
                             index = 0;
+                            RegisterTypes <= 4'b0000;
                         end
 
                         6'b011000: begin // mult
                             ALUControl = 5'b00010;
                             HI_LO_Write = 2'b11;
                             index = 0;
+                            RegisterTypes <= 4'b0010;
                         end
 
                         6'b011001: begin // multu
                             ALUControl = 5'b00010;
                             HI_LO_Write = 2'b11;
                             index = 0;
+                            RegisterTypes <= 4'b0010;
                         end
 
                         6'b100100: begin // and
                             ALUControl = 5'b00011;
                             index = 0;
+                            RegisterTypes <= 4'b0000;
                         end
 
                         6'b100101: begin // or
                             ALUControl = 5'b00100;
                             index = 0;
+                            RegisterTypes <= 4'b0000;
                         end
 
                         6'b100111: begin // nor
                             ALUControl = 5'b00101;
                             index = 0;
+                            RegisterTypes <= 4'b0000;
                         end
 
                         6'b100110: begin // xor
                             ALUControl = 5'b00110;
                             index = 0;
+                            RegisterTypes <= 4'b0000;
                         end
 
                         6'b000000: begin // sll
                             ALUControl = 5'b00111;
                             ALUSrc2 = 1'b1;
                             index = 1;
+                            RegisterTypes <= 4'b1001;
                         end
 
                         6'b000100: begin // sllv
                             ALUControl = 5'b00111;
                             index = 0;
+                            RegisterTypes <= 4'b0000;
                         end
 
                         6'b000010: begin
@@ -130,12 +142,14 @@ module Controller(
                                     ALUControl = 5'b01000;
                                     ALUSrc2 = 1'b1;
                                     index = 1;
+                                    RegisterTypes <= 4'b1001;
                                 end
 
                                 1'b1: begin // rotr
                                     ALUControl = 5'b01001;
                                     ALUSrc2 = 1'b1;
                                     index = 1;
+                                    RegisterTypes <= 4'b01001;
                                 end
 
                                 default: begin
@@ -149,11 +163,13 @@ module Controller(
                                 5'b00000: begin // srlv
                                     ALUControl = 5'b01000;
                                     index = 0;
+                                    RegisterTypes <= 4'b0000;
                                 end
 
                                 5'b00001: begin // rotrv
                                     ALUControl = 5'b01001;
                                     index = 0;
+                                    RegisterTypes <= 4'b0000;
                                 end
 
                                 default: begin
@@ -165,60 +181,71 @@ module Controller(
                         6'b101010: begin // slt
                             ALUControl = 5'b01010;
                             index = 0;
+                            RegisterTypes <= 4'b0000;
                         end
 
                         6'b001011: begin // movn
                             ALUControl = 5'b01011;
                             index = 0;
+                            RegisterTypes <= 4'b0000;
                         end
 
                         6'b001010: begin // movz
                             ALUControl = 5'b01100;
                             index = 0;
+                            RegisterTypes <= 4'b0000;
                         end
 
                         6'b000011: begin // sra
                             ALUControl = 5'b01101;
                             index = 1;
                             ALUSrc2 = 1'b1;
+                            RegisterTypes <= 4'b1001;
                         end
 
                         6'b000111: begin // srav
                             ALUControl = 5'b01101;
                             index = 0;
+                            RegisterTypes <= 4'b0000;
                         end
 
                         6'b101011: begin // sltu
                             ALUControl = 5'b01110;
                             index = 0;
+                            RegisterTypes <= 4'b0000;
                         end
 
                         6'b010001: begin // mthi
                             ALUControl = 5'b01111;
                             HI_LO_Write = 2'b01;
                             index = 0;
+                            RegisterTypes <= 4'b0010;
                         end
 
                         6'b010011: begin // mtlo
                             ALUControl = 5'b10000;
                             HI_LO_Write = 2'b10;
                             index = 0;
+                            RegisterTypes <= 4'b0010;
                         end
 
                         6'b010000: begin // mfhi
                             ALUControl = 5'b10001;
                             index = 0;
+                            RegisterTypes <= 4'b1010;
                         end
 
                         6'b010010: begin // mflo
                             ALUControl = 5'b10010;
                             index = 0;
+                            RegisterTypes <= 4'b1010;
                         end
                         
                         6'b001000: begin // jr
                             ALUControl = 5'b11111;
                             Jump = 1'b1;
                             index = 0;
+                            RegisterTypes <= 4'b1000;
                         end
 
                         default: begin
@@ -247,16 +274,19 @@ module Controller(
                         6'b000010: begin // mul
                             ALUControl = 5'b10011;
                             HI_LO_Write = 2'b00;
+                            RegisterTypes <= 4'b0000;
                         end
 
                         6'b000000: begin // madd
                             ALUControl = 5'b10100;
                             HI_LO_Write = 2'b11;
+                            RegisterTypes <= 4'b0010;
                         end
 
                         6'b000100: begin // msub
                             ALUControl = 5'b10101;
                             HI_LO_Write = 2'b11;
+                            RegisterTypes <= 4'b0010;
                         end
 
                         default: begin
@@ -300,6 +330,7 @@ module Controller(
                     HI_LO_Write = 2'b00;
                     SignExtend = 1'b0;
                     index = 0;
+                    RegisterTypes <= 4'b0011;
                     //ALUOp1 = 1'b0;
                     //ALUOp0 = 1'b0;
                 end
@@ -318,6 +349,7 @@ module Controller(
                     HI_LO_Write = 2'b00;
                     SignExtend = 1'b0;
                     index = 0;
+                    RegisterTypes <= 4'b0011;
                     //ALUOp1 = 1'b0;
                     //ALUOp0 = 1'b0;
                 end
@@ -335,6 +367,7 @@ module Controller(
                     HI_LO_Write = 2'b00;
                     SignExtend = 1'b0;
                     index = 0;
+                    RegisterTypes <= 4'b0011;
                     //ALUOp1 = 1'b0;
                     //ALUOp0 = 1'b0;
                 end
@@ -353,6 +386,7 @@ module Controller(
                     HI_LO_Write = 2'b00;
                     SignExtend = 1'b0;
                     index = 0;
+                    RegisterTypes <= 4'b0100;
                     //ALUOp1 = 1'b0;
                     //ALUOp0 = 1'b0;
                 end
@@ -373,6 +407,7 @@ module Controller(
                     index = 0;
                     //ALUOp1 = 1'b0;
                     //ALUOp0 = 1'b0;
+                    RegisterTypes <= 4'b0100;
                 end
 
                 6'b101000: begin // sb
@@ -389,6 +424,7 @@ module Controller(
                     HI_LO_Write = 2'b00;
                     SignExtend = 1'b0;
                     index = 0;
+                    RegisterTypes <= 4'b0100;
                     //ALUOp1 = 1'b0;
                     //ALUOp0 = 1'b0;
                 end
@@ -415,10 +451,12 @@ module Controller(
                     case(Bit20_16)
                         5'b00001: begin // bgez
                             ALUControl = 5'b11000;
+                            RegisterTypes <= 4'b0101;
                         end
 
                         5'b00000: begin // bltz
                             ALUControl = 5'b11001;
+                            RegisterTypes <= 4'b0101;
                         end
                     endcase
                 end
@@ -437,6 +475,7 @@ module Controller(
                     HI_LO_Write = 2'b00;
                     SignExtend = 1'b0;
                     index = 0;
+                    RegisterTypes <= 4'b0110;
                     //ALUOp1 = 1'b0;
                     //ALUOp0 = 1'b1;
                 end
@@ -455,6 +494,7 @@ module Controller(
                     HI_LO_Write = 2'b00;
                     SignExtend = 1'b0;
                     index = 0;
+                    RegisterTypes <= 4'b0110;
                     //ALUOp1 = 1'b0;
                     //ALUOp0 = 1'b1;
                 end
@@ -473,6 +513,7 @@ module Controller(
                     HI_LO_Write = 2'b00;
                     SignExtend = 1'b0;
                     index = 0;
+                    RegisterTypes <= 4'b0101;
                     //ALUOp1 = 1'b0;
                     //ALUOp0 = 1'b1;
                 end
@@ -491,6 +532,7 @@ module Controller(
                     HI_LO_Write = 2'b00;
                     SignExtend = 1'b0;
                     index = 0;
+                    RegisterTypes <= 4'b0101;
                     //ALUOp1 = 1'b0;
                     //ALUOp0 = 1'b1;
                 end
@@ -511,6 +553,7 @@ module Controller(
                     HI_LO_Write = 2'b00;
                     SignExtend = 1'b0;
                     index = 0;
+                    RegisterTypes <= 4'b0001;
                     //ALUOp1 = 1'b1;
                     //ALUOp0 = 1'b0;
                 end
@@ -529,6 +572,7 @@ module Controller(
                     HI_LO_Write = 2'b00;
                     SignExtend = 1'b0;
                     index = 0;
+                    RegisterTypes <= 4'b0001;
                     //ALUOp1 = 1'b1;
                     //ALUOp0 = 1'b0;
                 end
@@ -547,6 +591,7 @@ module Controller(
                     HI_LO_Write = 2'b00;
                     SignExtend = 1'b1;
                     index = 0;
+                    RegisterTypes <= 4'b0001;
                     //ALUOp1 = 1'b1;
                     //ALUOp0 = 1'b0;
                 end
@@ -565,6 +610,7 @@ module Controller(
                     HI_LO_Write = 2'b00;
                     SignExtend = 1'b1;
                     index = 0;
+                    RegisterTypes <= 4'b0001;
                     //ALUOp1 = 1'b1;
                     //ALUOp0 = 1'b0;
                 end
@@ -583,6 +629,7 @@ module Controller(
                     HI_LO_Write = 2'b00;
                     SignExtend = 1'b1;
                     index = 0;
+                    RegisterTypes <= 4'b0001;
                     //ALUOp1 = 1'b1;
                     //ALUOp0 = 1'b0;
                 end
@@ -601,6 +648,7 @@ module Controller(
                     HI_LO_Write = 2'b00;
                     SignExtend = 1'b0;
                     index = 0;
+                    RegisterTypes <= 4'b0001;
                     //ALUOp1 = 1'b1;
                     //ALUOp0 = 1'b0;
                 end
@@ -619,6 +667,7 @@ module Controller(
                     HI_LO_Write = 2'b00;
                     SignExtend = 1'b0;
                     index = 0;
+                    RegisterTypes <= 4'b0001;
                     //ALUOp1 = 1'b1;
                     //ALUOp0 = 1'b0;
                 end
@@ -645,10 +694,12 @@ module Controller(
                     case(Bit10_6)
                         5'b11000: begin // seh
                             ALUControl = 5'b10110;
+                            RegisterTypes <= 4'b1001;
                         end
 
                         5'b10000: begin // seb
                             ALUControl = 5'b10111;
+                            RegisterTypes <= 4'b1001;
                         end
                     endcase
                 end
@@ -667,6 +718,7 @@ module Controller(
                     HI_LO_Write = 2'b00;
                     SignExtend = 1'b0;
                     index = 0;
+                    RegisterTypes <= 4'b0111;
                 end
                 
                 6'b000011: begin // jal
@@ -683,6 +735,7 @@ module Controller(
                     HI_LO_Write = 2'b00;
                     SignExtend = 1'b0;
                     index = 0;
+                    RegisterTypes <= 4'b0111;
                 end
 
                 default: begin

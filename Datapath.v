@@ -112,8 +112,7 @@ module Datapath(Clk, Rst, PCResult, WriteData);
                                     ID_EX_Rs, IF_ID_Rt, ID_EX_Rt, EX_MEM_Rt, 
                                     ID_EX_MemRead, EX_MEM_MemRead, ID_EX_RegWrite, EX_MEM_RegWrite, 
                                     ID_EX_Branch, EX_MEM_Branch, FlushSignal);*/
-    Hazard                  Hazard(EX_Instruction[25:21], MEM_Instruction[25:21], ID_Instruction[20:16], 
-                                    EX_Instruction[20:16], ID_Instruction[15:11], EX_Instruction[15:11], MEM_Instruction[15:11],
+    Hazard                  Hazard(EX_Instruction, MEM_Instruction, ID_Instruction,
                                     EX_MemRead, MEM_MemRead, EX_RegWrite, MEM_RegWrite,
                                     EX_Branch, MEM_Branch, FlushSignal);
 
@@ -128,10 +127,11 @@ module Datapath(Clk, Rst, PCResult, WriteData);
                                         Branch, Jump, Datatype, ALUControl, SignExtend
                                         );*/
     wire index;
+    //wire [3:0] ID_RegisterTypes;
     Controller                Controller(
                                         ID_Instruction[31:26], ID_Instruction[21], ID_Instruction[20:16], ID_Instruction[10:6], ID_Instruction[5:0], FlushSignal[0],
                                         ID_RegDst, ID_ALUSrc, ID_ALUSrc2, ID_MemtoReg, ID_RegWrite, ID_HiLoWrite, ID_MemRead, ID_MemWrite, 
-                                        ID_Branch, ID_Jump, ID_Datatype, ID_ALUControl, SignExtend, index
+                                        ID_Branch, ID_Jump, ID_Datatype, ID_ALUControl, SignExtend, index//, ID_RegisterTypes
                                         );
 
     wire OrResult;

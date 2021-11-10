@@ -14,7 +14,7 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-module Hazard(ID_EX_Rd, EX_MEM_Rd, IF_ID_Rs, ID_EX_Rs, IF_ID_Rt, ID_EX_Rt, EX_MEM_Rt, ID_EX_MemRead, EX_MEM_MemRead, ID_EX_RegWrite, EX_MEM_RegWrite, ID_EX_Branch, EX_MEM_Branch, FlushSignal);
+/*module Hazard(ID_EX_Rd, EX_MEM_Rd, IF_ID_Rs, ID_EX_Rs, IF_ID_Rt, ID_EX_Rt, EX_MEM_Rt, ID_EX_MemRead, EX_MEM_MemRead, ID_EX_RegWrite, EX_MEM_RegWrite, ID_EX_Branch, EX_MEM_Branch, FlushSignal);
     input [4:0] ID_EX_Rd, EX_MEM_Rd, IF_ID_Rs, ID_EX_Rs, IF_ID_Rt, ID_EX_Rt, EX_MEM_Rt;
     input ID_EX_MemRead, EX_MEM_MemRead, ID_EX_RegWrite, EX_MEM_RegWrite, ID_EX_Branch, EX_MEM_Branch;
     
@@ -22,9 +22,6 @@ module Hazard(ID_EX_Rd, EX_MEM_Rd, IF_ID_Rs, ID_EX_Rs, IF_ID_Rt, ID_EX_Rt, EX_ME
 
     always@(*) begin
 
-        if (ID_EX_RegWrite == 1 || ID_EX_RegWrite == 0) begin
-            FlushSignal <= 2'b00;
-        end
         // rd + rs/rt hazards
         if (ID_EX_RegWrite == 0 && EX_MEM_RegWrite == 0 && ID_EX_MemRead == 0 && EX_MEM_MemRead == 0) begin
             FlushSignal <= 2'b00;
@@ -86,5 +83,12 @@ module Hazard(ID_EX_Rd, EX_MEM_Rd, IF_ID_Rs, ID_EX_Rs, IF_ID_Rt, ID_EX_Rt, EX_ME
         //     end
         // end
     end
+
+endmodule*/
+
+module Hazard(EX_Instruction, MEM_Instruction, ID_Instruction,
+                EX_MemRead, MEM_MemRead, EX_RegWrite, MEM_RegWrite,
+                EX_Branch, MEM_Branch, FlushSignal);
+
 
 endmodule
