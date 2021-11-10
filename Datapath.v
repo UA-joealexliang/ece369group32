@@ -25,7 +25,8 @@ module Datapath(Clk, Rst, PCResult, WriteData);
     wire [31:0] ID_ReadData1, ID_ReadData2, ID_SignExtended, ID_PCAddResult;
     wire [4:0] ID_ALUControl;
     wire [1:0] ID_RegDst, ID_Datatype, ID_HiLoWrite;
-    wire ID_ALUSrc, ID_Branch, ID_MemWrite, ID_MemRead, ID_MemtoReg, ID_RegWrite, ID_Jump, ID_ALUSrc2, FlushSignal;
+    wire ID_ALUSrc, ID_Branch, ID_MemWrite, ID_MemRead, ID_MemtoReg, ID_RegWrite, ID_Jump, ID_ALUSrc2;//, FlushSignal;
+    wire [1:0] FlushSignal;
 
     wire [31:0] EX_ReadData1, EX_ReadData2, EX_SignExtended, EX_PCAddResult;
     wire[31:0] EX_Instruction;
@@ -85,9 +86,9 @@ module Datapath(Clk, Rst, PCResult, WriteData);
                            //InstructionMemory(Address, Instruction);
     InstructionMemory      InstructionMemory(PCResult, IF_Instruction);
 
-    wire Flush_Reset_Result;
+    //wire Flush_Reset_Result;
 
-    ORGate                  FlushOrRst(Rst, FlushSignal, Flush_Reset_Result);
+    //ORGate                  FlushOrRst(Rst, FlushSignal, Flush_Reset_Result);
     
     
                             /*IF_ID_Reg(
@@ -97,7 +98,7 @@ module Datapath(Clk, Rst, PCResult, WriteData);
                                         );*/
     IF_ID_Reg                 IF_ID_Reg(
                                         IF_Instruction, IF_PCAddResult, 
-                                        Clk, Flush_Reset_Result, 1'b1, 
+                                        Clk, FlushSignal[0] | Rst, 1'b1, 
                                         ID_Instruction, ID_PCAddResult
                                         );
     
@@ -116,6 +117,11 @@ module Datapath(Clk, Rst, PCResult, WriteData);
                                     EX_MemRead, MEM_MemRead, EX_RegWrite, MEM_RegWrite,
                                     EX_Branch, MEM_Branch, FlushSignal);
 
+    /*Hazard                  Hazard(ID_Instruction[25:21], EX_Instruction[25:21], IF_Instruction[20:16], 
+                                    ID_Instruction[20:16], IF_Instruction[15:11], ID_Instruction[15:11], EX_Instruction[15:11],
+                                    EX_MemRead, MEM_MemRead, EX_RegWrite, MEM_RegWrite,
+                                    EX_Branch, MEM_Branch, FlushSignal);*/
+
                             /*Controller(
                                         Opcode, Bit21, Bit20_16, Bit10_6, funct, 
                                         RegDst, ALUSrc, ALUSrc2, MemtoReg, RegWrite, HI_LO_Write, MemRead, MemWrite, 
@@ -123,7 +129,7 @@ module Datapath(Clk, Rst, PCResult, WriteData);
                                         );*/
     wire index;
     Controller                Controller(
-                                        ID_Instruction[31:26], ID_Instruction[21], ID_Instruction[20:16], ID_Instruction[10:6], ID_Instruction[5:0], FlushSignal,
+                                        ID_Instruction[31:26], ID_Instruction[21], ID_Instruction[20:16], ID_Instruction[10:6], ID_Instruction[5:0], FlushSignal[0],
                                         ID_RegDst, ID_ALUSrc, ID_ALUSrc2, ID_MemtoReg, ID_RegWrite, ID_HiLoWrite, ID_MemRead, ID_MemWrite, 
                                         ID_Branch, ID_Jump, ID_Datatype, ID_ALUControl, SignExtend, index
                                         );
@@ -153,7 +159,7 @@ module Datapath(Clk, Rst, PCResult, WriteData);
                                         ID_ReadData1,  ID_ReadData2,  ID_SignExtended, ID_PCAddResult, ID_Instruction,
                                         ID_RegDst, ID_ALUSrc, ID_ALUControl, ID_MemWrite, ID_MemRead, ID_MemtoReg, ID_RegWrite, 
                                         ID_Jump, ID_ALUSrc2, ID_Datatype, ID_HiLoWrite,
-                                        Clk, Flush_Reset_Result, 1'b1, 
+                                        Clk, FlushSignal[1] | Rst, 1'b1, 
                                         EX_ReadData1, EX_ReadData2, EX_SignExtended, EX_PCAddResult, EX_Instruction,
                                         EX_RegDst, EX_ALUSrc, EX_ALUControl, EX_MemWrite, EX_MemRead, EX_MemtoReg, EX_RegWrite, 
                                         EX_Jump, EX_ALUSrc2, EX_Datatype, EX_HiLoWrite
@@ -193,7 +199,7 @@ module Datapath(Clk, Rst, PCResult, WriteData);
                             //Mux32Bit2To1(out, inA, inB, sel)
     Mux32Bit2To1            NextPC(NextPC_Out, PC4_or_PCoffset, Rs_or_Imm, ID_Jump); //combination new mux to determine from last two muxes
 
-    Mux32Bit2To1            NextPC_or_CurrentPC(PC_in, NextPC_Out, PCResult, FlushSignal); //determines whether to go to new PC or stall
+    Mux32Bit2To1            NextPC_or_CurrentPC(PC_in, NextPC_Out, PCResult, FlushSignal[0]); //determines whether to go to new PC or stall
 
 ////////////////////EXECUTION STAGE////////////////////////////////////////////////////        
 

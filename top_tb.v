@@ -54,13 +54,13 @@ always begin
         Rst <= 1;
         @(posedge Clk);
         Rst <= 0;
-        @(posedge Clk);
-        @(posedge Clk)
-        #300;
-        Rst <= 1;
-        #200;
-        @(posedge Clk);
-        Rst <= 0;
+        //@(posedge Clk);
+        //@(posedge Clk)
+        //#300;
+        //Rst <= 1;
+        //#200;
+        //@(posedge Clk);
+        //Rst <= 0;
     end
 
 endmodule
