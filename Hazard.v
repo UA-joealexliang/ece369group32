@@ -23,16 +23,80 @@ module Hazard(ID_EX_Rd, EX_MEM_Rd, IF_ID_Rs, IF_ID_Rt, ID_EX_Rt, EX_MEM_Rt, ID_E
     always@(*) begin
         FlushSignal <= 0;
 
-        if ((ID_EX_RegWrite == 1) || (EX_MEM_RegWrite == 1)) begin // if first instruction will write to register
+        if (ID_EX_RegWrite == 1) begin //ID/EX check dependency
+            if (((IF_ID_ALUSrc == 1) && (IF_ID_MemWrite == 0)) || (IF_ID_Jump == 1)) begin //i-type, load, or jump
+                if (ID_EX_RegDst == 0) begin //rt writeaddress
+                    if (IF_ID_Rs == ID_EX_Rt) begin //rs = rt
+                        FlushSignal <= 1;
+                        $display("ID/EX rs=rt DEP");
+                    end
+                end
+                else if (ID_EX_RegDst == 1) begin //rd writeaddress
+                    if (IF_ID_Rs == ID_EX_Rd) begin //rs = rd
+                        FlushSignal <= 1;
+                        $display("ID/EX rs=rd DEP");
+                    end
+                end
+            end
+            else begin // if r-type, store, or branch
+                if (ID_EX_RegDst == 0) begin //rt writeaddress
+                    if ((IF_ID_Rs == ID_EX_Rt) || (IF_ID_Rt == ID_EX_Rt)) begin //rs or rt = rt
+                        FlushSignal <= 1;
+                        $display("ID/EX rs or rt = rt DEP");
+                    end
+                end
+                else if (ID_EX_RegDst == 1) begin //rd writeaddress
+                    if ((IF_ID_Rs == ID_EX_Rd) || (IF_ID_Rt == ID_EX_Rd)) begin // rs or rt = rd
+                        FlushSignal <= 1;
+                        $display("ID/EX rs or rt = rd DEP");
+                    end
+                end
+            end
+        end
+        if (EX_MEM_RegWrite == 1) begin
+            if (((IF_ID_ALUSrc == 1) && (IF_ID_MemWrite == 0)) || (IF_ID_Jump == 1)) begin //i-type, load, or jump
+                if (EX_MEM_RegDst == 0) begin //rt writeaddress
+                    if (IF_ID_Rs == EX_MEM_Rt) begin //rs = rt
+                        FlushSignal <= 1;
+                        $display("EX/MEM rs=rt DEP");
+                    end
+                end
+                else if (EX_MEM_RegDst == 1) begin //rd writeaddress
+                    if (IF_ID_Rs == EX_MEM_Rd) begin //rs = rd
+                        FlushSignal <= 1;
+                        $display("EX/MEM rs=rd DEP");
+                    end
+                end
+            end
+            else begin // if r-type, store, or branch
+                if (EX_MEM_RegDst == 0) begin //rt writeaddress
+                    if ((IF_ID_Rs == EX_MEM_Rt) || (IF_ID_Rt == EX_MEM_Rt)) begin //rs or rt = rt
+                        FlushSignal <= 1;
+                        $display("EX/MEM rs or rt = rt DEP");
+                    end
+                end
+                else if (EX_MEM_RegDst == 1) begin //rd writeaddress
+                    if ((IF_ID_Rs == EX_MEM_Rd) || (IF_ID_Rt == EX_MEM_Rd)) begin // rs or rt = rd
+                        FlushSignal <= 1;
+                        $display("EX/MEM rs or rt = rd DEP");
+                    end
+                end
+            end
+        end
+    end
+
+        /*if ((ID_EX_RegWrite == 1) || (EX_MEM_RegWrite == 1)) begin // if first instruction will write to register
             if ((ID_EX_RegDst == 0) || (EX_MEM_RegDst == 0)) begin // -> rt
                 if (((IF_ID_ALUSrc == 1) && (IF_ID_MemWrite == 0)) || (IF_ID_Jump == 1)) begin // if i-type, load, or jump
                     if ((IF_ID_Rs == ID_EX_Rt) || (IF_ID_Rs == EX_MEM_Rt)) begin // rs = rt
                         FlushSignal <= 1;
+                        $display("first");
                     end
                 end
                 else begin // if r-type, store, or branch
                     if (((IF_ID_Rs == ID_EX_Rt) || (IF_ID_Rs == EX_MEM_Rt)) || ((IF_ID_Rt == ID_EX_Rt) || (IF_ID_Rt == EX_MEM_Rt))) begin // rs or rt = rt
                         FlushSignal <= 1;
+                        $display("second");
                     end
                 end
             end
@@ -40,22 +104,23 @@ module Hazard(ID_EX_Rd, EX_MEM_Rd, IF_ID_Rs, IF_ID_Rt, ID_EX_Rt, EX_MEM_Rt, ID_E
                 if (((IF_ID_ALUSrc == 1) && (IF_ID_MemWrite == 0)) || (IF_ID_Jump == 1)) begin // if i-type, load, or jump
                     if ((IF_ID_Rs == ID_EX_Rd) || (IF_ID_Rs == EX_MEM_Rd)) begin // rs = rd
                         FlushSignal <= 1;
+                        $display("third");
                     end
                 end
                 else begin // if r-type, store, or branch
                     if (((IF_ID_Rs == ID_EX_Rd) || (IF_ID_Rs == EX_MEM_Rd)) || ((IF_ID_Rt == ID_EX_Rd) || (IF_ID_Rt == EX_MEM_Rd))) begin // rs or rt = rd
                         FlushSignal <= 1;
+                        $display("fourth");
                     end
                 end
             end
-        end
+        end*/
 
         /*else if ((ID_EX_MemWrite == 1) || (EX_MEM_MemWrite == 1)) begin // if first instruction will write to memory
             if (IF_ID_MemRead == 1) begin // i.e. reg -> mem then mem -> reg
                 if ()
             end
         end*/
-    end
 endmodule
 
 /*module Hazard(ID_EX_Rd, EX_MEM_Rd, IF_ID_Rs, ID_EX_Rs, IF_ID_Rt, ID_EX_Rt, EX_MEM_Rt, ID_EX_MemRead, EX_MEM_MemRead, ID_EX_RegWrite, EX_MEM_RegWrite, ID_EX_Branch, EX_MEM_Branch, FlushSignal);
@@ -127,12 +192,5 @@ endmodule
         //     end
         // end
     end
-
-endmodule*/
-
-/*module Hazard(EX_Instruction, MEM_Instruction, ID_Instruction,
-                EX_MemRead, MEM_MemRead, EX_RegWrite, MEM_RegWrite,
-                EX_Branch, MEM_Branch, FlushSignal);
-
 
 endmodule*/

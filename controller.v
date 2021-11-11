@@ -11,7 +11,7 @@ module Controller(
     input [4:0] Bit20_16;   // used to differentiate bgez vs bltz
     input [4:0] Bit10_6;    // used to differentiate seb vs seh and Bit6 used to differentiate srlv vs rotrv
     input [5:0] funct;      // right-most 6 bits of the instruction signifying the function under operation type
-    input [3:0] RegisterTypes;
+    output reg [3:0] RegisterTypes;
 
     output reg ALUSrc, ALUSrc2, MemtoReg, RegWrite, MemRead, MemWrite, Branch, Jump, index; // 12 control signals
     output reg [1:0] RegDst;

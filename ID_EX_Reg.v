@@ -44,7 +44,7 @@ module ID_EX_Reg(
     
     //write your code here
     always@(posedge Clk) begin
-            if(Rst == 1) begin
+            if(Rst == 1 || Ld == 0) begin
                 EX_ReadData1 <= 0; 
                 EX_ReadData2 <= 0;  
                 EX_SignExtended <= 0;  
