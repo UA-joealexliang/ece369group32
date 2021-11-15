@@ -21,8 +21,9 @@ module Hazard(
             MEM_WB_Rd, MEM_WB_Rt,
             MEM_WB_RegWrite, MEM_WB_RegDst
             );
-    input [4:0] ID_EX_Rd, EX_MEM_Rd, IF_ID_Rs, IF_ID_Rt, ID_EX_Rt, EX_MEM_Rt;
-    input ID_EX_RegWrite, EX_MEM_RegWrite, ID_EX_RegDst, EX_MEM_RegDst, ID_EX_MemWrite, EX_MEM_MemWrite, IF_ID_ALUSrc, IF_ID_MemWrite, IF_ID_Jump;
+    input [4:0] ID_EX_Rd, EX_MEM_Rd, IF_ID_Rs, IF_ID_Rt, ID_EX_Rt, EX_MEM_Rt, MEM_WB_Rd, MEM_WB_Rt;
+    input ID_EX_RegWrite, EX_MEM_RegWrite, ID_EX_MemWrite, EX_MEM_MemWrite, IF_ID_ALUSrc, IF_ID_MemWrite, IF_ID_Jump, MEM_WB_RegWrite;
+    input [1:0] ID_EX_RegDst, EX_MEM_RegDst, MEM_WB_RegDst;
 
     output reg FlushSignal; // 0 for original control signals, 1 for nop
 
@@ -89,7 +90,8 @@ module Hazard(
                 end
             end
         end
-    end
+    
+    
     if (MEM_WB_RegWrite == 1) begin
             if (((IF_ID_ALUSrc == 1) && (IF_ID_MemWrite == 0)) || (IF_ID_Jump == 1)) begin //i-type, load, or jump
                 if (MEM_WB_RegDst == 0) begin //rt writeaddress

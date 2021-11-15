@@ -52,6 +52,13 @@ module DataMemory(Address, WriteData, Clk, MemWrite, MemRead, Datatype, ReadData
     
     initial begin
         $readmemh("data_memory.mem", memory);
+/*memory[0] <= 32'h0;
+memory[1] <= 32'h4;
+memory[2] <= 32'h8;
+memory[3] <= 32'hc;
+memory[4] <= 32'h10;
+memory[5] <= 32'h0;
+memory[6] <= 32'h0;*/
     end
 
     /* Please fill in the implementation here */
