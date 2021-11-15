@@ -108,12 +108,16 @@ module Datapath(Clk, Rst, PCResult, WriteData);
                           /*Hazard(
                                    ID_EX_Rd, EX_MEM_Rd, IF_ID_Rs, IF_ID_Rt, ID_EX_Rt, EX_MEM_Rt, 
                                    ID_EX_RegWrite, EX_MEM_RegWrite, ID_EX_RegDst, EX_MEM_RegDst, ID_EX_MemWrite, EX_MEM_MemWrite, IF_ID_ALUSrc, IF_ID_MemWrite, IF_ID_Jump, 
-                                   FlushSignal
-                                   );*/
+                                   FlushSignal,
+                                   MEM_WB_Rd, MEM_WB_Rt,
+                                   MEM_WB_RegWrite, MEM_WB_RegDst
+                                   );*/                                   
     Hazard                  Hazard(
                                    EX_Instruction[15:11], MEM_Instruction[15:11], ID_Instruction[25:21], ID_Instruction[20:16], EX_Instruction[20:16], MEM_Instruction[20:16], 
                                    EX_RegWrite, MEM_RegWrite, EX_RegDst, MEM_RegDst, EX_MemWrite, MEM_MemWrite, ID_ALUSrc, ID_MemWrite, ID_Jump, 
-                                   FlushSignal
+                                   FlushSignal,
+                                   WB_Instruction[15:11], WB_Instruction[20:16], 
+                                   WB_RegWrite, WB_RegDst, 
                                    );
 
                             /*Controller(
