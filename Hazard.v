@@ -14,7 +14,13 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-module Hazard(ID_EX_Rd, EX_MEM_Rd, IF_ID_Rs, IF_ID_Rt, ID_EX_Rt, EX_MEM_Rt, ID_EX_RegWrite, EX_MEM_RegWrite, ID_EX_RegDst, EX_MEM_RegDst, ID_EX_MemWrite, EX_MEM_MemWrite, IF_ID_ALUSrc, IF_ID_MemWrite, IF_ID_Jump, FlushSignal);
+module Hazard(
+            ID_EX_Rd, EX_MEM_Rd, IF_ID_Rs, IF_ID_Rt, ID_EX_Rt, EX_MEM_Rt, 
+            ID_EX_RegWrite, EX_MEM_RegWrite, ID_EX_RegDst, EX_MEM_RegDst, ID_EX_MemWrite, EX_MEM_MemWrite, IF_ID_ALUSrc, IF_ID_MemWrite, IF_ID_Jump, 
+            FlushSignal,
+            MEM_WB_Rd, MEM_WB_Rt,
+            MEM_WB_RegWrite, MEM_WB_RegDst
+            );
     input [4:0] ID_EX_Rd, EX_MEM_Rd, IF_ID_Rs, IF_ID_Rt, ID_EX_Rt, EX_MEM_Rt;
     input ID_EX_RegWrite, EX_MEM_RegWrite, ID_EX_RegDst, EX_MEM_RegDst, ID_EX_MemWrite, EX_MEM_MemWrite, IF_ID_ALUSrc, IF_ID_MemWrite, IF_ID_Jump;
 
@@ -79,6 +85,37 @@ module Hazard(ID_EX_Rd, EX_MEM_Rd, IF_ID_Rs, IF_ID_Rt, ID_EX_Rt, EX_MEM_Rt, ID_E
                     if ((IF_ID_Rs == EX_MEM_Rd) || (IF_ID_Rt == EX_MEM_Rd)) begin // rs or rt = rd
                         FlushSignal <= 1;
                         $display("EX/MEM rs or rt = rd DEP");
+                    end
+                end
+            end
+        end
+    end
+    if (MEM_WB_RegWrite == 1) begin
+            if (((IF_ID_ALUSrc == 1) && (IF_ID_MemWrite == 0)) || (IF_ID_Jump == 1)) begin //i-type, load, or jump
+                if (MEM_WB_RegDst == 0) begin //rt writeaddress
+                    if (IF_ID_Rs == MEM_WB_Rt) begin //rs = rt
+                        FlushSignal <= 1;
+                        $display("MEM/WB rs=rt DEP");
+                    end
+                end
+                else if (MEM_WB_RegDst == 1) begin //rd writeaddress
+                    if (IF_ID_Rs == MEM_WB_Rd) begin //rs = rd
+                        FlushSignal <= 1;
+                        $display("MEM/WB rs=rd DEP");
+                    end
+                end
+            end
+            else begin // if r-type, store, or branch
+                if (MEM_WB_RegDst == 0) begin //rt writeaddress
+                    if ((IF_ID_Rs == MEM_WB_Rt) || (IF_ID_Rt == MEM_WB_Rt)) begin //rs or rt = rt
+                        FlushSignal <= 1;
+                        $display("MEM/WB rs or rt = rt DEP");
+                    end
+                end
+                else if (MEM_WB_RegDst == 1) begin //rd writeaddress
+                    if ((IF_ID_Rs == MEM_WB_Rd) || (IF_ID_Rt == MEM_WB_Rd)) begin // rs or rt = rd
+                        FlushSignal <= 1;
+                        $display("MEM/WB rs or rt = rd DEP");
                     end
                 end
             end
