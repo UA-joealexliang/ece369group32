@@ -337,9 +337,9 @@ vbsme:
     # insert your code here
     addi $sp, $sp, -4
     sw $ra, 0($sp);                                  #store ra = backtomain
-    move $s0, $0                                     #s0 stores best addrSAD row
-    move $s1, $0                                     #s0 stores best addrSAD col
-    addi $s2, $0, 32767                              #$s1 stores best SAD min, initialize to large number 2^32-1
+    move $v0, $0                                     #v0 stores best addrSAD row
+    move $v1, $0                                     #v1 stores best addrSAD col
+    addi $s2, $0, 32767                              #$s2 stores best SAD min, initialize to large number 2^32-1
 
     ############################################################### THIS IS WHERE ZIG-ZAG SHOULD BE IMPLEMENTED
     li $s7, 0 # set index to 0
@@ -456,9 +456,6 @@ mExit2:
 exitz: # exit zig-zag routine
     ############################################################### THIS IS WHERE ZIG-ZAG SHOULD BE IMPLEMENTED
 
-    move $v0, $s0
-    move $v1, $s1
-
     lw $ra, 0($sp)
     add $sp, $sp, 4
     jr $ra
@@ -526,7 +523,7 @@ compare:
     add $sp, $sp, 4
     jr $ra
 
-#update minimum into s2, calculate row_index into s0 and col_index into s1 based on s7
+#update minimum into s2, calculate row_index into v0 and col_index into v1 based on s7
 update:
     move $s2, $t5                                    #update minimum s2
     
@@ -545,11 +542,9 @@ continue:
     bne $t0, $s7, getRowCol                          #if t0 != s7 -> getRowCol
 
 done:
-    move $s0, $t1                                    #s0 = $t1 = row_index
-    move $s1, $t2                                    #s1 = $t1 = col_index
+    move $v0, $t1                                    #v0 = $t1 = row_index
+    move $v1, $t2                                    #v1 = $t1 = col_index
     # new code to move into v0 and v1
-    move $v0, $s0
-    move $v1, $s1
 
     add $sp, $sp, 4                                  #clear stack and return
     lw $ra, 0($sp)
