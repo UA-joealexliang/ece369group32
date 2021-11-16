@@ -138,16 +138,17 @@ window4: .word    7, 7, 7, 7,
 main: 
     addi    $sp, $sp, -4    # Make space on stack
     sw      $ra, 0($sp)     # Save return address
-
+    
+    addi $t8, $0, 0 # BEGIN t8
     # Start test 1 
     ############################################################
     la      $a0, asize0     # 1st parameter: address of asize0[0]
     la      $a1, frame0     # 2nd parameter: address of frame0[0]
     la      $a2, window0    # 3rd parameter: address of window0[0] 
-   
+    
     jal     vbsme           # call function
     #jal     print_result    # print results to console
-    
+    add $t8, $t8, 1 # BEGIN t8
     ############################################################
     # End of test 1 
 
@@ -159,7 +160,7 @@ main:
    
     jal     vbsme           # call function
     #jal     print_result    # print results to console
-    
+    add $t8, $t8, 1 # BEGIN t8
     ############################################################
     # End of test 1   
 
@@ -172,6 +173,7 @@ main:
    
     jal     vbsme           # call function
     #jal     print_result    # print results to console
+    add $t8, $t8, 1 # BEGIN t8
     ############################################################
     # End of test 2   
                     
@@ -184,6 +186,7 @@ main:
 
     jal     vbsme           # call function
     #jal     print_result    # print results to console 
+    add $t8, $t8, 1 # BEGIN t8
     ############################################################
     # End of test 3   
       
@@ -196,6 +199,7 @@ main:
 
     jal     vbsme           # call function
     #jal     print_result    # print results to console
+    add $t8, $t8, 1 # BEGIN t8
     ############################################################
     # End of test 4   
    
