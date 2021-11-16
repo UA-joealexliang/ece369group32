@@ -93,10 +93,11 @@ module Datapath(Clk, Rst, PCResult, WriteData);
                                         Clk, Rst, Ld, 
                                         ID_Instruction, ID_PCAddResult, 
                                         );*/
+    wire [31:0] ID_PCResult;
     IF_ID_Reg                 IF_ID_Reg(
-                                        IF_Instruction, IF_PCAddResult, 
+                                        IF_Instruction, IF_PCAddResult, PCResult,
                                         Clk, Rst, 1'b1, 
-                                        ID_Instruction, ID_PCAddResult
+                                        ID_Instruction, ID_PCAddResult, ID_PCResult
                                         );
     
 /////////////////INSTRUCTION DECODE STAGE////////////////////////////////////////////
@@ -214,7 +215,7 @@ module Datapath(Clk, Rst, PCResult, WriteData);
 
                             //Mux32Bit2To1(out, inA, inB, sel)
                             //used to determine NextPC_Out or PCResult based on FlushSignal
-    Mux32Bit2To1            NextPC_or_CurrentPC(PC_in, NextPC_Out, PCResult, FlushSignal); //determines whether to go to new PC or stall
+    Mux32Bit2To1            NextPC_or_CurrentPC(PC_in, NextPC_Out, ID_PCResult, FlushSignal); //determines whether to go to new PC or stall
 
 ////////////////////EXECUTION STAGE////////////////////////////////////////////////////        
 
