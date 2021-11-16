@@ -45,7 +45,7 @@ module DataMemory(Address, WriteData, Clk, MemWrite, MemRead, Datatype, ReadData
     input MemRead; 			// Control signal for memory read 
     input [1:0] Datatype;   // 0 = word, 1 = halfword, 2 = btye
     
-    reg [31:0] memory [0:1023];
+    reg [31:0] memory [0:1159];
     reg sign;
     
     output reg[31:0] ReadData; // Contents of memory location at Address
