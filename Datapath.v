@@ -9,9 +9,10 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module Datapath(Clk, Rst, PCResult, WriteData);
+module Datapath(Clk, Rst, PCResult, WriteData, v0, v1);
     input Clk, Rst;
 
+    output [31:0] v0, v1;
     //variables from Program Counter
     wire [31:0] PC_in;
     output [31:0] PCResult;
@@ -142,7 +143,7 @@ module Datapath(Clk, Rst, PCResult, WriteData);
     ORGate                  ORGate(WB_RegWrite, WB_RegWrite2, OrResult);
 
                             //RegisterFile(ReadRegister1, ReadRegister2, WriteRegister, WriteData, RegWrite, Clk, ReadData1, ReadData2);
-    RegisterFile            Registers(ID_Instruction[25:21], ID_Instruction[20:16], RegDstData[4:0], WriteData, OrResult, Clk, ID_ReadData1, ID_ReadData2);
+    RegisterFile            Registers(ID_Instruction[25:21], ID_Instruction[20:16], RegDstData[4:0], WriteData, OrResult, Clk, ID_ReadData1, ID_ReadData2, v0, v1);
     
     wire [31:0] chosen_Imm;
                             //Mux32Bit2To1(out, inA, inB, sel)

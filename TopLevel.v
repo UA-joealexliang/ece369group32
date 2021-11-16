@@ -27,14 +27,14 @@ module TopLevel( Clk, Reset, out7, en_out );
     output [7:0] en_out;
     
     wire ClkOut;
-    wire [31:0] PCResult, WriteData;
+    wire [31:0] PCResult, WriteData, v0, v1;
     
     ClkDiv              ClkDiv(Clk, Reset, ClkOut);
     
-    Datapath            Datapath(ClkOut, Reset, PCResult, WriteData);
+    Datapath            Datapath(ClkOut, Reset, PCResult, WriteData, v0, v1);
                       //Datapath(Clk, Rst, PCResult, WriteData, HI_out, LO_out
     
-    Two4DigitDisplay    Two4DigitDisplay(Clk, PCResult[15:0], WriteData[15:0], out7, en_out);     
+    Two4DigitDisplay    Two4DigitDisplay(Clk, v0[15:0], v1[15:0], out7, en_out);     
        
     
 endmodule
