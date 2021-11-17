@@ -101,7 +101,7 @@ module RegisterFile(ReadRegister1, ReadRegister2, WriteRegister, WriteData, RegW
     end
 
     always@(posedge Clk) begin
-        if(RegWrite == 1) begin
+        if( (RegWrite == 1) && (WriteRegister != 0) ) begin
             register[WriteRegister] <= WriteData;
             //$display("Write Register = %d, WriteData = %d", WriteRegister, WriteData);
         end
