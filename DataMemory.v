@@ -82,6 +82,7 @@ memory[6] <= 32'h0;*/
                 endcase
             end
             //memory[Address[11:2]] <= WriteData;
+            $display("sw: Address = %d, WriteData = %d", Address[11:2], WriteData);
         end
     end
     
