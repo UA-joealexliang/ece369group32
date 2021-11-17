@@ -31,8 +31,9 @@ module SignExtension(in, out, signOrZero);
             if(in[15] == 0) begin
                 extension <= 16'b0000_0000_0000_0000;
                 out <= {extension, in};
+            end
         end
-    end
+        //$display("SignExtend=%d", out);
     end
 
 endmodule

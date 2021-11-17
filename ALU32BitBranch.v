@@ -114,6 +114,7 @@ module ALU32BitBranch(ALUControl, A, B, Opcode, Zero);
 			default: begin // j, jal
 			end
 		endcase
+		//$display("BRANCH A = %d, B = %d, Zero = %d", A, B, Zero);
     end
  
 endmodule

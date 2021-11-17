@@ -103,13 +103,14 @@ module RegisterFile(ReadRegister1, ReadRegister2, WriteRegister, WriteData, RegW
     always@(posedge Clk) begin
         if(RegWrite == 1) begin
             register[WriteRegister] <= WriteData;
+            //$display("Write Register = %d, WriteData = %d", WriteRegister, WriteData);
         end
     end
     
     always@(negedge Clk)begin
         ReadData1 <= register[ReadRegister1];
         ReadData2 <= register[ReadRegister2];
-        
+        //$display("Read Rs = %d, GPR[rs] = %d, Rt = %d, GPR[rt] = %d", ReadRegister1, ReadData1, ReadRegister2, ReadData2);
         v0 <= register[2];
         v1 <= register[3];
     end

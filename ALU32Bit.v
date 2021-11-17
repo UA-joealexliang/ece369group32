@@ -514,6 +514,7 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Opcode, ALUResult, Hi, Lo, Zero,
 			default: begin // j, jal
 			end
 		endcase
+		//$display("A = %d, B = %d, ALUResult = %d", A, B, ALUResult);
     end
  
 endmodule
