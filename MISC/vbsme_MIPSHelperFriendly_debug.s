@@ -148,7 +148,7 @@ main:
     
     jal     vbsme           # call function
     #jal     print_result    # print results to console
-    add $t8, $t8, 1 # BEGIN t8
+    addi $t8, $t8, 1 # BEGIN t8
     ############################################################
     # End of test 1 
 
@@ -160,7 +160,7 @@ main:
    
     jal     vbsme           # call function
     #jal     print_result    # print results to console
-    add $t8, $t8, 1 # BEGIN t8
+    addi $t8, $t8, 1 # BEGIN t8
     ############################################################
     # End of test 1   
 
@@ -173,7 +173,7 @@ main:
    
     jal     vbsme           # call function
     #jal     print_result    # print results to console
-    add $t8, $t8, 1 # BEGIN t8
+    addi $t8, $t8, 1 # BEGIN t8
     ############################################################
     # End of test 2   
                     
@@ -186,7 +186,7 @@ main:
 
     jal     vbsme           # call function
     #jal     print_result    # print results to console 
-    add $t8, $t8, 1 # BEGIN t8
+    addi $t8, $t8, 1 # BEGIN t8
     ############################################################
     # End of test 3   
       
@@ -199,7 +199,7 @@ main:
 
     jal     vbsme           # call function
     #jal     print_result    # print results to console
-    add $t8, $t8, 1 # BEGIN t8
+    addi $t8, $t8, 1 # BEGIN t8
     ############################################################
     # End of test 4   
    
@@ -340,7 +340,7 @@ vbsme:
 
     # insert your code here
     addi $sp, $sp, -4
-    sw $ra, 0($sp);                                  #store ra = backtomain
+    sw $ra, 0($sp)                                   #store ra = backtomain
     move $v0, $0                                     #v0 stores best addrSAD row
     move $v1, $0                                     #v1 stores best addrSAD col
     addi $s2, $0, 32767                              #$s2 stores best SAD min, initialize to large number 2^32-1
