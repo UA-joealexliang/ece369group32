@@ -34,7 +34,7 @@ module TopLevel( Clk, Reset, out7, en_out );
     Datapath            Datapath(ClkOut, Reset, PCResult, WriteData, v0, v1);
                       //Datapath(Clk, Rst, PCResult, WriteData, HI_out, LO_out
     
-    Two4DigitDisplay    Two4DigitDisplay(Clk, v0[15:0], v1[15:0], out7, en_out);     
+    Two4DigitDisplay    Two4DigitDisplay(Clk, v1[15:0], v0[15:0], out7, en_out);     
        
     
 endmodule
