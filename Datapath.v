@@ -119,7 +119,8 @@ module Datapath(Clk, Rst, PCResult, WriteData, v0, v1);
                                    EX_RegWrite, MEM_RegWrite, EX_RegDst, MEM_RegDst, EX_MemWrite, MEM_MemWrite, ID_ALUSrc, ID_MemWrite, ID_Jump, 
                                    FlushSignal,
                                    WB_Instruction[15:11], WB_Instruction[20:16], 
-                                   WB_RegWrite, WB_RegDst 
+                                   WB_RegWrite, WB_RegDst,
+                                   ID_PCResult 
                                    );
                                    
                                   
