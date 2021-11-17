@@ -148,7 +148,7 @@ main:
     
     jal     vbsme           # call function
     #jal     print_result    # print results to console
-    addi $t8, $t8, 1 # BEGIN t8
+    add $t8, $t8, 1 # BEGIN t8
     ############################################################
     # End of test 1 
 
@@ -160,7 +160,7 @@ main:
    
     jal     vbsme           # call function
     #jal     print_result    # print results to console
-    addi $t8, $t8, 1 # BEGIN t8
+    add $t8, $t8, 1 # BEGIN t8
     ############################################################
     # End of test 1   
 
@@ -173,7 +173,7 @@ main:
    
     jal     vbsme           # call function
     #jal     print_result    # print results to console
-    addi $t8, $t8, 1 # BEGIN t8
+    add $t8, $t8, 1 # BEGIN t8
     ############################################################
     # End of test 2   
                     
@@ -186,7 +186,7 @@ main:
 
     jal     vbsme           # call function
     #jal     print_result    # print results to console 
-    addi $t8, $t8, 1 # BEGIN t8
+    add $t8, $t8, 1 # BEGIN t8
     ############################################################
     # End of test 3   
       
@@ -199,7 +199,7 @@ main:
 
     jal     vbsme           # call function
     #jal     print_result    # print results to console
-    addi $t8, $t8, 1 # BEGIN t8
+    add $t8, $t8, 1 # BEGIN t8
     ############################################################
     # End of test 4   
    
@@ -340,7 +340,7 @@ vbsme:
 
     # insert your code here
     addi $sp, $sp, -4
-    sw $ra, 0($sp)                                   #store ra = backtomain
+    sw $ra, 0($sp);                                  #store ra = backtomain
     move $v0, $0                                     #v0 stores best addrSAD row
     move $v1, $0                                     #v1 stores best addrSAD col
     addi $s2, $0, 32767                              #$s2 stores best SAD min, initialize to large number 2^32-1
@@ -461,7 +461,7 @@ exitz: # exit zig-zag routine
     ############################################################### THIS IS WHERE ZIG-ZAG SHOULD BE IMPLEMENTED
 
     lw $ra, 0($sp)
-    add $sp, $sp, 4
+    addi $sp, $sp, 4
     jr $ra
 
 ##############################################################################################################################
@@ -522,9 +522,9 @@ compare:
     slt $t6, $t5, $s2                               
     bne $t6, $0, update                              #if t5 < s2 -> update
     beq $t5, $s2, update                             #if t5 == s2 -> update
-    add $sp, $sp, 4                                  #else clear stack and return
+    addi $sp, $sp, 4                                  #else clear stack and return
     lw $ra, 0($sp)
-    add $sp, $sp, 4
+    addi $sp, $sp, 4
     jr $ra
 
 #update minimum into s2, calculate row_index into v0 and col_index into v1 based on s7
@@ -550,8 +550,8 @@ done:
     move $v1, $t2                                    #v1 = $t1 = col_index
     # new code to move into v0 and v1
 
-    add $sp, $sp, 4                                  #clear stack and return
+    addi $sp, $sp, 4                                  #clear stack and return
     lw $ra, 0($sp)
-    add $sp, $sp, 4
+    addi $sp, $sp, 4
     jr $ra
 ##############################################################################################################################
