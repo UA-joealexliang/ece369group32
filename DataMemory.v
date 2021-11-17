@@ -45,7 +45,7 @@ module DataMemory(Address, WriteData, Clk, MemWrite, MemRead, Datatype, ReadData
     input MemRead; 			// Control signal for memory read 
     input [1:0] Datatype;   // 0 = word, 1 = halfword, 2 = btye
     
-    reg [31:0] memory [0:2048];
+    reg [31:0] memory [0:2047];
     reg sign;
     
     output reg[31:0] ReadData; // Contents of memory location at Address
@@ -65,44 +65,44 @@ memory[6] <= 32'h0;*/
     always@(posedge Clk) begin
         if (MemWrite == 1) begin
             if (Datatype == 0) begin //sw
-                memory[Address[11:2]] <= WriteData;
+                memory[Address[12:2]] <= WriteData;
             end
             else if (Datatype == 1) begin //sh
                 case(Address[1])
-                    1'b0: memory[Address[11:2]][15:0] <= WriteData[15:0];
-                    1'b1: memory[Address[11:2]][31:16] <= WriteData[15:0];
+                    1'b0: memory[Address[12:2]][15:0] <= WriteData[15:0];
+                    1'b1: memory[Address[12:2]][31:16] <= WriteData[15:0];
                 endcase
             end
             else if (Datatype == 2) begin //sb
                 case(Address[1:0]) 
-                    2'b00: memory[Address[11:2]][7:0] <= WriteData[7:0];
-                    2'b01: memory[Address[11:2]][15:8] <= WriteData[7:0];
-                    2'b10: memory[Address[11:2]][23:16] <= WriteData[7:0];
-                    2'b11: memory[Address[11:2]][31:24] <= WriteData[7:0];
+                    2'b00: memory[Address[12:2]][7:0] <= WriteData[7:0];
+                    2'b01: memory[Address[12:2]][15:8] <= WriteData[7:0];
+                    2'b10: memory[Address[12:2]][23:16] <= WriteData[7:0];
+                    2'b11: memory[Address[12:2]][31:24] <= WriteData[7:0];
                 endcase
             end
             //memory[Address[11:2]] <= WriteData;
-            $display("sw: Address = %d, WriteData = %d", Address[11:2], WriteData);
+            $display("sw: Address = %d, WriteData = %d", Address[12:2], WriteData);
         end
     end
     
     always@(*)begin
         if (MemRead == 1)begin
             if (Datatype == 0) begin //lw
-                ReadData <= memory[Address[11:2]];
+                ReadData <= memory[Address[12:2]];
             end
             else if (Datatype == 1) begin //lh
                 case(Address[1])
-                    1'b0: ReadData <= $signed(memory[Address[11:2]][15:0]);
-                    1'b1: ReadData <= $signed(memory[Address[11:2]][31:16]);
+                    1'b0: ReadData <= $signed(memory[Address[12:2]][15:0]);
+                    1'b1: ReadData <= $signed(memory[Address[12:2]][31:16]);
                 endcase
             end
             else if (Datatype == 2) begin //lb
                 case(Address[1:0]) 
-                    2'b00: ReadData <= $signed(memory[Address[11:2]][7:0]);
-                    2'b01: ReadData <= $signed(memory[Address[11:2]][15:8]);
-                    2'b10: ReadData <= $signed(memory[Address[11:2]][23:16]);
-                    2'b11: ReadData <= $signed(memory[Address[11:2]][31:24]);
+                    2'b00: ReadData <= $signed(memory[Address[12:2]][7:0]);
+                    2'b01: ReadData <= $signed(memory[Address[12:2]][15:8]);
+                    2'b10: ReadData <= $signed(memory[Address[12:2]][23:16]);
+                    2'b11: ReadData <= $signed(memory[Address[12:2]][31:24]);
                 endcase
             end
             //ReadData <= memory[Address[11:2]];
