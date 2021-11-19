@@ -15,6 +15,8 @@ vbsme:
     lw $s4, 4($a0) # get frame columns (j)
     lw $s5, 8($a0) # get window rows (k)
     lw $s6, 12($a0) # get window columns (l)
+    sub $s0, $s4, $s6                                             
+    addi $s0, $s0, 1                                  # sizeofframecol - sizeofwindowcol + 1
 
     jal SAD
 
@@ -173,10 +175,8 @@ store:
     addi $t0, $t0, 1                                 # else t0++ 
     addi $t7, $t7, 1                                 # t7++
     j loop
-nextrow:
-    add $t0, $t0, $s4
-    sub $t0, $t0, $s6                                
-    addi $t0, $t0, 1                                 # t0 = $t0 + sizeofframecol - sizeofwindowcol + 1 (get new index on next line)
+nextrow:                                
+    addi $t0, $t0, $s0                               # t0 = $t0 + sizeofframecol - sizeofwindowcol + 1 (get new index on next line)
     move $t7, $0                                     # t7 = 0 (reset to new col index of nextrow)
     j loop
 
@@ -199,13 +199,12 @@ update:
 
     beq $t0, $s7, done                               # check before incrementing t0, used when t0 = 0 to avoid infinite loop
 getRowCol:
-    addi $t0, $t0, 1                                 # t0++
-    addi $t2, $t2, 1                                 # t2++
-    bne $t2, $s4, continue                           # if t2 != t3 -> continue (if col_index is not size_of_frame_col)
-    addi $t1, $t1, 1                                 # else t1++ (new row achieved)
-    move $t2, $0                                     # t2 = 0 (reset to new col index of nextrow)
-continue:
-    bne $t0, $s7, getRowCol                          # if t0 != s7 -> getRowCol
+    addi $t0, $t0, $s4                               # t0 = multiples of framecol
+    addi $t1, $t1, 1
+    slt $t5, $s7, $t0                                # t5 = 1 if s7 < t0
+    blez $t5, getRowCol                              # if t5 = 0, keep adding
+    sub $t5, $t0, $s4
+    sub $t2, $s7, $t5                                # t2 = s7-(t0-s4)    
 
 done:
     # new code to move into v0 and v1
