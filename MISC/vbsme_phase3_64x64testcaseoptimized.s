@@ -355,11 +355,12 @@ main:
     addi $t8, $t8, 1
     ############################################################
     # End of test 4
-     
-    lw      $ra, 0($sp)         # Restore return address
-    addi    $sp, $sp, 4         # Restore stack pointer
-    jr      $ra                 # Return
-
+here: 
+    # lw      $ra, 0($sp)         # Restore return address
+    # addi    $sp, $sp, 4         # Restore stack pointer
+    # jr      $ra                 # Return
+    j here
+    
 .text
 .globl  vbsme
 

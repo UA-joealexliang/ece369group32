@@ -1,0 +1,217 @@
+vbsme:  
+    li      $v0, 0              # reset $v0 and $v1
+    li      $v1, 0
+
+    # insert your code here
+    addi $sp, $sp, -4
+    sw $ra, 0($sp)                                  #store ra = backtomain
+    move $v0, $0                                     #v0 stores best addrSAD row
+    move $v1, $0                                     #v1 stores best addrSAD col
+    addi $s2, $0, 32767                              #$s2 stores best SAD min, initialize to large number 2^32-1
+
+    ############################################################### THIS IS WHERE ZIG-ZAG SHOULD BE IMPLEMENTED
+    li $s7, 0 # set index to 0
+    lw $s3, 0($a0) # get frame rows (i)
+    lw $s4, 4($a0) # get frame columns (j)
+    lw $s5, 8($a0) # get window rows (k)
+    lw $s6, 12($a0) # get window columns (l)
+
+    jal SAD
+
+zLoop: # main zigzag loop
+    mult $s3, $s4 # i * j
+    mflo $t0
+    addi $t1, $s5, -1 # k - 1
+    mult $s4, $t1 # j * (k - 1)
+    mflo $t1
+    sub $t0, $t0, $s6 # (i * j) - l
+    sub $t0, $t0, $t1 # ((i * j) - l) - (j * (k - 1)) in $t0
+    slt $t0, $s7, $t0 # index < $t0
+    beq $t0, $0, exitz # if index >= $t0 (bottom right reached), exit zig-zag routine
+
+    sub $t0, $s4, $s6 # j - l
+    slt $t0, $s7, $t0 # index < (j - l), checks if top border reached
+    bne $t0, $0, zIf1 # if top border reached, go into if statement
+    j zElse1 # else go into else statement
+
+zIf1:
+    addi $s7, $s7, 1 # move index right
+    j zCont1 # skip else statment
+
+zElse1:
+    add $s7, $s7, $s4 # move index down
+
+zCont1:
+    jal SAD
+
+zWhile1:
+    sub $t0, $s7, $s4 # index - j
+
+mLoop1:
+    slt $t1, $t0, $s4 # if $t0 < j
+    bne $t1, $0, mExit1 # continue
+    sub $t0, $t0, $s4 # else $t0 - j
+    j mLoop1
+
+mExit1:
+    beq $t0, $0, zCont2 # if index % j = 0 (left border), exit loop
+    
+    mult $s3, $s4 # i * j
+    mflo $t0
+    mult $s4, $s5 # j * k
+    mflo $t1
+    sub $t0, $t0, $t1 # (i * j) - (j * k)
+    slt $t0, $s7, $t0 # index < (i * j) - (j * k)
+    beq $t0, $0, zCont2 # if index >= (i * j) - (j * k) (bottom border), exit loop
+    
+    add $s7, $s7, $s4 # else if left/bottom border not reached,
+    addi $s7, $s7, -1 # move index down-left
+    jal SAD
+    j zWhile1 # loop until left/bottom border reached
+
+zCont2:
+    mult $s3, $s4 # i * j
+    mflo $t0
+    addi $t1, $s5, -1 # k - 1
+    mult $s4, $t1 # j * (k - 1)
+    mflo $t1
+    sub $t0, $t0, $s6 # (i * j) - l
+    sub $t0, $t0, $t1 # ((i * j) - l) - (j * (k - 1)) in $t0
+    slt $t0, $s7, $t0 # index < $t0
+    beq $t0, $0, exitz # if index >= $t0 (bottom right reached), exit zig-zag routine
+    
+    mult $s3, $s4 # i * j
+    mflo $t0
+    mult $s4, $s5 # j * k
+    mflo $t1
+    sub $t0, $t0, $t1 # (i * j) - (j * k)
+    slt $t0, $s7, $t0 # index < (i * j) - (j * k)
+    bne $t0, $0, zIf2 # if bottom border reached, go into if statment
+    j zElse2 # else go into else statement
+
+zIf2:
+    add $s7, $s7, $s4 # move index down
+    j zCont3
+
+zElse2:
+    addi $s7, $s7, 1 # move index right
+
+zCont3:
+    jal SAD
+
+zWhile2:
+    sub $t0, $s4, $s6 # j - l
+    slt $t0, $t0, $s7 # index > (j - l)
+    beq $t0, $0, zLoop # if top border reached, exit loop
+
+    add $t0, $s7, $s6 # index + l
+    sub $t0, $t0, $s4 # (index + l) - j
+
+mLoop2:
+    slt $t1, $t0, $s4 # if $t0 < j
+    bne $t1, $0, mExit2 # continue
+    sub $t0, $t0, $s4 # else $t0 - j
+    j mLoop2
+
+mExit2:
+    beq $t0, $0, zLoop # if (index + l) % j = 0 (right border), exit loop
+
+    sub $s7, $s7, $s4 # else if top/right border not reached,
+    addi $s7, $s7, 1 # move index up-right
+    jal SAD
+    j zWhile2 # loop until top/right border reached
+
+exitz: # exit zig-zag routine
+    ############################################################### THIS IS WHERE ZIG-ZAG SHOULD BE IMPLEMENTED
+
+    lw $ra, 0($sp)
+    addi $sp, $sp, 4
+    jr $ra
+
+##############################################################################################################################
+#SAD function begins
+SAD:
+    move $t0, $0                                     # t0 is current base address of frame
+    move $t1, $0                                     # t1 is current base address of window
+
+    addi $sp, $sp, -4
+    sw $ra, 0($sp)                  
+    move $t8, $0                                     # t8 = local SAD value 
+
+    move $t2, $s6                                    
+    addi $t2, $t2, -1                                # t2 = sizeofwindowcol-1 (used to check when to increment to nextrow)
+
+    mul $t6, $s5, $s6
+    addi $t6, $t6, -1                                # t6 = sizeofwindow-1 (used to check when to exit SAD loop)
+
+    move $t7, $0                                     # t7 keeps track of col index
+
+loop:
+    # rEfA1
+    add $t3, $t0, $s7                                # t3 = chosen index Address for a1, base address is $s7
+    sll $t3, $t3, 2       
+    add $t3, $t3, $a1                                
+    lw $t3, 0($t3)                                   # t3 = a1[Address]
+
+    # rEfA2
+    add $t4, $t1, $0                                 # t4 = chosen index Address for a2, no need to have a 'base address' since we always start at 0
+    sll $t4, $t4, 2                                 
+    add $t4, $t4, $a2                                   
+    lw $t4, 0($t4)                                   # t4 = a2[Address] 
+
+    slt $t5, $t3, $t4                                
+    beq $t5, $0, switch                              # if t3 >= t4 -> switch (used to calculate 'absolute' difference)
+    sub $t4, $t4, $t3                                # else t4 = t4-t3
+    j store
+switch:     
+    sub $t4, $t3, $t4                                # t4 = t3-t4
+store:
+    add $t4, $t4, $t8                                # update SAD into t8
+    beq $t6, $t1, compare                            # if t1 = sizeofwindow-1 -> compare (exit loop when last element has been added to SAD)
+    addi $t1, $t1, 1                                 # else t1++
+    beq $t7, $t2, nextrow                            # if t7==sizeofwindowcol-1 -> nextrow (jump to nextrow if last element of a row has been accessed)
+    addi $t0, $t0, 1                                 # else t0++ 
+    addi $t7, $t7, 1                                 # t7++
+    j loop
+nextrow:
+    add $t0, $t0, $s4
+    sub $t0, $t0, $s6                                
+    addi $t0, $t0, 1                                 # t0 = $t0 + sizeofframecol - sizeofwindowcol + 1 (get new index on next line)
+    move $t7, $0                                     # t7 = 0 (reset to new col index of nextrow)
+    j loop
+
+# compare to see if new calculated SAD is <= minimum SAD
+compare:
+    slt $t6, $t8, $s2                               
+    bne $t6, $0, update                              # if t8 < s2 -> update
+    beq $t5, $s2, update                             # if t8 == s2 -> update
+    lw $ra, 0($sp)                                   # else clear stack and return
+    addi $sp, $sp, 4
+    jr $ra
+
+# update minimum into s2, calculate row_index into v0 and col_index into v1 based on s7
+update:
+    move $s2, $t8                                    # update minimum s2
+    
+    move $t0, $0                                     # t0 increments to s7
+    move $t1, $0                                     # t1 keeps track of rows
+    move $t2, $0                                     # t2 keeps track of col
+
+    beq $t0, $s7, done                               # check before incrementing t0, used when t0 = 0 to avoid infinite loop
+getRowCol:
+    addi $t0, $t0, 1                                 # t0++
+    addi $t2, $t2, 1                                 # t2++
+    bne $t2, $s4, continue                           # if t2 != t3 -> continue (if col_index is not size_of_frame_col)
+    addi $t1, $t1, 1                                 # else t1++ (new row achieved)
+    move $t2, $0                                     # t2 = 0 (reset to new col index of nextrow)
+continue:
+    bne $t0, $s7, getRowCol                          # if t0 != s7 -> getRowCol
+
+done:
+    # new code to move into v0 and v1
+    move $v0, $t1                                    # v0 = $t1 = row_index
+    move $v1, $t2                                    # v1 = $t1 = col_index                                
+    lw $ra, 0($sp)                                   # clear stack and return
+    addi $sp, $sp, 4
+    jr $ra
+##############################################################################################################################
