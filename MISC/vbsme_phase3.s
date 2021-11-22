@@ -36,7 +36,6 @@ endCol:
     j zCompare
 zCompare: 
     jal SAD
-    (i * j) - (j * (k - 1)) - l
     beq $s7, $t9, endSAD                              # endloop if last element index
     bne $s7, $s1, zLoop                               # loop +1 if not endofcol
     j endCol                                          # loop +windowcol if endcol
