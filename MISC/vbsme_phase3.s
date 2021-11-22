@@ -91,7 +91,7 @@ store:
     addi $t7, $t7, 1                                 # t7++
     j loop
 nextrow:                                
-    addi $t0, $t0, $s0                               # t0 = $t0 + sizeofframecol - sizeofwindowcol + 1 (get new index on next line)
+    add $t0, $t0, $s0                               # t0 = $t0 + sizeofframecol - sizeofwindowcol + 1 (get new index on next line)
     move $t7, $0                                     # t7 = 0 (reset to new col index of nextrow)
     j loop
 
@@ -114,7 +114,7 @@ update:
 
     beq $t0, $s7, done                               # check before incrementing t0, used when t0 = 0 to avoid infinite loop
 getRowCol:
-    addi $t0, $t0, $s4                               # t0 = multiples of framecol
+    add $t0, $t0, $s4                               # t0 = multiples of framecol
     addi $t1, $t1, 1
     slt $t5, $s7, $t0                                # t5 = 1 if s7 < t0
     blez $t5, getRowCol                              # if t5 = 0, keep adding

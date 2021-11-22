@@ -1,7 +1,7 @@
 ##Set clock frequency to 100 MHz. Helps guide the placement and routing algorithm
 ##to synthesize design that satisfies this constraint, and gives better power estimations
 ## 100 MHz frequency, 10 ns period,, duty cycle 50%, no phase shift
-create_clock -period 10 [get_ports Clk]
+create_clock -period 5.000 -name clk -waveform {0.000 2.500} -add [get_ports Clk]
 
 ##This part is to assign a pin number to 100MHz clock signal
 set_property PACKAGE_PIN E3 [get_ports Clk]
@@ -43,8 +43,8 @@ set_property PACKAGE_PIN L18 [get_ports {out7[0]}]
 
 # Assigning pin for sending Reset signal to the circuit.
 # Corresponds to the center button of the 5 push buttons.
-set_property IOSTANDARD LVCMOS33 [get_ports {Reset}]
-set_property PACKAGE_PIN N17 [get_ports {Reset}]
+set_property IOSTANDARD LVCMOS33 [get_ports Reset]
+set_property PACKAGE_PIN N17 [get_ports Reset]
 
 
 ##This part is to assign pin numbers for input numbers
@@ -84,3 +84,4 @@ set_property PACKAGE_PIN N17 [get_ports {Reset}]
 #set_property PACKAGE_PIN L16 [get_ports {NumberA[1]}]
 #set_property IOSTANDARD LVCMOS33 [get_ports {NumberA[0]}]
 #set_property PACKAGE_PIN J15 [get_ports {NumberA[0]}]
+
