@@ -26,8 +26,8 @@ zLoop:
     addi $s7, $s7, 1
     j zCompare
 endCol:
-    addi $s7, $s7, $s6
-    addi $t9, $t9, $s4
+    add $s7, $s7, $s6
+    add $t9, $t9, $s4
     j zCompare
 zCompare: 
     jal SAD
