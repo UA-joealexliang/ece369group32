@@ -16,23 +16,29 @@ vbsme:
     lw $s6, 12($a0) # get window columns (l)
     sub $s0, $s4, $s6                                             
     addi $s0, $s0, 1                                  # sizeofframecol - sizeofwindowcol + 1
-    mul $s1, $s3, $s4
-    addi $s1, $s1, -1                                 # sizeofframe-1
 
     jal SAD
 
-    sub $t9, $s4, $s6                                 # t9 = endofcol
+    sub $s1, $s4, $s6                                 # s1 = endofcol
+
+    mul $t1, $s3, $s4                                 # t1 = (i * j)
+    addi $t2, $s5, -1                                 # t2 = (k - 1)
+    mul $t3, $t2, $s4                                 # t3 = (j * (k - 1))
+    sub $t4, $t1, $t3                                 # t4 = (i * j) - (j * (k - 1))
+    addi $t9, $t4, -1                                 # t9 = (i * j) - (j * (k - 1)) - 1 = last index
+
 zLoop:
     addi $s7, $s7, 1
     j zCompare
 endCol:
     add $s7, $s7, $s6
-    add $t9, $t9, $s4
+    add $s1, $s1, $s4
     j zCompare
 zCompare: 
     jal SAD
-    beq $s7, $s1, endSAD                              # endloop if last element index
-    bne $s7, $t9, zLoop                               # loop +1 if not endofcol
+    (i * j) - (j * (k - 1)) - l
+    beq $s7, $t9, endSAD                              # endloop if last element index
+    bne $s7, $s1, zLoop                               # loop +1 if not endofcol
     j endCol                                          # loop +windowcol if endcol
 endSAD:
 
