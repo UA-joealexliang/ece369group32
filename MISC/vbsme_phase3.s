@@ -8,8 +8,7 @@ vbsme:
     move $v0, $0                                     #v0 stores best addrSAD row
     move $v1, $0                                     #v1 stores best addrSAD col
     addi $s2, $0, 32767                              #$s2 stores best SAD min, initialize to large number 2^32-1
-
-    ############################################################### THIS IS WHERE ZIG-ZAG SHOULD BE IMPLEMENTED
+    
     li $s7, 0 # set index to 0
     lw $s3, 0($a0) # get frame rows (i)
     lw $s4, 4($a0) # get frame columns (j)
@@ -17,114 +16,25 @@ vbsme:
     lw $s6, 12($a0) # get window columns (l)
     sub $s0, $s4, $s6                                             
     addi $s0, $s0, 1                                  # sizeofframecol - sizeofwindowcol + 1
+    mul $s1, $s3, $s4
+    addi $s1, $s1, -1                                 # sizeofframe-1
 
     jal SAD
 
-zLoop: # main zigzag loop
-    mult $s3, $s4 # i * j
-    mflo $t0
-    addi $t1, $s5, -1 # k - 1
-    mult $s4, $t1 # j * (k - 1)
-    mflo $t1
-    sub $t0, $t0, $s6 # (i * j) - l
-    sub $t0, $t0, $t1 # ((i * j) - l) - (j * (k - 1)) in $t0
-    slt $t0, $s7, $t0 # index < $t0
-    beq $t0, $0, exitz # if index >= $t0 (bottom right reached), exit zig-zag routine
-
-    sub $t0, $s4, $s6 # j - l
-    slt $t0, $s7, $t0 # index < (j - l), checks if top border reached
-    bne $t0, $0, zIf1 # if top border reached, go into if statement
-    j zElse1 # else go into else statement
-
-zIf1:
-    addi $s7, $s7, 1 # move index right
-    j zCont1 # skip else statment
-
-zElse1:
-    add $s7, $s7, $s4 # move index down
-
-zCont1:
+    sub $t9, $s4, $s6                                 # t9 = endofcol
+zLoop:
+    addi $s7, $s7, 1
+    j zCompare
+endCol:
+    addi $s7, $s7, $s6
+    addi $t9, $t9, $s4
+    j zCompare
+zCompare: 
     jal SAD
-
-zWhile1:
-    sub $t0, $s7, $s4 # index - j
-
-mLoop1:
-    slt $t1, $t0, $s4 # if $t0 < j
-    bne $t1, $0, mExit1 # continue
-    sub $t0, $t0, $s4 # else $t0 - j
-    j mLoop1
-
-mExit1:
-    beq $t0, $0, zCont2 # if index % j = 0 (left border), exit loop
-    
-    mult $s3, $s4 # i * j
-    mflo $t0
-    mult $s4, $s5 # j * k
-    mflo $t1
-    sub $t0, $t0, $t1 # (i * j) - (j * k)
-    slt $t0, $s7, $t0 # index < (i * j) - (j * k)
-    beq $t0, $0, zCont2 # if index >= (i * j) - (j * k) (bottom border), exit loop
-    
-    add $s7, $s7, $s4 # else if left/bottom border not reached,
-    addi $s7, $s7, -1 # move index down-left
-    jal SAD
-    j zWhile1 # loop until left/bottom border reached
-
-zCont2:
-    mult $s3, $s4 # i * j
-    mflo $t0
-    addi $t1, $s5, -1 # k - 1
-    mult $s4, $t1 # j * (k - 1)
-    mflo $t1
-    sub $t0, $t0, $s6 # (i * j) - l
-    sub $t0, $t0, $t1 # ((i * j) - l) - (j * (k - 1)) in $t0
-    slt $t0, $s7, $t0 # index < $t0
-    beq $t0, $0, exitz # if index >= $t0 (bottom right reached), exit zig-zag routine
-    
-    mult $s3, $s4 # i * j
-    mflo $t0
-    mult $s4, $s5 # j * k
-    mflo $t1
-    sub $t0, $t0, $t1 # (i * j) - (j * k)
-    slt $t0, $s7, $t0 # index < (i * j) - (j * k)
-    bne $t0, $0, zIf2 # if bottom border reached, go into if statment
-    j zElse2 # else go into else statement
-
-zIf2:
-    add $s7, $s7, $s4 # move index down
-    j zCont3
-
-zElse2:
-    addi $s7, $s7, 1 # move index right
-
-zCont3:
-    jal SAD
-
-zWhile2:
-    sub $t0, $s4, $s6 # j - l
-    slt $t0, $t0, $s7 # index > (j - l)
-    beq $t0, $0, zLoop # if top border reached, exit loop
-
-    add $t0, $s7, $s6 # index + l
-    sub $t0, $t0, $s4 # (index + l) - j
-
-mLoop2:
-    slt $t1, $t0, $s4 # if $t0 < j
-    bne $t1, $0, mExit2 # continue
-    sub $t0, $t0, $s4 # else $t0 - j
-    j mLoop2
-
-mExit2:
-    beq $t0, $0, zLoop # if (index + l) % j = 0 (right border), exit loop
-
-    sub $s7, $s7, $s4 # else if top/right border not reached,
-    addi $s7, $s7, 1 # move index up-right
-    jal SAD
-    j zWhile2 # loop until top/right border reached
-
-exitz: # exit zig-zag routine
-    ############################################################### THIS IS WHERE ZIG-ZAG SHOULD BE IMPLEMENTED
+    beq $s7, $s1, endSAD                              # endloop if last element index
+    bne $s7, $t9, zLoop                               # loop +1 if not endofcol
+    j endCol                                          # loop +windowcol if endcol
+endSAD:
 
     lw $ra, 0($sp)
     addi $sp, $sp, 4
