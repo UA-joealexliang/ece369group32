@@ -1,3 +1,58 @@
+
+#  Team Members: JOE LIANG, ASHTON ROWE, CAMERON MATSUMOTO
+#  % Effort    :   ALL MEMBERS CONTRIBUTED EQUALLY  
+#
+# ECE369A,  
+# 
+
+########################################################################################################################
+### data
+########################################################################################################################
+.data
+
+asize0:  .word    4,  4,  2, 2    #i, j, k, l
+frame0:  .word    0,  0,  1,  2, 
+         .word    0,  0,  3,  4
+         .word    0,  0,  0,  0
+         .word    0,  0,  0,  0, 
+window0: .word    1,  2, 
+         .word    3,  4, 
+
+
+########################################################################################################################
+### main
+########################################################################################################################
+
+.text
+
+.globl main
+
+main: 
+    addi    $sp, $sp, -4    # Make space on stack
+    sw      $ra, 0($sp)     # Save return address
+         
+    # Start test 1 
+    ############################################################
+    la      $a0, asize1     # 1st parameter: address of asize1[0]
+    la      $a1, frame1     # 2nd parameter: address of frame1[0]
+    la      $a2, window1    # 3rd parameter: address of window1[0] 
+   
+    jal     vbsme           # call function
+    
+    ############################################################
+    # End of test 1
+   
+    lw      $ra, 0($sp)         # Restore return address
+    addi    $sp, $sp, 4         # Restore stack pointer
+    jr      $ra                 # Return
+
+#####################################################################
+### vbsme
+#####################################################################
+
+.text
+.globl  vbsme
+
 vbsme:  
     li      $v0, 0              # reset $v0 and $v1
     li      $v1, 0
