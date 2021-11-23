@@ -154,11 +154,11 @@ vbsme:
 
     sub $s1, $s4, $s6                                 # s1 = endofcol
 
-    mul $t1, $s3, $s4                                 # t1 = (i * j)
-    addi $t2, $s5, -1                                 # t2 = (k - 1)
-    mul $t3, $t2, $s4                                 # t3 = (j * (k - 1))
-    sub $t4, $t1, $t3                                 # t4 = (i * j) - (j * (k - 1))
-    addi $t9, $t4, -1                                 # t9 = (i * j) - (j * (k - 1)) - 1 = last index
+    mul $t1, $s3, $s4                                                             
+    mul $t2, $s4, $s5                                
+    add $t1, $t1, $s4                                 # t1 = sizeofframecol+framecol   
+    add $t2, $t2, $s6                                 # t2 = framecol*windowrow+windowcol
+    sub $t9, $t1, $t2                                 # sizeofframe-framecol*windowrow+framecol-windowcol
 
 zLoop:
     addi $s7, $s7, 1
