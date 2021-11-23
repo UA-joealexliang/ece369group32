@@ -83,7 +83,7 @@ loop:
 switch:     
     sub $t4, $t3, $t4                                # t4 = t3-t4
 store:
-    add $t4, $t4, $t8                                # update SAD into t8
+    add $t8, $t4, $t8                                # update SAD into t8
     beq $t6, $t1, compare                            # if t1 = sizeofwindow-1 -> compare (exit loop when last element has been added to SAD)
     addi $t1, $t1, 1                                 # else t1++
     beq $t7, $t2, nextrow                            # if t7==sizeofwindowcol-1 -> nextrow (jump to nextrow if last element of a row has been accessed)
