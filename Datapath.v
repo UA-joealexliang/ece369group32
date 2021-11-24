@@ -25,14 +25,16 @@ module Datapath(Clk, Rst, PCResult, WriteData, v0, v1);
     //variables from ID_EX_Reg
     wire [31:0] ID_ReadData1, ID_ReadData2, ID_SignExtended, ID_PCAddResult;
     wire [4:0] ID_ALUControl;
-    wire [1:0] ID_RegDst, ID_Datatype, ID_HiLoWrite;
+    wire [1:0] ID_RegDst, ID_Datatype;
+    //wire [1:0] ID_HiLoWrite;
     wire ID_ALUSrc, ID_Branch, ID_MemWrite, ID_MemRead, ID_MemtoReg, ID_RegWrite, ID_Jump, ID_ALUSrc2;
     wire FlushSignal;
 
     wire [31:0] EX_ReadData1, EX_ReadData2, EX_SignExtended, EX_PCAddResult;
     wire[31:0] EX_Instruction;
     wire [4:0] EX_ALUControl;
-    wire [1:0] EX_RegDst, EX_Datatype, EX_HiLoWrite;
+    wire [1:0] EX_RegDst, EX_Datatype;
+    //wire [1:0] EX_HiLoWrite;
     wire EX_ALUSrc, EX_MemWrite, EX_MemRead, EX_MemtoReg, EX_RegWrite, EX_Jump, EX_ALUSrc2;
     
     wire SignExtend; //is not fed into ID_EX_Reg
@@ -56,9 +58,9 @@ module Datapath(Clk, Rst, PCResult, WriteData, v0, v1);
 
     wire [31:0] ALUSrc1Data, ALUSrc2Data; //is not fed into EX_MEM_Reg
     
-    wire [31:0] HiALUOut, LoALUOut; //is not fed into EX_MEM_Reg
+    //wire [31:0] HiALUOut, LoALUOut; //is not fed into EX_MEM_Reg
     
-    wire [31:0] HI_out, LO_out; //is not fed into EX_MEM_Reg
+    //wire [31:0] HI_out, LO_out; //is not fed into EX_MEM_Reg
     
     //variables from MEM_WB_Reg
     wire [31:0] MEM_MemDataOut;
@@ -134,7 +136,7 @@ module Datapath(Clk, Rst, PCResult, WriteData, v0, v1);
     wire [3:0] RegisterTypes;
     Controller                Controller(
                                         ID_Instruction[31:26], ID_Instruction[21], ID_Instruction[20:16], ID_Instruction[10:6], ID_Instruction[5:0],
-                                        ID_RegDst, ID_ALUSrc, ID_ALUSrc2, ID_MemtoReg, ID_RegWrite, ID_HiLoWrite, ID_MemRead, ID_MemWrite, 
+                                        ID_RegDst, ID_ALUSrc, ID_ALUSrc2, ID_MemtoReg, ID_RegWrite, /*ID_HiLoWrite,*/ ID_MemRead, ID_MemWrite, 
                                         ID_Branch, ID_Jump, ID_Datatype, ID_ALUControl, SignExtend, index15_0or10_6, RegisterTypes
                                         );
 
@@ -167,11 +169,11 @@ module Datapath(Clk, Rst, PCResult, WriteData, v0, v1);
     ID_EX_Reg                 ID_EX_Reg(
                                         ID_ReadData1,  ID_ReadData2,  ID_SignExtended, ID_PCAddResult, ID_Instruction,
                                         ID_RegDst, ID_ALUSrc, ID_ALUControl, ID_MemWrite, ID_MemRead, ID_MemtoReg, ID_RegWrite, 
-                                        ID_Jump, ID_ALUSrc2, ID_Datatype, ID_HiLoWrite,
+                                        ID_Jump, ID_ALUSrc2, ID_Datatype, /*ID_HiLoWrite,*/
                                         Clk, Rst, ~(FlushSignal), 
                                         EX_ReadData1, EX_ReadData2, EX_SignExtended, EX_PCAddResult, EX_Instruction,
                                         EX_RegDst, EX_ALUSrc, EX_ALUControl, EX_MemWrite, EX_MemRead, EX_MemtoReg, EX_RegWrite, 
-                                        EX_Jump, EX_ALUSrc2, EX_Datatype, EX_HiLoWrite
+                                        EX_Jump, EX_ALUSrc2, EX_Datatype, /*EX_HiLoWrite*/
                                         );
 
                             //ShiftLeft2(In, Out);
@@ -229,12 +231,12 @@ module Datapath(Clk, Rst, PCResult, WriteData, v0, v1);
     Mux32Bit2To1            EX_MuxALUinput2(ALUSrc2Data, EX_ReadData2, EX_SignExtended, EX_ALUSrc); 
 
                             //HI_Reg(in, out, Clk, Ld, Clr)
-    HI_Reg                  HI_Reg(HiALUOut, HI_out, Clk, EX_HiLoWrite[0], Rst); 
+    //HI_Reg                  HI_Reg(HiALUOut, HI_out, Clk, EX_HiLoWrite[0], Rst); 
                             //LO_Reg(in, out, Clk, Ld, Clr)
-    LO_Reg                  LO_Reg(LoALUOut, LO_out, Clk, EX_HiLoWrite[1], Rst);
+    //LO_Reg                  LO_Reg(LoALUOut, LO_out, Clk, EX_HiLoWrite[1], Rst);
 
                             //ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Opcode, ALUResult, Hi, Lo, Zero, RegWrite2);
-    ALU32Bit                EX_ALU(EX_ALUControl, ALUSrc1Data, ALUSrc2Data, HI_out, LO_out, EX_Instruction[31:26], EX_ALUResult, HiALUOut, LoALUOut, EX_Zero, EX_RegWrite2);
+    ALU32Bit                EX_ALU(EX_ALUControl, ALUSrc1Data, ALUSrc2Data, /*HI_out, LO_out,*/ EX_Instruction[31:26], EX_ALUResult, /*HiALUOut, LoALUOut,*/ EX_Zero, EX_RegWrite2);
     
                             /*EX_MEM_Reg(
                                     EX_RegWrite, EX_RegWrite2, EX_MemtoReg, 

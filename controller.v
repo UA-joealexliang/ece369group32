@@ -2,7 +2,7 @@
 
 module Controller(
             Opcode, Bit21, Bit20_16, Bit10_6, funct,
-            RegDst, ALUSrc, ALUSrc2, MemtoReg, RegWrite, HI_LO_Write, MemRead, MemWrite, 
+            RegDst, ALUSrc, ALUSrc2, MemtoReg, RegWrite, /*HI_LO_Write,*/ MemRead, MemWrite, 
             Branch, Jump, Datatype, ALUControl, SignExtend, index, RegisterTypes
             );
 
@@ -17,7 +17,7 @@ module Controller(
     output reg [1:0] RegDst;
     output reg SignExtend; // still needs to be implemented
     output reg [1:0] Datatype;
-    output reg [1:0] HI_LO_Write; // 0: don't write, 1: HI, 2: LO, 3: Both
+    //output reg [1:0] HI_LO_Write; // 0: don't write, 1: HI, 2: LO, 3: Both
     output reg [4:0] ALUControl;
 
     //SignExtend: 0 for unsigned operations, 1 for signed operations
@@ -40,7 +40,7 @@ module Controller(
             MemWrite = 1'b0;
             Branch = 1'b0;
             Jump = 1'b0;
-            HI_LO_Write = 2'b00;
+            //HI_LO_Write = 2'b00;
             SignExtend = 1'b0;
             ALUControl = 5'b11111;
             index = 0;
@@ -61,7 +61,7 @@ module Controller(
                     MemWrite = 1'b0;
                     Branch = 1'b0;
                     Jump = 1'b0;
-                    HI_LO_Write = 2'b00;
+                    //HI_LO_Write = 2'b00;
                     SignExtend = 1'b0;
                     //ALUOp1 = 1'b1;
                     //ALUOp0 = 1'b0;
@@ -85,19 +85,19 @@ module Controller(
                             RegisterTypes <= 4'b0000;
                         end
 
-                        6'b011000: begin // mult
-                            ALUControl = 5'b00010;
-                            HI_LO_Write = 2'b11;
-                            index = 0;
-                            RegisterTypes <= 4'b0010;
-                        end
+                        // 6'b011000: begin // mult
+                        //     ALUControl = 5'b00010;
+                        //     //HI_LO_Write = 2'b11;
+                        //     index = 0;
+                        //     RegisterTypes <= 4'b0010;
+                        // end
 
-                        6'b011001: begin // multu
-                            ALUControl = 5'b00010;
-                            HI_LO_Write = 2'b11;
-                            index = 0;
-                            RegisterTypes <= 4'b0010;
-                        end
+                        // 6'b011001: begin // multu
+                        //     ALUControl = 5'b00010;
+                        //     //HI_LO_Write = 2'b11;
+                        //     index = 0;
+                        //     RegisterTypes <= 4'b0010;
+                        // end
 
                         6'b100100: begin // and
                             ALUControl = 5'b00011;
@@ -215,31 +215,31 @@ module Controller(
                             RegisterTypes <= 4'b0000;
                         end
 
-                        6'b010001: begin // mthi
-                            ALUControl = 5'b01111;
-                            HI_LO_Write = 2'b01;
-                            index = 0;
-                            RegisterTypes <= 4'b0010;
-                        end
+                        // 6'b010001: begin // mthi
+                        //     ALUControl = 5'b01111;
+                        //     //HI_LO_Write = 2'b01;
+                        //     index = 0;
+                        //     RegisterTypes <= 4'b0010;
+                        // end
 
-                        6'b010011: begin // mtlo
-                            ALUControl = 5'b10000;
-                            HI_LO_Write = 2'b10;
-                            index = 0;
-                            RegisterTypes <= 4'b0010;
-                        end
+                        // 6'b010011: begin // mtlo
+                        //     ALUControl = 5'b10000;
+                        //     //HI_LO_Write = 2'b10;
+                        //     index = 0;
+                        //     RegisterTypes <= 4'b0010;
+                        // end
 
-                        6'b010000: begin // mfhi
-                            ALUControl = 5'b10001;
-                            index = 0;
-                            RegisterTypes <= 4'b1010;
-                        end
+                        // 6'b010000: begin // mfhi
+                        //     ALUControl = 5'b10001;
+                        //     index = 0;
+                        //     RegisterTypes <= 4'b1010;
+                        // end
 
-                        6'b010010: begin // mflo
-                            ALUControl = 5'b10010;
-                            index = 0;
-                            RegisterTypes <= 4'b1010;
-                        end
+                        // 6'b010010: begin // mflo
+                        //     ALUControl = 5'b10010;
+                        //     index = 0;
+                        //     RegisterTypes <= 4'b1010;
+                        // end
                         
                         6'b001000: begin // jr
                             ALUControl = 5'b11111;
@@ -273,25 +273,25 @@ module Controller(
                     case(funct)
                         6'b000010: begin // mul
                             ALUControl = 5'b10011;
-                            HI_LO_Write = 2'b00;
+                            //HI_LO_Write = 2'b00;
                             RegisterTypes <= 4'b0000;
                         end
 
-                        6'b000000: begin // madd
-                            ALUControl = 5'b10100;
-                            HI_LO_Write = 2'b11;
-                            RegisterTypes <= 4'b0010;
-                        end
+                        // 6'b000000: begin // madd
+                        //     ALUControl = 5'b10100;
+                        //     //HI_LO_Write = 2'b11;
+                        //     RegisterTypes <= 4'b0010;
+                        // end
 
-                        6'b000100: begin // msub
-                            ALUControl = 5'b10101;
-                            HI_LO_Write = 2'b11;
-                            RegisterTypes <= 4'b0010;
-                        end
+                        // 6'b000100: begin // msub
+                        //     ALUControl = 5'b10101;
+                        //     //HI_LO_Write = 2'b11;
+                        //     RegisterTypes <= 4'b0010;
+                        // end
 
                         default: begin
                             ALUControl = 5'b11111;
-                            HI_LO_Write = 2'b00;
+                            //HI_LO_Write = 2'b00;
                         end
                     endcase
                 end
@@ -309,7 +309,7 @@ module Controller(
                     MemWrite = 1'b0;
                     Branch = 1'b0;
                     Jump = 1'b0;
-                    HI_LO_Write = 2'b00;
+                    //HI_LO_Write = 2'b00;
                     SignExtend = 1'b0;
                     index = 0;
                     //ALUOp1 = 1'b0;
@@ -327,7 +327,7 @@ module Controller(
                     MemWrite = 1'b0;
                     Branch = 1'b0;
                     Jump = 1'b0;
-                    HI_LO_Write = 2'b00;
+                    //HI_LO_Write = 2'b00;
                     SignExtend = 1'b0;
                     index = 0;
                     RegisterTypes <= 4'b0011;
@@ -346,7 +346,7 @@ module Controller(
                     MemWrite = 1'b0;
                     Branch = 1'b0;
                     Jump = 1'b0;
-                    HI_LO_Write = 2'b00;
+                    //HI_LO_Write = 2'b00;
                     SignExtend = 1'b0;
                     index = 0;
                     RegisterTypes <= 4'b0011;
@@ -364,7 +364,7 @@ module Controller(
                     MemWrite = 1'b0;
                     Branch = 1'b0;
                     Jump = 1'b0;
-                    HI_LO_Write = 2'b00;
+                    //HI_LO_Write = 2'b00;
                     SignExtend = 1'b0;
                     index = 0;
                     RegisterTypes <= 4'b0011;
@@ -383,7 +383,7 @@ module Controller(
                     MemWrite = 1'b1;
                     Branch = 1'b0;
                     Jump = 1'b0;
-                    HI_LO_Write = 2'b00;
+                    //HI_LO_Write = 2'b00;
                     SignExtend = 1'b0;
                     index = 0;
                     RegisterTypes <= 4'b0100;
@@ -402,7 +402,7 @@ module Controller(
                     MemWrite = 1'b1;
                     Branch = 1'b0;
                     Jump = 1'b0;
-                    HI_LO_Write = 2'b00;
+                    //HI_LO_Write = 2'b00;
                     SignExtend = 1'b0;
                     index = 0;
                     //ALUOp1 = 1'b0;
@@ -421,7 +421,7 @@ module Controller(
                     MemWrite = 1'b1;
                     Branch = 1'b0;
                     Jump = 1'b0;
-                    HI_LO_Write = 2'b00;
+                    //HI_LO_Write = 2'b00;
                     SignExtend = 1'b0;
                     index = 0;
                     RegisterTypes <= 4'b0100;
@@ -442,7 +442,7 @@ module Controller(
                     MemWrite = 1'b0;
                     Branch = 1'b1;
                     Jump = 1'b0;
-                    HI_LO_Write = 2'b00;
+                    //HI_LO_Write = 2'b00;
                     SignExtend = 1'b0;
                     index = 0;
                     //ALUOp1 = 1'b0;
@@ -472,7 +472,7 @@ module Controller(
                     MemWrite = 1'b0;
                     Branch = 1'b1;
                     Jump = 1'b0;
-                    HI_LO_Write = 2'b00;
+                    //HI_LO_Write = 2'b00;
                     SignExtend = 1'b0;
                     index = 0;
                     RegisterTypes <= 4'b0110;
@@ -491,7 +491,7 @@ module Controller(
                     MemWrite = 1'b0;
                     Branch = 1'b1;
                     Jump = 1'b0;
-                    HI_LO_Write = 2'b00;
+                    //HI_LO_Write = 2'b00;
                     SignExtend = 1'b0;
                     index = 0;
                     RegisterTypes <= 4'b0110;
@@ -510,7 +510,7 @@ module Controller(
                     MemWrite = 1'b0;
                     Branch = 1'b1;
                     Jump = 1'b0;
-                    HI_LO_Write = 2'b00;
+                    //HI_LO_Write = 2'b00;
                     SignExtend = 1'b0;
                     index = 0;
                     RegisterTypes <= 4'b0101;
@@ -529,7 +529,7 @@ module Controller(
                     MemWrite = 1'b0;
                     Branch = 1'b1;
                     Jump = 1'b0;
-                    HI_LO_Write = 2'b00;
+                    //HI_LO_Write = 2'b00;
                     SignExtend = 1'b0;
                     index = 0;
                     RegisterTypes <= 4'b0101;
@@ -550,7 +550,7 @@ module Controller(
                     MemWrite = 1'b0;
                     Branch = 1'b0;
                     Jump = 1'b0;
-                    HI_LO_Write = 2'b00;
+                    //HI_LO_Write = 2'b00;
                     SignExtend = 1'b0;
                     index = 0;
                     RegisterTypes <= 4'b0001;
@@ -569,7 +569,7 @@ module Controller(
                     MemWrite = 1'b0;
                     Branch = 1'b0;
                     Jump = 1'b0;
-                    HI_LO_Write = 2'b00;
+                    //HI_LO_Write = 2'b00;
                     SignExtend = 1'b0;
                     index = 0;
                     RegisterTypes <= 4'b0001;
@@ -588,7 +588,7 @@ module Controller(
                     MemWrite = 1'b0;
                     Branch = 1'b0;
                     Jump = 1'b0;
-                    HI_LO_Write = 2'b00;
+                    //HI_LO_Write = 2'b00;
                     SignExtend = 1'b1;
                     index = 0;
                     RegisterTypes <= 4'b0001;
@@ -607,7 +607,7 @@ module Controller(
                     MemWrite = 1'b0;
                     Branch = 1'b0;
                     Jump = 1'b0;
-                    HI_LO_Write = 2'b00;
+                    //HI_LO_Write = 2'b00;
                     SignExtend = 1'b1;
                     index = 0;
                     RegisterTypes <= 4'b0001;
@@ -626,7 +626,7 @@ module Controller(
                     MemWrite = 1'b0;
                     Branch = 1'b0;
                     Jump = 1'b0;
-                    HI_LO_Write = 2'b00;
+                    //HI_LO_Write = 2'b00;
                     SignExtend = 1'b1;
                     index = 0;
                     RegisterTypes <= 4'b0001;
@@ -645,7 +645,7 @@ module Controller(
                     MemWrite = 1'b0;
                     Branch = 1'b0;
                     Jump = 1'b0;
-                    HI_LO_Write = 2'b00;
+                    //HI_LO_Write = 2'b00;
                     SignExtend = 1'b0;
                     index = 0;
                     RegisterTypes <= 4'b0001;
@@ -664,7 +664,7 @@ module Controller(
                     MemWrite = 1'b0;
                     Branch = 1'b0;
                     Jump = 1'b0;
-                    HI_LO_Write = 2'b00;
+                    //HI_LO_Write = 2'b00;
                     SignExtend = 1'b0;
                     index = 0;
                     RegisterTypes <= 4'b0001;
@@ -685,7 +685,7 @@ module Controller(
                     MemWrite = 1'b0;
                     Branch = 1'b0;
                     Jump = 1'b0;
-                    HI_LO_Write = 2'b00;
+                    //HI_LO_Write = 2'b00;
                     SignExtend = 1'b0;
                     index = 0;
                     //ALUOp1 = 1'b1;
@@ -715,7 +715,7 @@ module Controller(
                     MemWrite = 1'b0;
                     Branch = 1'b0;
                     Jump = 1'b1;
-                    HI_LO_Write = 2'b00;
+                    //HI_LO_Write = 2'b00;
                     SignExtend = 1'b0;
                     index = 0;
                     RegisterTypes <= 4'b0111;
@@ -732,7 +732,7 @@ module Controller(
                     MemWrite = 1'b0;
                     Branch = 1'b0;
                     Jump = 1'b1;
-                    HI_LO_Write = 2'b00;
+                    //HI_LO_Write = 2'b00;
                     SignExtend = 1'b0;
                     index = 0;
                     RegisterTypes <= 4'b0111;
@@ -748,7 +748,7 @@ module Controller(
                     MemWrite = 1'b0;
                     Branch = 1'b0;
                     Jump = 1'b0;
-                    HI_LO_Write = 2'b00;
+                    //HI_LO_Write = 2'b00;
                     SignExtend = 1'b0;
                     index = 0;
                     //ALUOp1 = 1'b0;
