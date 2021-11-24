@@ -21,24 +21,24 @@
 
 
 module EX_MEM_Reg(
-                EX_RegWrite, EX_RegWrite2, EX_MemtoReg, 
+                EX_RegWrite, /*EX_RegWrite2,*/ EX_MemtoReg, 
                 EX_MemWrite, EX_MemRead, EX_ALUResult, EX_ReadData2, EX_RegDst, 
                 EX_Jump, EX_Datatype, EX_PCAddResult,
                 EX_Instruction,
                 Clk, Rst, Ld,
-                MEM_RegWrite, MEM_RegWrite2, MEM_MemtoReg,
+                MEM_RegWrite, /*MEM_RegWrite2,*/ MEM_MemtoReg,
                 MEM_MemWrite, MEM_MemRead, MEM_ALUResult, MEM_ReadData2, MEM_RegDst, 
                 MEM_Jump, MEM_Datatype, MEM_PCAddResult, 
                 MEM_Instruction
                 );
         
     input Clk, Rst, Ld;
-    input EX_RegWrite, EX_RegWrite2, EX_MemtoReg, EX_MemWrite, EX_MemRead, EX_Jump;
+    input EX_RegWrite, /*EX_RegWrite2,*/ EX_MemtoReg, EX_MemWrite, EX_MemRead, EX_Jump;
     input [31:0] EX_ALUResult, EX_ReadData2, EX_PCAddResult;
     input [1:0] EX_RegDst, EX_Datatype;
     input [31:0] EX_Instruction;
 
-    output reg MEM_RegWrite, MEM_RegWrite2, MEM_MemtoReg, MEM_MemWrite, MEM_MemRead, MEM_Jump;
+    output reg MEM_RegWrite, /*MEM_RegWrite2,*/ MEM_MemtoReg, MEM_MemWrite, MEM_MemRead, MEM_Jump;
     output reg [31:0] MEM_ALUResult, MEM_ReadData2, MEM_PCAddResult;
     output reg [1:0] MEM_RegDst, MEM_Datatype;
     output reg [31:0] MEM_Instruction;
@@ -46,7 +46,7 @@ module EX_MEM_Reg(
     always@(posedge Clk) begin
         if(Rst == 1) begin
             MEM_RegWrite <= 0; 
-            MEM_RegWrite2 <= 0;
+            //MEM_RegWrite2 <= 0;
             MEM_MemtoReg <= 0;
             MEM_MemWrite <= 0; 
             MEM_MemRead <= 0;
@@ -60,7 +60,7 @@ module EX_MEM_Reg(
         end
         else if(Ld == 1) begin
             MEM_RegWrite <= EX_RegWrite; 
-            MEM_RegWrite2 <= EX_RegWrite2;
+            //MEM_RegWrite2 <= EX_RegWrite2;
             MEM_MemtoReg <= EX_MemtoReg;
             MEM_MemWrite <= EX_MemWrite; 
             MEM_MemRead <= EX_MemRead;

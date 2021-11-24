@@ -26,13 +26,13 @@
 //   operations needed to support. 
 ////////////////////////////////////////////////////////////////////////////////
 
-module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Opcode, ALUResult, Hi, Lo, Zero, RegWrite2);
+module ALU32Bit(ALUControl, A, B, /*Hi_in, Lo_in,*/ Opcode, ALUResult, /*Hi, Lo,*/ Zero, RegWrite2);
 
 	input [4:0] ALUControl; //control bits for ALU operation
                                 //you need to adjust the bitwidth as needed
 	input [31:0] A, B;	//inputs
-	input [31:0] Hi_in;
-	input [31:0] Lo_in;
+	//input [31:0] Hi_in;
+	//input [31:0] Lo_in;
 	input [5:0] Opcode; // input for opcode from instruction
 	
 	reg [63:0] temp; //temp 64 bit register
@@ -41,8 +41,8 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Opcode, ALUResult, Hi, Lo, Zero,
 
 	output reg [31:0] ALUResult;	//answer
 	output reg Zero;	    		//Zero flag is raised if conditions are met in branch instructions
-	output reg [31:0] Hi;
-	output reg [31:0] Lo;
+	//output reg [31:0] Hi;
+	//output reg [31:0] Lo;
 	output reg RegWrite2; //this is OR'd with RegWrite
 
 
@@ -65,23 +65,23 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Opcode, ALUResult, Hi, Lo, Zero,
             ALUResult <= A * B;		
         end 
 	
-	    5'b00100: begin                  	//multiply word: mult*, multu*
-            temp <= $signed(A * B);
-            Hi <= temp[63:32];
-            Lo <= temp[31:0];
-        end
+	    // 5'b00100: begin                  	//multiply word: mult*, multu*
+        //     temp <= $signed(A * B);
+        //     Hi <= temp[63:32];
+        //     Lo <= temp[31:0];
+        // end
 	
-  	    5'b00101: begin                 	//multiply and add: madd*
-            temp <= {Hi_in, Lo_in} + (A * B);
-            Hi <= temp[63:32];
-            Lo <= temp[31:0]; 
-        end
+  	    // 5'b00101: begin                 	//multiply and add: madd*
+        //     temp <= {Hi_in, Lo_in} + (A * B);
+        //     Hi <= temp[63:32];
+        //     Lo <= temp[31:0]; 
+        // end
             
-        5'b00110: begin                 	//multiply and sub: msub*
-            temp <= {Hi_in, Lo_in} - (A * B);
-            Hi <= temp[63:32];
-            Lo <= temp[31:0]; 
-        end
+        // 5'b00110: begin                 	//multiply and sub: msub*
+        //     temp <= {Hi_in, Lo_in} - (A * B);
+        //     Hi <= temp[63:32];
+        //     Lo <= temp[31:0]; 
+        // end
 	
 	    5'b00111: begin						//bgez* rs >= 0
 			if (A >= 0) begin
@@ -189,25 +189,25 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Opcode, ALUResult, Hi, Lo, Zero,
 			end
         end
 		
-	    5'b10100: begin						//movn* SET RegWrite = 0, writing now determined by RegWrite2
-			ALUResult <= A;
-			if(B != 0) begin
-				RegWrite2 <= 1;
-			end
-			else begin
-				RegWrite2 <= 0;
-			end
-	    end
+	    // 5'b10100: begin						//movn* SET RegWrite = 0, writing now determined by RegWrite2
+		// 	ALUResult <= A;
+		// 	if(B != 0) begin
+		// 		RegWrite2 <= 1;
+		// 	end
+		// 	else begin
+		// 		RegWrite2 <= 0;
+		// 	end
+	    // end
 
-	    5'b10101: begin						//movz* SET RegWrite = 0, writing now determined by RegWrite2
-			ALUResult <= A;
-			if(B == 0) begin				
-				RegWrite2 <= 1;
-			end
-			else begin
-				RegWrite2 <= 0;
-			end
-	    end	
+	    // 5'b10101: begin						//movz* SET RegWrite = 0, writing now determined by RegWrite2
+		// 	ALUResult <= A;
+		// 	if(B == 0) begin				
+		// 		RegWrite2 <= 1;
+		// 	end
+		// 	else begin
+		// 		RegWrite2 <= 0;
+		// 	end
+	    // end	
             
         5'b10110: begin                  	//rotrv*, rotr* rt is rotated rs[4:0] bits (ASSUME unsigned B[4:0])
 			temp <= {B, B}; //ex B = 101 temp = 101101 rotr0/3 = 101 rotr1 = 110 rotr2 = 011 
@@ -246,21 +246,21 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Opcode, ALUResult, Hi, Lo, Zero,
             end
 	     end
 
- 	    5'b11001: begin 					//mthi*
-			Hi <= A;
-	    end
+ 	    // 5'b11001: begin 					//mthi*
+		// 	Hi <= A;
+	    // end
 
-	    5'b11001: begin 					//mtlo*
-			Lo <= A;
-	    end	
+	    // 5'b11001: begin 					//mtlo*
+		// 	Lo <= A;
+	    // end	
 
-	    5'b11001: begin 					//mfhi*
-			ALUResult <= Hi_in;
-		end
+	    // 5'b11001: begin 					//mfhi*
+		// 	ALUResult <= Hi_in;
+		// end
 
-	    5'b11001: begin 					//mflo*
-			ALUResult <= Lo_in;
-	    end		
+	    // 5'b11001: begin 					//mflo*
+		// 	ALUResult <= Lo_in;
+	    // end		
 	    
 	    5'b11010: begin 					//lui* load immediate into upper half of a word
 			ALUResult <= B<<16;
@@ -287,11 +287,11 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Opcode, ALUResult, Hi, Lo, Zero,
 						ALUResult = A - B; 
 					end
 
-					5'b00010: begin // mult, multu
-						temp <= $signed(A) * $signed(B);
-            			Hi <= temp[63:32];
-            			Lo <= temp[31:0];
-					end
+					// 5'b00010: begin // mult, multu
+					// 	temp <= $signed(A) * $signed(B);
+            		// 	Hi <= temp[63:32];
+            		// 	Lo <= temp[31:0];
+					// end
 
 					5'b00011: begin // and
         				ALUResult = (A & B);
@@ -342,25 +342,25 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Opcode, ALUResult, Hi, Lo, Zero,
 						end
 					end
 
-					5'b01011: begin // movn
-						ALUResult <= A;
-						if(B != 0) begin
-							RegWrite2 <= 1;
-						end
-						else begin
-							RegWrite2 <= 0;
-						end
-					end
+					// 5'b01011: begin // movn
+					// 	ALUResult <= A;
+					// 	if(B != 0) begin
+					// 		RegWrite2 <= 1;
+					// 	end
+					// 	else begin
+					// 		RegWrite2 <= 0;
+					// 	end
+					// end
 
-					5'b01100: begin // movz
-						ALUResult <= A;
-						if(B == 0) begin				
-							RegWrite2 <= 1;
-						end
-						else begin
-							RegWrite2 <= 0;
-						end
-					end
+					// 5'b01100: begin // movz
+					// 	ALUResult <= A;
+					// 	if(B == 0) begin				
+					// 		RegWrite2 <= 1;
+					// 	end
+					// 	else begin
+					// 		RegWrite2 <= 0;
+					// 	end
+					// end
 
 					5'b01101: begin // sra, srav ; shift right but signed
 						if (B[31] == 1) begin
@@ -382,21 +382,21 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Opcode, ALUResult, Hi, Lo, Zero,
 						end
 					end
 
-					5'b01111: begin // mthi
-						Hi <= A;
-					end
+					// 5'b01111: begin // mthi
+					// 	Hi <= A;
+					// end
 
-					5'b10000: begin // mtlo
-						Lo <= A;
-					end
+					// 5'b10000: begin // mtlo
+					// 	Lo <= A;
+					// end
 
-					5'b10001: begin // mfhi
-						ALUResult <= Hi_in;
-					end
+					// 5'b10001: begin // mfhi
+					// 	ALUResult <= Hi_in;
+					// end
 
-					5'b10010: begin // mflo
-						ALUResult <= Lo_in;
-					end
+					// 5'b10010: begin // mflo
+					// 	ALUResult <= Lo_in;
+					// end
 
 					default: begin // jr
 					end
@@ -409,17 +409,17 @@ module ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Opcode, ALUResult, Hi, Lo, Zero,
 						ALUResult <= ($signed(A)) * ($signed(B));
 					end
 
-					5'b10100: begin // madd
-						temp <= $signed(A) * $signed(B);
-						Hi <= temp[63:32] + Hi_in;
-						Lo <= temp[31:0] + Lo_in; 
-					end
+					// 5'b10100: begin // madd
+					// 	temp <= $signed(A) * $signed(B);
+					// 	Hi <= temp[63:32] + Hi_in;
+					// 	Lo <= temp[31:0] + Lo_in; 
+					// end
 
-					5'b10101: begin // msub
-						temp <= $signed(A) * $signed(B);
-						Hi <= Hi_in - temp[63:32];
-						Lo <= Lo_in - temp[31:0]; 
-					end
+					// 5'b10101: begin // msub
+					// 	temp <= $signed(A) * $signed(B);
+					// 	Hi <= Hi_in - temp[63:32];
+					// 	Lo <= Lo_in - temp[31:0]; 
+					// end
 				endcase
 			end
 
