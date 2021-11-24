@@ -142,11 +142,11 @@ vbsme:
     move $v1, $0                                     #v1 stores best addrSAD col
     addi $s2, $0, 32767                              #$s2 stores best SAD min, initialize to large number 2^32-1
     
+    lw $s4, 4($a0) # get frame columns (j)
+    lw $s6, 12($a0) # get window columns (l)
     li $s7, 0 # set index to 0
     lw $s3, 0($a0) # get frame rows (i)
-    lw $s4, 4($a0) # get frame columns (j)
     lw $s5, 8($a0) # get window rows (k)
-    lw $s6, 12($a0) # get window columns (l)
     sub $s0, $s4, $s6                                             
     addi $s0, $s0, 1                                  # sizeofframecol - sizeofwindowcol + 1
 
