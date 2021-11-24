@@ -48,10 +48,11 @@ module Datapath(Clk, Rst, PCResult, WriteData, v0, v1);
     wire Zero;
 
     //variables from EX_MEM_Reg
-    wire EX_RegWrite2;
+    //wire EX_RegWrite2;
     wire [31:0] EX_ALUResult;
     
-    wire MEM_RegWrite, MEM_RegWrite2, MEM_MemtoReg, MEM_MemWrite, MEM_MemRead, MEM_Jump;
+    wire MEM_RegWrite, MEM_MemtoReg, MEM_MemWrite, MEM_MemRead, MEM_Jump;
+    //wire MEM_RegWrite2;
     wire [31:0] MEM_ALUResult, MEM_ReadData2, MEM_PCAddResult;
     wire [1:0] MEM_RegDst, MEM_Datatype;
     wire [31:0] MEM_Instruction;
@@ -66,7 +67,8 @@ module Datapath(Clk, Rst, PCResult, WriteData, v0, v1);
     wire [31:0] MEM_MemDataOut;
     //wire [31:0] WriteDataIn, ReadDataOut;
 
-    wire WB_RegWrite, WB_RegWrite2, WB_MemtoReg, WB_Jump;
+    wire WB_RegWrite, WB_MemtoReg, WB_Jump;
+    //wire WB_RegWrite2;
     wire [31:0] WB_MemDataOut, WB_ALUResult, WB_PCAddResult;
     wire [1:0] WB_RegDst;
     wire [31:0] WB_Instruction;
@@ -140,13 +142,13 @@ module Datapath(Clk, Rst, PCResult, WriteData, v0, v1);
                                         ID_Branch, ID_Jump, ID_Datatype, ID_ALUControl, SignExtend, index15_0or10_6, RegisterTypes
                                         );
 
-    wire OrResult;
+    //wire OrResult;
                             //ORGate(A, B, Out);
                             //WB_RegWrite or WB_RegWrite2 need to be 1 to write into registers
-    ORGate                  ORGate(WB_RegWrite, WB_RegWrite2, OrResult);
+    //ORGate                  ORGate(WB_RegWrite, WB_RegWrite2, OrResult);
 
                             //RegisterFile(ReadRegister1, ReadRegister2, WriteRegister, WriteData, RegWrite, Clk, ReadData1, ReadData2);
-    RegisterFile            Registers(ID_Instruction[25:21], ID_Instruction[20:16], RegDstData[4:0], WriteData, OrResult, Clk, ID_ReadData1, ID_ReadData2, v0, v1);
+    RegisterFile            Registers(ID_Instruction[25:21], ID_Instruction[20:16], RegDstData[4:0], WriteData, WB_RegWrite, Clk, ID_ReadData1, ID_ReadData2, v0, v1);
     
     wire [31:0] chosen_Imm;
                             //Mux32Bit2To1(out, inA, inB, sel)
@@ -173,7 +175,7 @@ module Datapath(Clk, Rst, PCResult, WriteData, v0, v1);
                                         Clk, Rst, ~(FlushSignal), 
                                         EX_ReadData1, EX_ReadData2, EX_SignExtended, EX_PCAddResult, EX_Instruction,
                                         EX_RegDst, EX_ALUSrc, EX_ALUControl, EX_MemWrite, EX_MemRead, EX_MemtoReg, EX_RegWrite, 
-                                        EX_Jump, EX_ALUSrc2, EX_Datatype, /*EX_HiLoWrite*/
+                                        EX_Jump, EX_ALUSrc2, EX_Datatype/*,EX_HiLoWrite*/
                                         );
 
                             //ShiftLeft2(In, Out);
@@ -236,7 +238,7 @@ module Datapath(Clk, Rst, PCResult, WriteData, v0, v1);
     //LO_Reg                  LO_Reg(LoALUOut, LO_out, Clk, EX_HiLoWrite[1], Rst);
 
                             //ALU32Bit(ALUControl, A, B, Hi_in, Lo_in, Opcode, ALUResult, Hi, Lo, Zero, RegWrite2);
-    ALU32Bit                EX_ALU(EX_ALUControl, ALUSrc1Data, ALUSrc2Data, /*HI_out, LO_out,*/ EX_Instruction[31:26], EX_ALUResult, /*HiALUOut, LoALUOut,*/ EX_Zero, EX_RegWrite2);
+    ALU32Bit                EX_ALU(EX_ALUControl, ALUSrc1Data, ALUSrc2Data, /*HI_out, LO_out,*/ EX_Instruction[31:26], EX_ALUResult, /*HiALUOut, LoALUOut,*/ EX_Zero/*, EX_RegWrite2*/);
     
                             /*EX_MEM_Reg(
                                     EX_RegWrite, EX_RegWrite2, EX_MemtoReg, 
@@ -250,12 +252,12 @@ module Datapath(Clk, Rst, PCResult, WriteData, v0, v1);
                                     MEM_Instruction
                                     );*/
     EX_MEM_Reg              EX_MEM_Reg(
-                                    EX_RegWrite, EX_RegWrite2, EX_MemtoReg, 
+                                    EX_RegWrite, /*EX_RegWrite2, */EX_MemtoReg, 
                                     EX_MemWrite, EX_MemRead, EX_ALUResult, EX_ReadData2, EX_RegDst, 
                                     EX_Jump, EX_Datatype, EX_PCAddResult, 
                                     EX_Instruction,
                                     Clk, Rst, 1'b1,
-                                    MEM_RegWrite, MEM_RegWrite2, MEM_MemtoReg, 
+                                    MEM_RegWrite, /*MEM_RegWrite2,*/ MEM_MemtoReg, 
                                     MEM_MemWrite, MEM_MemRead, MEM_ALUResult, MEM_ReadData2, MEM_RegDst, 
                                     MEM_Jump, MEM_Datatype, MEM_PCAddResult, 
                                     MEM_Instruction
@@ -274,10 +276,10 @@ module Datapath(Clk, Rst, PCResult, WriteData, v0, v1);
                                     WB_Instruction
                                     );*/
     MEM_WB_Reg              MEM_WB_Reg(
-                                    MEM_RegWrite, MEM_RegWrite2, MEM_MemtoReg, MEM_MemDataOut, MEM_ALUResult, MEM_RegDst, MEM_Jump, MEM_PCAddResult,
+                                    MEM_RegWrite, /*MEM_RegWrite2,*/ MEM_MemtoReg, MEM_MemDataOut, MEM_ALUResult, MEM_RegDst, MEM_Jump, MEM_PCAddResult,
                                     MEM_Instruction,
                                     Clk, Rst, 1'b1,
-                                    WB_RegWrite, WB_RegWrite2, WB_MemtoReg, WB_MemDataOut, WB_ALUResult, WB_RegDst, WB_Jump, WB_PCAddResult,
+                                    WB_RegWrite, /*WB_RegWrite2,*/ WB_MemtoReg, WB_MemDataOut, WB_ALUResult, WB_RegDst, WB_Jump, WB_PCAddResult,
                                     WB_Instruction
                                     );
                                                      

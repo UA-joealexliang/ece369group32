@@ -184,17 +184,17 @@ module Controller(
                             RegisterTypes <= 4'b0000;
                         end
 
-                        6'b001011: begin // movn
-                            ALUControl = 5'b01011;
-                            index = 0;
-                            RegisterTypes <= 4'b0000;
-                        end
+                        // 6'b001011: begin // movn
+                        //     ALUControl = 5'b01011;
+                        //     index = 0;
+                        //     RegisterTypes <= 4'b0000;
+                        // end
 
-                        6'b001010: begin // movz
-                            ALUControl = 5'b01100;
-                            index = 0;
-                            RegisterTypes <= 4'b0000;
-                        end
+                        // 6'b001010: begin // movz
+                        //     ALUControl = 5'b01100;
+                        //     index = 0;
+                        //     RegisterTypes <= 4'b0000;
+                        // end
 
                         6'b000011: begin // sra
                             ALUControl = 5'b01101;

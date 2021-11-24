@@ -26,7 +26,7 @@ module ID_EX_Reg(
                 Clk, Rst, Ld, //these help separate inputs and outputs, each i/o is neatly mapped in order
                 EX_ReadData1, EX_ReadData2, EX_SignExtended, EX_PCAddResult, EX_Instruction,
                 EX_RegDst, EX_ALUSrc, EX_ALUControl, EX_MemWrite, EX_MemRead, EX_MemtoReg, EX_RegWrite, 
-                EX_Jump, EX_ALUSrc2, EX_Datatype, /*EX_HiLoWrite*/
+                EX_Jump, EX_ALUSrc2, EX_Datatype/*,EX_HiLoWrite*/
                 );
             
     input Clk, Rst, Ld;

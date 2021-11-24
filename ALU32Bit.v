@@ -189,25 +189,25 @@ module ALU32Bit(ALUControl, A, B, /*Hi_in, Lo_in,*/ Opcode, ALUResult, /*Hi, Lo,
 			end
         end
 		
-	    5'b10100: begin						//movn* SET RegWrite = 0, writing now determined by RegWrite2
-			ALUResult <= A;
-			if(B != 0) begin
-				RegWrite2 <= 1;
-			end
-			else begin
-				RegWrite2 <= 0;
-			end
-	    end
+	    // 5'b10100: begin						//movn* SET RegWrite = 0, writing now determined by RegWrite2
+		// 	ALUResult <= A;
+		// 	if(B != 0) begin
+		// 		RegWrite2 <= 1;
+		// 	end
+		// 	else begin
+		// 		RegWrite2 <= 0;
+		// 	end
+	    // end
 
-	    5'b10101: begin						//movz* SET RegWrite = 0, writing now determined by RegWrite2
-			ALUResult <= A;
-			if(B == 0) begin				
-				RegWrite2 <= 1;
-			end
-			else begin
-				RegWrite2 <= 0;
-			end
-	    end	
+	    // 5'b10101: begin						//movz* SET RegWrite = 0, writing now determined by RegWrite2
+		// 	ALUResult <= A;
+		// 	if(B == 0) begin				
+		// 		RegWrite2 <= 1;
+		// 	end
+		// 	else begin
+		// 		RegWrite2 <= 0;
+		// 	end
+	    // end	
             
         5'b10110: begin                  	//rotrv*, rotr* rt is rotated rs[4:0] bits (ASSUME unsigned B[4:0])
 			temp <= {B, B}; //ex B = 101 temp = 101101 rotr0/3 = 101 rotr1 = 110 rotr2 = 011 
@@ -342,25 +342,25 @@ module ALU32Bit(ALUControl, A, B, /*Hi_in, Lo_in,*/ Opcode, ALUResult, /*Hi, Lo,
 						end
 					end
 
-					5'b01011: begin // movn
-						ALUResult <= A;
-						if(B != 0) begin
-							RegWrite2 <= 1;
-						end
-						else begin
-							RegWrite2 <= 0;
-						end
-					end
+					// 5'b01011: begin // movn
+					// 	ALUResult <= A;
+					// 	if(B != 0) begin
+					// 		RegWrite2 <= 1;
+					// 	end
+					// 	else begin
+					// 		RegWrite2 <= 0;
+					// 	end
+					// end
 
-					5'b01100: begin // movz
-						ALUResult <= A;
-						if(B == 0) begin				
-							RegWrite2 <= 1;
-						end
-						else begin
-							RegWrite2 <= 0;
-						end
-					end
+					// 5'b01100: begin // movz
+					// 	ALUResult <= A;
+					// 	if(B == 0) begin				
+					// 		RegWrite2 <= 1;
+					// 	end
+					// 	else begin
+					// 		RegWrite2 <= 0;
+					// 	end
+					// end
 
 					5'b01101: begin // sra, srav ; shift right but signed
 						if (B[31] == 1) begin
