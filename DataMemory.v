@@ -99,10 +99,10 @@ memory[6] <= 32'h0;*/
             end
             else if (Datatype == 2) begin //lb
                 case(Address[1:0]) 
-                    2'b00: ReadData <= $signed(memory[Address[14:2]][7:0]);
-                    2'b01: ReadData <= $signed(memory[Address[14:2]][15:8]);
-                    2'b10: ReadData <= $signed(memory[Address[14:2]][23:16]);
-                    2'b11: ReadData <= $signed(memory[Address[14:2]][31:24]);
+                    2'b00: ReadData <= memory[Address[14:2]][7:0];
+                    2'b01: ReadData <= memory[Address[14:2]][15:8];
+                    2'b10: ReadData <= memory[Address[14:2]][23:16];
+                    2'b11: ReadData <= memory[Address[14:2]][31:24];
                 endcase
             end
             //ReadData <= memory[Address[11:2]];
