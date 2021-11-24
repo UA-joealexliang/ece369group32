@@ -132,33 +132,29 @@ main:
 .globl  vbsme
 
 vbsme:  
-    li      $v0, 0              # reset $v0 and $v1
-    li      $v1, 0
 
-    # insert your code here
     addi $sp, $sp, -4
-    sw $ra, 0($sp)                                  #store ra = backtomain
-    move $v0, $0                                     #v0 stores best addrSAD row
-    move $v1, $0                                     #v1 stores best addrSAD col
-    addi $s2, $0, 32767                              #$s2 stores best SAD min, initialize to large number 2^32-1
-    
-    li $s7, 0 # set index to 0
-    lw $s3, 0($a0) # get frame rows (i)
-    lw $s4, 4($a0) # get frame columns (j)
-    lw $s5, 8($a0) # get window rows (k)
-    lw $s6, 12($a0) # get window columns (l)
-    sub $s0, $s4, $s6                                             
-    addi $s0, $s0, 1                                  # sizeofframecol - sizeofwindowcol + 1
-
+    lw $s3, 0($a0)                                   # s3 = get frame rows (i)
+    lw $s4, 4($a0)                                   # s4 = get frame columns (j)
+    lw $s6, 12($a0)                                  # s6 = get window columns (l)
+    lw $s5, 8($a0)                                   # s5 = get window rows (k)
+    sw $ra, 0($sp)                                   # store ra = backtomain
+    move $t2, $s6
+    mul $t1, $s3, $s4 
+    sub $s1, $s4, $s6                                # s1 = framecol-windowcol  
+    mul $t6, $s5, $s6
+    mul $t3, $s4, $s5
+    addi $s2, $0, 32767                              # s2 stores best SAD min, initialize to large number 2^32-1
+    add $t1, $t1, $s4                                # t1 = sizeofframe+framecol
+    move $s7, $0                                     # s7 = 0 set index to 0                                
+    add $t3, $t3, $s6                                # t3 = framecol*windowrow+windowcol
+    addi $s0, $s1, 1                                 # s0 = framecol-windowcol+1
+    move $v0, $0                                     # v0 stores best addrSAD row
+    move $v1, $0                                     # v1 stores best addrSAD col
+    sub $t9, $t1, $t3                                # sizeofframe-framecol*windowrow+framecol-windowcol
+    addi $t2, $t2, -1                                # t2 = sizeofwindowcol-1 (used to check when to increment to nextrow)
+    addi $t6, $t6, -1                                # t6 = sizeofwindow-1 (used to check when to exit SAD loop)
     jal SAD
-
-    sub $s1, $s4, $s6                                 # s1 = endofcol
-
-    mul $t1, $s3, $s4                                                             
-    mul $t2, $s4, $s5                                
-    add $t1, $t1, $s4                                 # t1 = sizeofframecol+framecol   
-    add $t2, $t2, $s6                                 # t2 = framecol*windowrow+windowcol
-    sub $t9, $t1, $t2                                 # sizeofframe-framecol*windowrow+framecol-windowcol
 
 zLoop:
     addi $s7, $s7, 1
@@ -181,20 +177,12 @@ endSAD:
 ##############################################################################################################################
 #SAD function begins
 SAD:
+    addi $sp, $sp, -4
     move $t0, $0                                     # t0 is current base address of frame
     move $t1, $0                                     # t1 is current base address of window
-
-    addi $sp, $sp, -4
-    sw $ra, 0($sp)                  
-    move $t8, $0                                     # t8 = local SAD value 
-
-    move $t2, $s6                                    
-    addi $t2, $t2, -1                                # t2 = sizeofwindowcol-1 (used to check when to increment to nextrow)
-
-    mul $t6, $s5, $s6
-    addi $t6, $t6, -1                                # t6 = sizeofwindow-1 (used to check when to exit SAD loop)
-
+    move $t8, $0                                     # t8 = local SAD value             
     move $t7, $0                                     # t7 keeps track of col index
+    sw $ra, 0($sp)
 
 loop:
     # rEfA1
