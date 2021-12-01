@@ -293,8 +293,40 @@ module ALU32Bit(ALUControl, A, B, /*Hi_in, Lo_in,*/ Opcode, ALUResult, /*Hi, Lo,
             		// 	Lo <= temp[31:0];
 					// end
 
-					5'b00011: begin // and
-        				ALUResult = (A & B);
+					5'b00011: begin // and (SAD)
+        				//ALUResult = (A & B);
+
+						// new instruction calculates abs for a 2x2 grid of values stored in one register each
+						// 1st value
+						if (A[31:24] >= B[31:24]) begin
+							s[31:24] <= A[31:24] - B[31:24];
+						end
+						else if (A[31:24] < B[31:24]) begin
+							s[31:24] <= B[31:24] - A[31:24];
+						end
+						// 2nd value
+						if (A[23:16] >= B[23:16]) begin
+							s[23:16] <= A[23:16] - B[23:16];
+						end
+						else if (A[23:16] < B[23:16]) begin
+							s[23:16] <= B[23:16] - A[23:16];
+						end
+						// 3rd value
+						if (A[15:8] >= B[15:8]) begin
+							s[15:8] <= A[15:8] - B[15:8];
+						end
+						else if (A[15:8] < B[15:8]) begin
+							s[15:8] <= B[15:8] - A[15:8];
+						end
+						// 4th value
+						if (A[7:0] >= B[7:0]) begin
+							s[7:0] <= A[7:0] - B[7:0];
+						end
+						else if (A[7:0] < B[7:0]) begin
+							s[7:0] <= B[7:0] - A[7:0];
+						end
+
+						ALUResult <= s[31:24] + s[23:16] + s[15:8] + s[7:0];
 					end
 
 					5'b00100: begin // or
