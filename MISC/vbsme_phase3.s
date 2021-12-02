@@ -212,7 +212,7 @@ store:
     addi $t7, $t7, 1                                 # t7++
     j loop
 nextrow:                                
-    add $t0, $t0, $s0                               # t0 = $t0 + sizeofframecol - sizeofwindowcol + 1 (get new index on next line)
+    add $t0, $t0, $s0                                # t0 = $t0 + sizeofframecol - sizeofwindowcol + 1 (get new index on next line)
     move $t7, $0                                     # t7 = 0 (reset to new col index of nextrow)
     j loop
 
@@ -228,27 +228,23 @@ compare:
 
 # update minimum into s2, calculate row_index into v0 and col_index into v1 based on s7
 update:
-    move $s2, $t8                                    # update minimum s2
-    
     move $t0, $0                                     # t0 increments to s7
     move $t1, $0                                     # t1 keeps track of rows
     move $t3, $0                                     # t3 keeps track of col
-
-    beq $t0, $s7, done                               # check before incrementing t0, used when t0 = 0 to avoid infinite loop
+    move $s2, $t8                                    # update minimum s2
 getRowCol:
-    add $t0, $t0, $s4                               # t0 = multiples of framecol
+    add $t0, $t0, $s4                                # t0 = multiples of framecol
     addi $t1, $t1, 1
     slt $t5, $s7, $t0                                # t5 = 1 if s7 < t0
     blez $t5, getRowCol                              # if t5 = 0, keep adding
     sub $t5, $t0, $s4
-    sub $t3, $s7, $t5                                # t3 = s7-(t0-s4)    
     addi $t1, $t1, -1
+    sub $t3, $s7, $t5                                # t3 = s7-(t0-s4)    
 
-done:
-    # new code to move into v0 and v1
-    move $v0, $t1                                    # v0 = $t1 = row_index
-    move $v1, $t3                                    # v1 = $t1 = col_index                                
+    # new code to move into v0 and v1                               
     lw $ra, 0($sp)                                   # clear stack and return
     addi $sp, $sp, 4
+    move $v0, $t1                                    # v0 = $t1 = row_index
+    move $v1, $t3                                    # v1 = $t1 = col_index
     jr $ra
 ##############################################################################################################################
