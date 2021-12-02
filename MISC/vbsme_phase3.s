@@ -13,13 +13,13 @@
 # test 0 For the 4x4 frame size and 2X2 window size
 # small size for validation and debugging purpose
 # The result should be 0, 2
-asize0:  .word    4,  4,  2,  2    #i, j, k, l
-frame0:  .word    0,  0,  1,  2, 
-         .word    0,  0,  3,  4,
-         .word    0,  0,  0,  0,
-         .word    0,  0,  0,  0, 
-window0: .word    1,  2, 
-         .word    3,  4,
+# asize0:  .word    4,  4,  2,  2    #i, j, k, l
+# frame0:  .word    0,  0,  1,  2, 
+#         .word    0,  0,  3,  4,
+#         .word    0,  0,  0,  0,
+#         .word    0,  0,  0,  0, 
+# window0: .word    1,  2, 
+#         .word    3,  4,
 
 # test 7
 # The result should be
