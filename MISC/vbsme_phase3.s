@@ -174,9 +174,10 @@ zCompare:
     j endCol                                          # loop +windowcol if endcol
 endSAD:
 
-    lw $ra, 0($sp)
-    addi $sp, $sp, 4
-    jr $ra
+#    lw $ra, 0($sp)
+#    addi $sp, $sp, 4
+#    jr $ra
+    j endSAD
 
 ##############################################################################################################################
 #SAD function begins
