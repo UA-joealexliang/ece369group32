@@ -13,10 +13,10 @@
 # test 0 For the 4x4 frame size and 2X2 window size
 # small size for validation and debugging purpose
 # The result should be 0, 2
-asize0:  .word    4,  4,  2, 2    #i, j, k, l
+asize0:  .word    4,  4,  2,  2    #i, j, k, l
 frame0:  .word    0,  0,  1,  2, 
-         .word    0,  0,  3,  4
-         .word    0,  0,  0,  0
+         .word    0,  0,  3,  4,
+         .word    0,  0,  0,  0,
          .word    0,  0,  0,  0, 
 window0: .word    1,  2, 
          .word    3,  4,
@@ -218,9 +218,10 @@ nextrow:
 
 # compare to see if new calculated SAD is <= minimum SAD
 compare:
-    slt $t6, $t8, $s2                               
-    bne $t6, $0, update                              # if t8 < s2 -> update
-    beq $t8, $s2, update                             # if t8 == s2 -> update
+    slt $t5, $t8, $s2   
+    beq $t8, $s2, update                             # if t8 == s2 -> update                            
+    bne $t5, $0, update                              # if t8 < s2 -> update
+
     lw $ra, 0($sp)                                   # else clear stack and return
     addi $sp, $sp, 4
     jr $ra
@@ -231,7 +232,7 @@ update:
     
     move $t0, $0                                     # t0 increments to s7
     move $t1, $0                                     # t1 keeps track of rows
-    move $t2, $0                                     # t2 keeps track of col
+    move $t3, $0                                     # t3 keeps track of col
 
     beq $t0, $s7, done                               # check before incrementing t0, used when t0 = 0 to avoid infinite loop
 getRowCol:
@@ -240,13 +241,13 @@ getRowCol:
     slt $t5, $s7, $t0                                # t5 = 1 if s7 < t0
     blez $t5, getRowCol                              # if t5 = 0, keep adding
     sub $t5, $t0, $s4
-    sub $t2, $s7, $t5                                # t2 = s7-(t0-s4)    
+    sub $t3, $s7, $t5                                # t3 = s7-(t0-s4)    
     addi $t1, $t1, -1
 
 done:
     # new code to move into v0 and v1
     move $v0, $t1                                    # v0 = $t1 = row_index
-    move $v1, $t2                                    # v1 = $t1 = col_index                                
+    move $v1, $t3                                    # v1 = $t1 = col_index                                
     lw $ra, 0($sp)                                   # clear stack and return
     addi $sp, $sp, 4
     jr $ra
