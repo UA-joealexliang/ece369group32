@@ -138,7 +138,9 @@ vbsme:
     lw $s4, 4($a0)                                   # s4 = get frame columns (j)
     lw $s6, 12($a0)                                  # s6 = get window columns (l)
     lw $s5, 8($a0)                                   # s5 = get window rows (k)
-    sw $ra, 0($sp)                                   # store ra = backtomain
+    sw $ra, 0($sp)                                   # store ra = backtomain                 
+    lb $k0, 0($a2)                                   # PARALLEL 0*4 = 0; all 4 row0 elements
+    lb $k1, 16($a2)                                  # PARALLEL 4*4 = 16; all 4 row1 elements
     move $t2, $s6
     mul $t1, $s3, $s4 
     sub $s1, $s4, $s6                                # s1 = framecol-windowcol  
@@ -147,10 +149,12 @@ vbsme:
     addi $s2, $0, 32767                              # s2 stores best SAD min, initialize to large number 2^32-1
     add $t1, $t1, $s4                                # t1 = sizeofframe+framecol
     move $s7, $0                                     # s7 = 0 set index to 0                                
+    lb $gp, 32($a2)                                  # PARALLEL 8*4 = 32; all 4 row2 elements
     add $t3, $t3, $s6                                # t3 = framecol*windowrow+windowcol
     addi $s0, $s1, 1                                 # s0 = framecol-windowcol+1
     move $v0, $0                                     # v0 stores best addrSAD row
     move $v1, $0                                     # v1 stores best addrSAD col
+    lb $fp, 48($a2)                                  # PARALLEL 12*4 = 48; all 4 row3 elements
     sub $t9, $t1, $t3                                # sizeofframe-framecol*windowrow+framecol-windowcol
     addi $t2, $t2, -1                                # t2 = sizeofwindowcol-1 (used to check when to increment to nextrow)
     addi $t6, $t6, -1                                # t6 = sizeofwindow-1 (used to check when to exit SAD loop)
@@ -179,45 +183,42 @@ endSAD:
 SAD:
     addi $sp, $sp, -4
     move $t0, $0                                     # t0 is current base address of frame
-    move $t1, $0                                     # t1 is current base address of window
+    # move $t1, $0                                     # t1 is current base address of window
     move $t8, $0                                     # t8 = local SAD value             
-    move $t7, $0                                     # t7 keeps track of col index
+    # move $t7, $0                                     # t7 keeps track of col index
     sw $ra, 0($sp)
 
 loop:
     # rEfA1
-    add $t3, $t0, $s7                                # t3 = chosen index Address for a1, base address is $s7
-    sll $t3, $t3, 2       
-    add $t3, $t3, $a1                                
-    lw $t3, 0($t3)                                   # t3 = a1[Address]
-
-    # rEfA2
-    add $t4, $t1, $0                                 # t4 = chosen index Address for a2, no need to have a 'base address' since we always start at 0
-    sll $t4, $t4, 2                                 
-    add $t4, $t4, $a2                                   
-    lw $t4, 0($t4)                                   # t4 = a2[Address] 
-
-    slt $t5, $t3, $t4                                
-    beq $t5, $0, switch                              # if t3 >= t4 -> switch (used to calculate 'absolute' difference)
-    sub $t4, $t4, $t3                                # else t4 = t4-t3
-    j store
-switch:     
-    sub $t4, $t3, $t4                                # t4 = t3-t4
-store:
-    add $t8, $t4, $t8                                # update SAD into t8
-    beq $t6, $t1, compare                            # if t1 = sizeofwindow-1 -> compare (exit loop when last element has been added to SAD)
-    addi $t1, $t1, 1                                 # else t1++
-    beq $t7, $t2, nextrow                            # if t7==sizeofwindowcol-1 -> nextrow (jump to nextrow if last element of a row has been accessed)
-    addi $t0, $t0, 1                                 # else t0++ 
-    addi $t7, $t7, 1                                 # t7++
-    j loop
-nextrow:                                
+    add $a3, $t0, $s7                                # t3 = chosen index Address for a1, base address is $s7
     add $t0, $t0, $s0                                # t0 = $t0 + sizeofframecol - sizeofwindowcol + 1 (get new index on next line)
-    move $t7, $0                                     # t7 = 0 (reset to new col index of nextrow)
-    j loop
+    add $at, $t0, $s7                                # t3 = chosen index Address for a1, base address is $s7
+    add $t0, $t0, $s0                                # t0 = $t0 + sizeofframecol - sizeofwindowcol + 1 (get new index on next line)
+    add $t3, $t0, $s7                                # t3 = chosen index Address for a1, base address is $s7
+    add $t0, $t0, $s0                                # t0 = $t0 + sizeofframecol - sizeofwindowcol + 1 (get new index on next line)
+    add $t4, $t0, $s7                                # t4 = chosen index Address for a1, base address is $s7
+    sll $a3, $a3, 2
+    sll $at, $at, 2
+    sll $t3, $t3, 2  
+    sll $t4, $t4, 2 
+    add $a3, $a3, $a1
+    add $at, $at, $a1
+    add $t3, $t3, $a1      
+    add $t4, $t4, $a1 
+    lw $a3, 0($a3)                                   # t3 = a1[Address]
+    lw $at, 0($at)                                   # t3 = a1[Address]
+    lw $t3, 0($t3)                                   # t3 = a1[Address] 
+    lw $t4, 0($t4)                                   # t4 = a1[Address]
+    and $a3, $a3, $k0                                # PARALLEL SAD row 1     
+    and $at, $at, $k1                                # PARALLEL SAD row 2
+    and $t3, $t3, $gp                                # PARALLEL SAD row 3
+    and $t4, $t4, $fp                                # PARALLEL SAD row 4
+    add $t8, $t8, $a3                                # PARALLEL MINSUM row 1
+    add $t8, $t8, $at                                # PARALLEL MINSUM row 2 
+    add $t8, $t8, $t3                                # PARALLEL MINSUM row 3
+    add $t8, $t8, $t4                                # PARALLEL MINSUM row 4
 
 # compare to see if new calculated SAD is <= minimum SAD
-compare:
     slt $t5, $t8, $s2   
     beq $t8, $s2, update                             # if t8 == s2 -> update                            
     bne $t5, $0, update                              # if t8 < s2 -> update
