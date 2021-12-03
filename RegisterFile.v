@@ -58,7 +58,7 @@ module RegisterFile(ReadRegister1, ReadRegister2, WriteRegister, WriteData, RegW
     input Clk;
     
     reg [31:0] register [0:31];
-    reg [4:0] i;
+    //reg [4:0] i;
     
     output reg [31:0] ReadData1;
     output reg [31:0] ReadData2;

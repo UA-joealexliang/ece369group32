@@ -67,20 +67,20 @@ memory[6] <= 32'h0;*/
             if (Datatype == 0) begin //sw
                 memory[Address[14:2]] <= WriteData;
             end
-            else if (Datatype == 1) begin //sh
-                case(Address[1])
-                    1'b0: memory[Address[14:2]][15:0] <= WriteData[15:0];
-                    1'b1: memory[Address[14:2]][31:16] <= WriteData[15:0];
-                endcase
-            end
-            else if (Datatype == 2) begin //sb
-                case(Address[1:0]) 
-                    2'b00: memory[Address[14:2]][7:0] <= WriteData[7:0];
-                    2'b01: memory[Address[14:2]][15:8] <= WriteData[7:0];
-                    2'b10: memory[Address[14:2]][23:16] <= WriteData[7:0];
-                    2'b11: memory[Address[14:2]][31:24] <= WriteData[7:0];
-                endcase
-            end
+            //else if (Datatype == 1) begin //sh
+            //    case(Address[1])
+            //        1'b0: memory[Address[14:2]][15:0] <= WriteData[15:0];
+            //        1'b1: memory[Address[14:2]][31:16] <= WriteData[15:0];
+            //    endcase
+            //end
+            //else if (Datatype == 2) begin //sb
+            //    case(Address[1:0]) 
+            //        2'b00: memory[Address[14:2]][7:0] <= WriteData[7:0];
+            //        2'b01: memory[Address[14:2]][15:8] <= WriteData[7:0];
+            //        2'b10: memory[Address[14:2]][23:16] <= WriteData[7:0];
+            //        2'b11: memory[Address[14:2]][31:24] <= WriteData[7:0];
+            //    endcase
+            //end
             //memory[Address[11:2]] <= WriteData;
             $display("sw: Address = %d, WriteData = %d", Address[14:2], WriteData);
         end
@@ -91,12 +91,12 @@ memory[6] <= 32'h0;*/
             if (Datatype == 0) begin //lw
                 ReadData <= memory[Address[14:2]];
             end
-            else if (Datatype == 1) begin //lh
-                case(Address[1])
-                    1'b0: ReadData <= $signed(memory[Address[14:2]][15:0]);
-                    1'b1: ReadData <= $signed(memory[Address[14:2]][31:16]);
-                endcase
-            end
+            //else if (Datatype == 1) begin //lh
+            //    case(Address[1])
+            //        1'b0: ReadData <= $signed(memory[Address[14:2]][15:0]);
+            //        1'b1: ReadData <= $signed(memory[Address[14:2]][31:16]);
+            //    endcase
+            //end
             else if (Datatype == 2) begin //lb
                 // case(Address[1:0]) 
                 //     2'b00: ReadData <= memory[Address[14:2]][7:0];

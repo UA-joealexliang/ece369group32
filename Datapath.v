@@ -44,7 +44,7 @@ module Datapath(Clk, Rst, PCResult, WriteData, v0, v1);
     wire [31:0] Rs_or_Imm; //is not fed into MEM_WB_Reg
     //wire [31:0] Shifted_Imm; //imm shifted, not rs
 
-    wire [31:0] ID_ALUSrc1Data, ID_ALUSrc2Data;
+    //wire [31:0] ID_ALUSrc1Data, ID_ALUSrc2Data;
     wire Zero;
 
     //variables from EX_MEM_Reg
@@ -188,13 +188,13 @@ module Datapath(Clk, Rst, PCResult, WriteData, v0, v1);
     
                             //Mux32Bit2To1(out, inA, inB, sel)
                             //decides between rs and imm
-    Mux32Bit2To1            ID_MuxALUinput1(ID_ALUSrc1Data, ID_ReadData1, ID_SignExtended, ID_ALUSrc2); 
+    //Mux32Bit2To1            ID_MuxALUinput1(ID_ALUSrc1Data, ID_ReadData1, ID_SignExtended, ID_ALUSrc2); 
                             //Mux32Bit2To1(out, inA, inB, sel)
                             //decides between rt and imm
-    Mux32Bit2To1            ID_MuxALUinput2(ID_ALUSrc2Data, ID_ReadData2, ID_SignExtended, ID_ALUSrc); 
+    //Mux32Bit2To1            ID_MuxALUinput2(ID_ALUSrc2Data, ID_ReadData2, ID_SignExtended, ID_ALUSrc); 
 
                             //ALU32BitBranch(ALUControl, A, B, Opcode, Zero);
-    ALU32BitBranch          ALU32BitBranch(ID_ALUControl, ID_ALUSrc1Data, ID_ALUSrc2Data, ID_Instruction[31:26], Zero);
+    ALU32BitBranch          ALU32BitBranch(ID_ALUControl, ID_ReadData1, ID_ReadData2, ID_Instruction[31:26], Zero);
 
     wire [31:0] Shifted_Jump;
                             //ShiftLeft2(In, Out)
