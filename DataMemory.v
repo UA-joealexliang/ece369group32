@@ -106,9 +106,9 @@ memory[6] <= 32'h0;*/
                 // endcase
 
                 ReadData[31:24] <= memory[Address[14:2] + 4'b0000][7:0];
-                ReadData[23:16] <= memory[Address[14:2] + 4'b0100][7:0];
-                ReadData[15:8] <= memory[Address[14:2] + 4'b1000][7:0];
-                ReadData[7:0] <= memory[Address[14:2] + 4'b1100][7:0];
+                ReadData[23:16] <= memory[Address[14:2] + 4'b0001][7:0];
+                ReadData[15:8] <= memory[Address[14:2] + 4'b0010][7:0];
+                ReadData[7:0] <= memory[Address[14:2] + 4'b0011][7:0];
             end
             //ReadData <= memory[Address[11:2]];
         end

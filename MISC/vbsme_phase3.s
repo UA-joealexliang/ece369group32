@@ -151,7 +151,7 @@ vbsme:
     move $s7, $0                                     # s7 = 0 set index to 0                                
     lb $gp, 32($a2)                                  # PARALLEL 8*4 = 32; all 4 row2 elements
     add $t3, $t3, $s6                                # t3 = framecol*windowrow+windowcol
-    addi $s0, $s1, 1                                 # s0 = framecol-windowcol+1
+    # addi $s0, $s1, 1                                 # s0 = framecol-windowcol+1
     move $v0, $0                                     # v0 stores best addrSAD row
     move $v1, $0                                     # v1 stores best addrSAD col
     lb $fp, 48($a2)                                  # PARALLEL 12*4 = 48; all 4 row3 elements
@@ -192,11 +192,11 @@ SAD:
 loop:
     # rEfA1
     add $a3, $t0, $s7                                # t3 = chosen index Address for a1, base address is $s7
-    add $t0, $t0, $s0                                # t0 = $t0 + sizeofframecol - sizeofwindowcol + 1 (get new index on next line)
+    add $t0, $t0, $s4                                # t0 = $t0 + sizeofframecol - sizeofwindowcol + 1 (get new index on next line)
     add $at, $t0, $s7                                # t3 = chosen index Address for a1, base address is $s7
-    add $t0, $t0, $s0                                # t0 = $t0 + sizeofframecol - sizeofwindowcol + 1 (get new index on next line)
+    add $t0, $t0, $s4                                # t0 = $t0 + sizeofframecol - sizeofwindowcol + 1 (get new index on next line)
     add $t3, $t0, $s7                                # t3 = chosen index Address for a1, base address is $s7
-    add $t0, $t0, $s0                                # t0 = $t0 + sizeofframecol - sizeofwindowcol + 1 (get new index on next line)
+    add $t0, $t0, $s4                                # t0 = $t0 + sizeofframecol - sizeofwindowcol + 1 (get new index on next line)
     add $t4, $t0, $s7                                # t4 = chosen index Address for a1, base address is $s7
     sll $a3, $a3, 2
     sll $at, $at, 2
@@ -206,10 +206,10 @@ loop:
     add $at, $at, $a1
     add $t3, $t3, $a1      
     add $t4, $t4, $a1 
-    lw $a3, 0($a3)                                   # t3 = a1[Address]
-    lw $at, 0($at)                                   # t3 = a1[Address]
-    lw $t3, 0($t3)                                   # t3 = a1[Address] 
-    lw $t4, 0($t4)                                   # t4 = a1[Address]
+    lb $a3, 0($a3)                                   # t3 = a1[Address]
+    lb $at, 0($at)                                   # t3 = a1[Address]
+    lb $t3, 0($t3)                                   # t3 = a1[Address] 
+    lb $t4, 0($t4)                                   # t4 = a1[Address]
     and $a3, $a3, $k0                                # PARALLEL SAD row 1     
     and $at, $at, $k1                                # PARALLEL SAD row 2
     and $t3, $t3, $gp                                # PARALLEL SAD row 3
